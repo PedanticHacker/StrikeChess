@@ -1,0 +1,10 @@
+# Byte-compiled files
+__pycache__/
+
+# macOS-specific files
+.DS_Store
+
+# mypy files
+.mypy_cache/
+.dmypy.json
+dmypy.json
