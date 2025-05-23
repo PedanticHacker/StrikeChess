@@ -63,7 +63,7 @@ def create_splash_screen() -> QSplashScreen:
 
     message_font: QFont = splash_screen.font()
     message_font.setBold(True)
-    message_font.setPixelSize(24)
+    message_font.setPixelSize(26)
 
     splash_screen.setFont(message_font)
     splash_screen.showMessage("StrikeChess\n1.0", center_alignment, yellow_color)
