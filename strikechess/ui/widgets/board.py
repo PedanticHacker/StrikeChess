@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import IntEnum
 from functools import lru_cache
 from typing import Final, Literal, NamedTuple
 
@@ -21,6 +22,12 @@ from strikechess.utils import setting_value
 
 
 svg.XX = "<circle id='xx' r='4.5' cx='22.5' cy='22.5' stroke='#303030' fill='#e5e5e5'/>"
+
+
+class BoardSize(IntEnum):
+    small = 380
+    normal = 480
+    big = 580
 
 
 class BoardCache(NamedTuple):
@@ -118,18 +125,8 @@ class SvgBoard(QSvgWidget):
     @property
     def board_size(self) -> int:
         """Get board size based on option in settings."""
-        SMALL_BOARD_SIZE: Final[int] = 380
-        NORMAL_BOARD_SIZE: Final[int] = 480
-        BIG_BOARD_SIZE: Final[int] = 580
-
         option: Literal["small", "normal", "big"] = setting_value("board", "size")
-
-        if option == "small":
-            return SMALL_BOARD_SIZE
-        elif option == "big":
-            return BIG_BOARD_SIZE
-        else:
-            return NORMAL_BOARD_SIZE
+        return BoardSize[option]
 
     @property
     def board_margin(self) -> float:
