@@ -1,0 +1,101 @@
+name: Build StrikeChess
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact-name: StrikeChess-Windows
+          - os: ubuntu-latest
+            artifact-name: StrikeChess-Linux
+          - os: macos-latest
+            artifact-name: StrikeChess-macOS
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2t64 \
+            libdbus-1-3 \
+            libegl1 \
+            libpulse0 \
+            libxcb-cursor0 \
+            libxcb-icccm4 \
+            libxcb-keysyms1 \
+            libxcb-shape0 \
+            libxkbcommon0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build executable
+        run: pyinstaller --clean bundle.spec
+
+      - name: Copy Linux files
+        if: runner.os == 'Linux'
+        run: |
+          cp strikechess/assets/icons/logo.svg dist/
+          cp strikechess/assets/Linux/install.sh dist/
+          cp strikechess/assets/Linux/uninstall.sh dist/
+
+      - name: Compress artifact (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd dist
+          zip -r ../${{ matrix.artifact-name }}.zip .
+
+      - name: Compress artifact (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd dist
+          Compress-Archive -Path * -DestinationPath ..\${{ matrix.artifact-name }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-name }}.zip
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v6
+        with:
+          path: artifacts
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*.zip
+          generate_release_notes: true

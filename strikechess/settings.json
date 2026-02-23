@@ -1,0 +1,19 @@
+{
+  "clock": {
+    "time": 60.0,
+    "increment": 0.0
+  },
+  "engine": {
+    "is_white": false,
+    "is_ponder_enabled": false,
+    "name": "(no engine)"
+  },
+  "human": {
+    "name": "Human"
+  },
+  "ui": {
+    "is_white_at_bottom": true,
+    "language": "en",
+    "theme": "dark-mint"
+  }
+}

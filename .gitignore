@@ -1,0 +1,27 @@
+# Build and distribution artifacts
+*.zip
+build/
+dist/
+
+# IDE settings
+*.code-workspace
+.idea/
+.vscode/
+
+# Lock files
+*.lock
+
+# macOS-specific files
+.DS_Store
+
+# Python bytecode
+__pycache__/
+
+# Type checking
+.dmypy.json
+.mypy_cache/
+dmypy.json
+
+# Virtual environments
+.venv/
+venv/

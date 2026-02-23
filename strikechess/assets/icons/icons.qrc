@@ -1,0 +1,30 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/icons">
+    <file>about.svg</file>
+    <file>american-flag.svg</file>
+    <file>black-bishop.svg</file>
+    <file>black-knight.svg</file>
+    <file>black-queen.svg</file>
+    <file>black-rook.svg</file>
+    <file>flip.svg</file>
+    <file>german-flag.svg</file>
+    <file>italian-flag.svg</file>
+    <file>load-engine.svg</file>
+    <file>load-from-pgn.svg</file>
+    <file>logo.svg</file>
+    <file>new-game.svg</file>
+    <file>play-move-now.svg</file>
+    <file>quit.svg</file>
+    <file>save-as-pgn.svg</file>
+    <file>settings.svg</file>
+    <file>spanish-flag.svg</file>
+    <file>start-analysis.svg</file>
+    <file>stop-analysis.svg</file>
+    <file>unload-engine.svg</file>
+    <file>white-bishop.svg</file>
+    <file>white-knight.svg</file>
+    <file>white-queen.svg</file>
+    <file>white-rook.svg</file>
+  </qresource>
+</RCC>
