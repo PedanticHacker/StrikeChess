@@ -62,7 +62,7 @@ class SettingsService:
                 if key not in self._data[section]:
                     self._data[section][key] = default_value
                     is_repaired = True
-                elif not isinstance(self._data[section][key], default_value):
+                elif not isinstance(self._data[section][key], type(default_value)):
                     self._data[section][key] = default_value
                     is_repaired = True
 
