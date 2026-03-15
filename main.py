@@ -6,7 +6,7 @@ from multiprocessing import freeze_support
 from PySide6.QtCore import QLockFile, QTimer
 
 from strikechess.ui import MainWindow, SplashScreen
-from strikechess.utils import abort_duplicate_launch, create_app
+from strikechess.utils import abort_duplicate_launch, create_app, lock_file_path
 
 
 SplashScreenDurationMilliseconds: Final[int] = 3000
@@ -27,7 +27,7 @@ def main() -> None:
     splash_screen: SplashScreen = SplashScreen().show_raised()
 
     main_window: MainWindow = MainWindow()
-    lock_file: QLockFile = QLockFile("StrikeChess.lock")
+    lock_file: QLockFile = QLockFile(lock_file_path())
 
     if not lock_file.tryLock(1):
         abort_duplicate_launch(splash_screen, main_window)

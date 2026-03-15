@@ -506,12 +506,13 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("Load Game"),
-                self.tr("You will lose the current game.\n"
-                        "Load from PGN anyway?"),
+                self.tr("You will lose the current game.\n" "Load from PGN anyway?"),
             ):
                 return
 
-        file_path: str | None = show_file_manager(self, self.tr("Load Game"), self.tr("PGN file (*.pgn)"))
+        file_path: str | None = show_file_manager(
+            self, self.tr("Load Game"), self.tr("PGN file (*.pgn)")
+        )
 
         if file_path is None:
             return
@@ -541,9 +542,11 @@ class MainWindow(QMainWindow):
             show_warning(
                 self,
                 self.tr("File Error"),
-                self.tr("Cannot read PGN.\n\n"
-                        "The file may be locked or corrupted.\n"
-                        "Check file permissions and try again."),
+                self.tr(
+                    "Cannot read PGN.\n\n"
+                    "The file may be locked or corrupted.\n"
+                    "Check file permissions and try again."
+                ),
             )
 
     def offer_new_game(self) -> None:
@@ -552,8 +555,7 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("New Game"),
-                self.tr("You will lose the current game.\n"
-                        "Start a new game anyway?"),
+                self.tr("You will lose the current game.\n" "Start a new game anyway?"),
             ):
                 return
 
@@ -615,8 +617,6 @@ class MainWindow(QMainWindow):
     def request_engine_analysis(self) -> None:
         """Request engine to analyze current position."""
         QThreadPool.globalInstance().start(self._engine.start_analysis)
-
-        self._engine.is_analyzing = True
         self._notifications_label.setText(self.tr("Analyzing..."))
 
     def request_engine_move(self, force: bool = False) -> None:
@@ -625,7 +625,7 @@ class MainWindow(QMainWindow):
             return
 
         if self._game.is_engine_to_move() or force:
-            self._engine.is_thinking = True
+            self._engine.start_thinking()
             self._notifications_label.setText(self.tr("Thinking..."))
 
             self.update_actions()
@@ -679,9 +679,11 @@ class MainWindow(QMainWindow):
             show_warning(
                 self,
                 self.tr("Save Error"),
-                self.tr("Cannot save game as PGN.\n\n"
-                        "The destination may be read-only or full.\n"
-                        "Try saving to a different location."),
+                self.tr(
+                    "Cannot save game as PGN.\n\n"
+                    "The destination may be read-only or full.\n"
+                    "Try saving to a different location."
+                ),
             )
 
     def show_about(self) -> None:
@@ -778,8 +780,8 @@ class MainWindow(QMainWindow):
 
     def update_actions(self) -> None:
         """Update availability of actions based on game state."""
-        is_engine_thinking: bool = self._engine.is_thinking
-        is_engine_analyzing: bool = self._engine.is_analyzing
+        is_engine_thinking: bool = self._engine.is_thinking()
+        is_engine_analyzing: bool = self._engine.is_analyzing()
         is_engine_not_loaded: bool = not self._engine.is_loaded()
 
         is_game_over: bool = self._game.is_over()
@@ -795,8 +797,7 @@ class MainWindow(QMainWindow):
             is_engine_thinking
             or is_engine_analyzing
             or is_engine_not_loaded
-            or is_game_over_by_rules
-            and is_last_move
+            or (is_game_over_by_rules and is_last_move)
         )
 
         self.save_as_pgn_action.setEnabled(is_game_in_progress)
@@ -909,7 +910,7 @@ class MainWindow(QMainWindow):
         self._sound_player.play(move)
         self._game.push(move)
 
-        self._engine.is_thinking = False
+        self._engine.stop_thinking()
 
         self.update_ui_state()
 
