@@ -28,9 +28,8 @@ class EngineService(QObject):
 
         self._engine: SimpleEngine | None = None
 
-        self._thinking: Event = Event()
-        self._analyzing: Event = Event()
-        self._active_analysis: SimpleEngine.analysis | None = None
+        self.is_thinking: bool = False
+        self.is_analyzing: bool = False
 
         self.load_default_engine()
 
@@ -38,22 +37,6 @@ class EngineService(QObject):
     def name(self) -> str:
         """Engine name, or "(no engine)" if none is loaded."""
         return self.tr("(no engine)") if self._engine is None else self._engine.id["name"]
-
-    def is_thinking(self) -> bool:
-        """Return True if engine is thinking."""
-        return self._thinking.is_set()
-
-    def is_analyzing(self) -> bool:
-        """Return True if engine is analyzing."""
-        return self._analyzing.is_set()
-
-    def start_thinking(self) -> None:
-        """Set engine state to thinking."""
-        self._thinking.set()
-
-    def stop_thinking(self) -> None:
-        """Clear engine thinking state."""
-        self._thinking.clear()
 
     def is_loaded(self) -> bool:
         """Return True if engine is loaded."""
@@ -71,20 +54,10 @@ class EngineService(QObject):
             make_executable(file_path)
 
             new_engine: SimpleEngine = SimpleEngine.popen_uci(file_path)
-
-            if "name" not in new_engine.id:
-                new_engine.quit()
-                raise EngineError("Engine did not provide identification.")
-
             new_engine.configure(engine_options())
 
             self.terminate()
             self._engine = new_engine
-
-        except EngineError:
-            self._engine = None
-            self._settings.set_value("engine", "name", "(no engine)")
-            raise
 
         except Exception:
             self._engine = None
@@ -140,33 +113,22 @@ class EngineService(QObject):
 
     def start_analysis(self) -> None:
         """Start analyzing current position."""
-        self._analyzing.set()
-
         with self._engine.analysis(self._game.board) as analysis:
-            self._active_analysis = analysis
-
             for info in analysis:
-                if not self._analyzing.is_set():
+                if not self.is_analyzing:
                     break
 
-                if "pv" not in info:
-                    continue
+                if "pv" in info:
+                    pv: list[Move] = info["pv"]
 
-                pv: list[Move] = info["pv"]
+                    best_move: Move = pv[0]
+                    score: Score = info["score"].white()
+                    variation: str = self._game.board.variation_san(pv)
 
-                best_move: Move = pv[0]
-                score: Score = info["score"].white()
-                variation: str = self._game.board.variation_san(pv)
-
-                self.best_move_analyzed.emit(best_move)
-                self.score_analyzed.emit(score)
-                self.variation_analyzed.emit(variation)
-
-            self._active_analysis = None
+                    self.best_move_analyzed.emit(best_move)
+                    self.score_analyzed.emit(score)
+                    self.variation_analyzed.emit(variation)
 
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""
-        self._analyzing.clear()
-
-        if self._active_analysis is not None:
-            self._active_analysis.stop()
+        self.is_analyzing = False

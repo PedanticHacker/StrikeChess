@@ -16,9 +16,6 @@ from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox, QPushButto
 from strikechess import __version__
 
 
-HOME_DIRECTORY: Final[str] = Path.home()
-
-
 def abort_duplicate_launch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
     """Warn user about duplicate launch and quit app."""
     splash_screen.close()
@@ -99,15 +96,13 @@ def engine_options() -> dict[str, int]:
     """Get UCI engine Hash and Threads options based on OS resources."""
     bytes_per_megabyte: int = 2**20
     engine_hash_size_percentage: float = 0.25
-    max_hash_size_in_megabytes: int = 4096
 
     logical_cpu_cores: int | None = cpu_count()
     allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores // 2)
 
     available_ram_in_megabytes: int = virtual_memory().available // bytes_per_megabyte
-    allowed_hash_size_in_megabytes: int = min(
-        int(available_ram_in_megabytes * engine_hash_size_percentage),
-        max_hash_size_in_megabytes,
+    allowed_hash_size_in_megabytes: int = int(
+        available_ram_in_megabytes * engine_hash_size_percentage
     )
 
     return {"Hash": allowed_hash_size_in_megabytes, "Threads": allowed_cpu_threads}
@@ -116,13 +111,6 @@ def engine_options() -> dict[str, int]:
 def find_opening(fen: str) -> str | None:
     """Get opening name based on `fen`."""
     return _openings().get(fen)
-
-
-def lock_file_path() -> str:
-    """Get path to user's StrikeChess.lock file."""
-    user_directory: Path = HOME_DIRECTORY / ".StrikeChess"
-    user_directory.mkdir(exist_ok=True)
-    return str(user_directory / "StrikeChess.lock")
 
 
 def make_executable(file_path: str) -> None:
@@ -160,7 +148,9 @@ def show_about(parent: QWidget | None) -> None:
     """Show About dialog."""
     QMessageBox.about(
         parent,
-        QApplication.translate("StrikeChess", "About StrikeChess %1").replace("%1", __version__),
+        QApplication.translate("StrikeChess", "About StrikeChess %1").replace(
+            "%1", __version__
+        ),
         QApplication.translate(
             "StrikeChess",
             "Play chess and analyze games across\n"
@@ -176,7 +166,7 @@ def show_file_manager(parent: QWidget | None, caption: str, file_filter: str = "
     file_path, _ = QFileDialog.getOpenFileName(
         parent=parent,
         caption=caption,
-        dir=str(HOME_DIRECTORY),
+        dir=str(Path.home()),
         filter=file_filter,
     )
     return file_path if file_path else None
