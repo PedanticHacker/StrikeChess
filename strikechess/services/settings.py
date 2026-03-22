@@ -16,13 +16,19 @@ class SettingsService:
 
     def value(self, section: str, key: str) -> Any:
         """Get value of `key` from `section` in settings."""
+        default_value: Any = self._defaults[section][key]
+
         try:
-            return self._data[section][key]
+            stored_value: Any = self._data[section][key]
         except KeyError:
-            default_data: dict[str, dict[str, Any]] = self._load(
-                self._default_settings_file_path()
-            )
-            return default_data[section][key]
+            return default_value
+
+        if not isinstance(stored_value, type(default_value)):
+            self._data[section][key] = default_value
+            self._save()
+            return default_value
+
+        return stored_value
 
     def set_value(self, section: str, key: str, value: Any) -> None:
         """Set `value` to `key` for `section` in settings."""
