@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+from pathlib import Path
 from multiprocessing import freeze_support
 
 from PySide6.QtCore import QLockFile, QTimer
@@ -25,9 +26,11 @@ def main() -> None:
     """Launch app with splash screen, abort duplicate launch attempt."""
     app: QApplication = create_app()
     splash_screen: SplashScreen = SplashScreen().show_raised()
-
     main_window: MainWindow = MainWindow()
-    lock_file: QLockFile = QLockFile("StrikeChess.lock")
+
+    lock_directory: Path = Path.home() / ".StrikeChess"
+    lock_directory.mkdir(exist_ok=True)
+    lock_file: QLockFile = QLockFile(str(lock_directory / "StrikeChess.lock"))
 
     if not lock_file.tryLock(1):
         abort_duplicate_launch(splash_screen, main_window)
