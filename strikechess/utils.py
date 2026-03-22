@@ -96,16 +96,18 @@ def engine_options() -> dict[str, int]:
     """Get UCI engine Hash and Threads options based on OS resources."""
     bytes_per_megabyte: int = 2**20
     engine_hash_size_percentage: float = 0.25
+    maximum_hash_size_in_megabytes: int = 4096
 
     logical_cpu_cores: int | None = cpu_count()
     allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores // 2)
 
     available_ram_in_megabytes: int = virtual_memory().available // bytes_per_megabyte
-    allowed_hash_size_in_megabytes: int = int(
-        available_ram_in_megabytes * engine_hash_size_percentage
-    )
+    allowed_hash_size_in_megabytes: int = int(available_ram_in_megabytes * engine_hash_size_percentage)
 
-    return {"Hash": allowed_hash_size_in_megabytes, "Threads": allowed_cpu_threads}
+    return {
+        "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
+        "Threads": allowed_cpu_threads,
+    }
 
 
 def find_opening(fen: str) -> str | None:
