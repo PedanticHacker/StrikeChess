@@ -12,19 +12,22 @@ class SettingsService:
         self._ensure_settings_exist()
 
         self._file_path: Path = self._user_settings_file_path()
-        self._data: dict[str, dict[str, Any]] = self._load(self._file_path)
+        self._user_settings: dict[str, dict[str, Any]] = self._load(self._file_path)
+        self._default_settings: dict[str, dict[str, Any]] = self._load(
+            self._default_settings_file_path()
+        )
 
     def value(self, section: str, key: str) -> Any:
         """Get value of `key` from `section` in settings."""
-        default_value: Any = self._defaults[section][key]
+        default_value: Any = self._default_settings[section][key]
 
         try:
-            stored_value: Any = self._data[section][key]
+            stored_value: Any = self._user_settings[section][key]
         except KeyError:
             return default_value
 
         if not isinstance(stored_value, type(default_value)):
-            self._data[section][key] = default_value
+            self._user_settings[section][key] = default_value
             self._save()
             return default_value
 
@@ -32,7 +35,7 @@ class SettingsService:
 
     def set_value(self, section: str, key: str, value: Any) -> None:
         """Set `value` to `key` for `section` in settings."""
-        self._data[section][key] = value
+        self._user_settings[section][key] = value
         self._save()
 
     def _user_settings_file_path(self) -> Path:
@@ -61,5 +64,5 @@ class SettingsService:
     def _save(self) -> None:
         """Save settings to user's settings.json file."""
         with open(self._file_path, mode="w", encoding="utf-8", newline="\n") as file:
-            json.dump(self._data, file, indent=2)
+            json.dump(self._user_settings, file, indent=2)
             file.write("\n")
