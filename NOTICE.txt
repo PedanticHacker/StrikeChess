@@ -6,7 +6,7 @@ StrikeChess incorporates the following third-party software components:
 
 Stockfish
 
-Version: 17.1
+Version: 18
 Source code: https://github.com/official-stockfish/Stockfish
 
 Copyright © 2004-2026 The Stockfish developers (see AUTHORS file)
