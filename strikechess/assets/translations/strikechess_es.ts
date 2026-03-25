@@ -319,6 +319,10 @@ Intente guardar en otra ubicación.</translation>
     <source>Are you sure you want to quit?</source>
     <translation>¿Está seguro de que desea salir?</translation>
   </message>
+  <message>
+    <source>Player</source>
+    <translation>Jugador</translation>
+  </message>
 </context>
 <context>
   <name>TableModel</name>
@@ -357,7 +361,7 @@ Intente guardar en otra ubicación.</translation>
     <translation>Control de tiempo</translation>
   </message>
   <message>
-    <source>Human</source>
+    <source>Player</source>
     <translation>Jugador</translation>
   </message>
   <message>

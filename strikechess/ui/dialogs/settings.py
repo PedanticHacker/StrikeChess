@@ -57,7 +57,7 @@ class SettingsDialog(QDialog):
         is_ponder_enabled: bool = self._settings.value("engine", "is_ponder_enabled")
 
         self._human_name_option: QLineEdit = QLineEdit(human_name)
-        self._human_name_option.setPlaceholderText(self.tr("Human"))
+        self._human_name_option.setPlaceholderText(self.tr("Player"))
 
         self._engine_black_option: QRadioButton = QRadioButton(self.tr("Black"))
         self._engine_black_option.setChecked(not is_engine_white)
@@ -145,7 +145,7 @@ class SettingsDialog(QDialog):
         current_settings: dict[str, bool | float | str] = {
             "clock_increment": self._clock_increment_option.currentData(),
             "clock_time": self._clock_time_option.currentData(),
-            "human_name": self._human_name_option.text().strip() or self.tr("Human"),
+            "human_name": self._human_name_option.text().strip(),
             "is_engine_ponder_enabled": self._engine_ponder_option.isChecked(),
             "is_engine_white": self._engine_white_option.isChecked(),
         }
@@ -162,7 +162,7 @@ class SettingsDialog(QDialog):
         self._settings.set_value(
             section="human",
             key="name",
-            value=self._human_name_option.text().strip() or self.tr("Human"),
+            value=self._human_name_option.text().strip(),
         )
         self._settings.set_value(
             section="engine",

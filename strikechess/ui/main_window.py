@@ -121,7 +121,9 @@ class MainWindow(QMainWindow):
         self._notifications_label: QLabel = QLabel()
         self._notifications_label.setObjectName("notifications")
 
-        self._human_name_label: QLabel = QLabel(self._settings.value("human", "name"))
+        self._human_name_label: QLabel = QLabel(
+            self._settings.value("human", "name") or self.tr("Player")
+        )
         self._human_name_label.setObjectName("humanName")
 
         self._openings_label: QLabel = QLabel()
@@ -446,7 +448,9 @@ class MainWindow(QMainWindow):
             self._black_clock.reset()
             self._white_clock.reset()
 
-            self._human_name_label.setText(self._settings.value("human", "name"))
+            self._human_name_label.setText(
+                self._settings.value("human", "name") or self.tr("Player")
+            )
 
         self.orient_board_for_human()
         self.request_engine_move()
@@ -506,12 +510,13 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("Load Game"),
-                self.tr("You will lose the current game.\n"
-                        "Load from PGN anyway?"),
+                self.tr("You will lose the current game.\n" "Load from PGN anyway?"),
             ):
                 return
 
-        file_path: str | None = show_file_manager(self, self.tr("Load Game"), self.tr("PGN file (*.pgn)"))
+        file_path: str | None = show_file_manager(
+            self, self.tr("Load Game"), self.tr("PGN file (*.pgn)")
+        )
 
         if file_path is None:
             return
@@ -541,9 +546,11 @@ class MainWindow(QMainWindow):
             show_warning(
                 self,
                 self.tr("File Error"),
-                self.tr("Cannot read PGN.\n\n"
-                        "The file may be locked or corrupted.\n"
-                        "Check file permissions and try again."),
+                self.tr(
+                    "Cannot read PGN.\n\n"
+                    "The file may be locked or corrupted.\n"
+                    "Check file permissions and try again."
+                ),
             )
 
     def offer_new_game(self) -> None:
@@ -552,8 +559,7 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("New Game"),
-                self.tr("You will lose the current game.\n"
-                        "Start a new game anyway?"),
+                self.tr("You will lose the current game.\n" "Start a new game anyway?"),
             ):
                 return
 
@@ -641,9 +647,9 @@ class MainWindow(QMainWindow):
 
     def save_as_pgn(self) -> None:
         """Save current game as PGN."""
-        human_name: str = self._settings.value("human", "name")
         engine_name: str = self._settings.value("engine", "name")
         is_engine_white: bool = self._settings.value("engine", "is_white")
+        human_name: str = self._settings.value("human", "name") or self.tr("Player")
         suggested_file_name: str = self._pgn.suggest_file_name(
             human_name,
             engine_name,
@@ -679,9 +685,11 @@ class MainWindow(QMainWindow):
             show_warning(
                 self,
                 self.tr("Save Error"),
-                self.tr("Cannot save game as PGN.\n\n"
-                        "The destination may be read-only or full.\n"
-                        "Try saving to a different location."),
+                self.tr(
+                    "Cannot save game as PGN.\n\n"
+                    "The destination may be read-only or full.\n"
+                    "Try saving to a different location."
+                ),
             )
 
     def show_about(self) -> None:

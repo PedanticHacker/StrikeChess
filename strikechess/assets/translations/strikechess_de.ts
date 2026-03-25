@@ -319,6 +319,10 @@ Versuchen Sie, an einem anderen Ort zu speichern.</translation>
     <source>Are you sure you want to quit?</source>
     <translation>Möchten Sie wirklich beenden?</translation>
   </message>
+  <message>
+    <source>Player</source>
+    <translation>Spieler</translation>
+  </message>
 </context>
 <context>
   <name>TableModel</name>
@@ -357,7 +361,7 @@ Versuchen Sie, an einem anderen Ort zu speichern.</translation>
     <translation>Zeitkontrolle</translation>
   </message>
   <message>
-    <source>Human</source>
+    <source>Player</source>
     <translation>Spieler</translation>
   </message>
   <message>
