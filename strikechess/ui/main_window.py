@@ -6,7 +6,7 @@ from re import sub
 
 from chess import BLACK, Move, WHITE
 from chess.engine import EngineError, Score
-from PySide6.QtCore import QThreadPool, QTimer, QTranslator, Slot
+from PySide6.QtCore import QLibraryInfo, QThreadPool, QTimer, QTranslator, Slot
 from PySide6.QtGui import QAction, QCloseEvent, QIcon, QWheelEvent
 from PySide6.QtWidgets import (
     QApplication,
@@ -436,11 +436,21 @@ class MainWindow(QMainWindow):
         language_code: str = self._settings.value("ui", "language")
 
         if language_code != "en":
-            translations_directory: Path = root_path() / "assets" / "translations"
-            self._translator: QTranslator = QTranslator()
+            app_translations_directory: Path = root_path() / "assets" / "translations"
+            qt_translations_directory: str = QLibraryInfo.path(
+                QLibraryInfo.LibraryPath.TranslationsPath
+            )
 
-            if self._translator.load(f"strikechess_{language_code}", str(translations_directory)):
-                QApplication.installTranslator(self._translator)
+            self._app_translator: QTranslator = QTranslator()
+            self._qt_translator: QTranslator = QTranslator()
+
+            if self._app_translator.load(
+                f"strikechess_{language_code}", str(app_translations_directory)
+            ):
+                QApplication.installTranslator(self._app_translator)
+
+            if self._qt_translator.load(f"qtbase_{language_code}", qt_translations_directory):
+                QApplication.installTranslator(self._qt_translator)
 
     def apply_saved_settings(self) -> None:
         """Act on edited settings being saved."""
