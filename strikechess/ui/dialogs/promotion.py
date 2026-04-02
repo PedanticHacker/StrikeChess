@@ -1,7 +1,16 @@
 from chess import BISHOP, KNIGHT, QUEEN, ROOK, WHITE
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QPushButton
 
-from strikechess.utils import create_button, create_svg_icon
+from strikechess.utils import create_svg_icon
+
+
+def _create_button(icon: QIcon) -> QPushButton:
+    """Create button with `icon`."""
+    button: QPushButton = QPushButton()
+    button.setIcon(icon)
+    button.setIconSize(QSize(50, 50))
+    return button
 
 
 class PromotionDialog(QDialog):
@@ -23,15 +32,15 @@ class PromotionDialog(QDialog):
     def create_buttons(self) -> None:
         """Create buttons based on player's color."""
         if self._player_color == WHITE:
-            self.queen_button: QPushButton = create_button(create_svg_icon("white-queen"))
-            self.rook_button: QPushButton = create_button(create_svg_icon("white-rook"))
-            self.bishop_button: QPushButton = create_button(create_svg_icon("white-bishop"))
-            self.knight_button: QPushButton = create_button(create_svg_icon("white-knight"))
+            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
+            self.rook_button: QPushButton = _create_button(create_svg_icon("white-rook"))
+            self.bishop_button: QPushButton = _create_button(create_svg_icon("white-bishop"))
+            self.knight_button: QPushButton = _create_button(create_svg_icon("white-knight"))
         else:
-            self.queen_button = create_button(create_svg_icon("black-queen"))
-            self.rook_button = create_button(create_svg_icon("black-rook"))
-            self.bishop_button = create_button(create_svg_icon("black-bishop"))
-            self.knight_button = create_button(create_svg_icon("black-knight"))
+            self.queen_button = _create_button(create_svg_icon("black-queen"))
+            self.rook_button = _create_button(create_svg_icon("black-rook"))
+            self.bishop_button = _create_button(create_svg_icon("black-bishop"))
+            self.knight_button = _create_button(create_svg_icon("black-knight"))
 
     def set_horizontal_layout(self) -> None:
         """Add buttons to horizontal layout."""

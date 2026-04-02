@@ -1,15 +1,17 @@
+import os
+import platform
+import stat
+import subprocess
 from contextlib import suppress
+from pathlib import Path
 
 from chess import Move
 from chess.engine import EngineError, Limit, Score, SimpleEngine
+from cpuinfo import get_cpu_info
+from psutil import cpu_count, virtual_memory
 from PySide6.QtCore import QObject, Signal
 
-from strikechess.utils import (
-    delete_quarantine_attribute,
-    engine_options,
-    make_executable,
-    stockfish_executable,
-)
+from strikechess.utils import root_path
 
 
 class EngineService(QObject):
@@ -45,16 +47,16 @@ class EngineService(QObject):
     def load_default_engine(self) -> None:
         """Load executable file of Stockfish engine."""
         with suppress(EngineError):
-            self.load_file(stockfish_executable())
+            self.load_file(_stockfish_executable())
 
     def load_file(self, file_path: str) -> None:
         """Load UCI-compliant engine from `file_path`."""
         try:
-            delete_quarantine_attribute(file_path)
-            make_executable(file_path)
+            _delete_quarantine_attribute(file_path)
+            _make_executable(file_path)
 
             new_engine: SimpleEngine = SimpleEngine.popen_uci(file_path)
-            new_engine.configure(engine_options())
+            new_engine.configure(_engine_options())
 
             self.terminate()
             self._engine = new_engine
@@ -132,3 +134,78 @@ class EngineService(QObject):
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""
         self.is_analyzing = False
+
+
+def _delete_quarantine_attribute(file_path: str) -> None:
+    """Delete quarantine attribute from `file_path`."""
+    if platform.system() == "Darwin":
+        subprocess.run(
+            ["xattr", "-d", "com.apple.quarantine", file_path],
+            stderr=subprocess.DEVNULL,
+        )
+
+
+def _engine_options() -> dict[str, int]:
+    """Get UCI engine Hash and Threads options based on OS resources."""
+    bytes_per_megabyte: int = 2**20
+    engine_hash_size_percentage: float = 0.25
+    maximum_hash_size_in_megabytes: int = 4096
+
+    logical_cpu_cores: int | None = cpu_count()
+    allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores // 2)
+
+    available_ram_in_megabytes: int = virtual_memory().available // bytes_per_megabyte
+    allowed_hash_size_in_megabytes: int = int(available_ram_in_megabytes * engine_hash_size_percentage)
+
+    return {
+        "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
+        "Threads": allowed_cpu_threads,
+    }
+
+
+def _make_executable(file_path: str) -> None:
+    """Make `file_path` have executable permission."""
+    os.chmod(file_path, os.stat(file_path).st_mode | stat.S_IXUSR)
+
+
+def _stockfish_executable() -> str:
+    """Get path to executable file of default Stockfish engine."""
+    system: str = platform.system()
+    extension: str = ".exe" if system == "Windows" else ""
+
+    stockfish_directory: Path = root_path() / "assets" / "engines" / "stockfish-18" / system
+    build_path: Path = stockfish_directory / _stockfish_build() / f"stockfish{extension}"
+
+    return str(build_path)
+
+
+def _stockfish_build() -> str:
+    """Detect best Stockfish build for current CPU."""
+    if platform.machine() == "arm64":
+        return "apple-silicon"
+
+    cpu_info: dict[str, Any] = get_cpu_info()
+    supported_instructions: set[str] = set(cpu_info.get("flags", []))
+
+    if platform.system() == "Darwin":
+        builds: list[tuple[str, set[str]]] = [
+            ("bmi2", {"bmi2", "popcnt"}),
+            ("avx2", {"avx2", "popcnt"}),
+            ("sse41-popcnt", {"sse4_1", "popcnt"}),
+        ]
+    else:
+        builds = [
+            ("avx512icl", {"avx512f", "avx512_vnni", "avx512_vbmi", "popcnt"}),
+            ("vnni512", {"avx512_vnni", "avx512f", "popcnt"}),
+            ("avx512", {"avx512f", "popcnt"}),
+            ("avxvnni", {"avx_vnni", "popcnt"}),
+            ("bmi2", {"bmi2", "popcnt"}),
+            ("avx2", {"avx2", "popcnt"}),
+            ("sse41-popcnt", {"sse4_1", "popcnt"}),
+        ]
+
+    for build, required_instructions in builds:
+        if required_instructions <= supported_instructions:
+            return build
+
+    return "x86-64"
