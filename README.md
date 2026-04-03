@@ -7,7 +7,7 @@
 
 A chess app with Stockfish 18, 8 themes, 32 time controls, and 3500 openings.
 
-![Preview](https://github.com/user-attachments/assets/04e0af81-36f6-4025-a547-cc6d3c86d8e7)
+![Preview](https://github.com/user-attachments/assets/)
 
 ## Features
 
