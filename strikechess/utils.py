@@ -75,19 +75,18 @@ def save_with_file_manager(
 
 def show_about(parent: QWidget | None) -> None:
     """Show About dialog."""
-    QMessageBox.about(
-        parent,
-        QApplication.translate("StrikeChess", "About StrikeChess %1").replace(
-            "%1", __version__
-        ),
-        QApplication.translate(
-            "StrikeChess",
-            "Play chess and analyze games across\n"
-            "Windows, Linux, and macOS platforms.\n\n"
-            "Copyright © 2026 Boštjan Mejak\n"
-            "MIT License",
-        ),
+    title_format: str = QApplication.translate("StrikeChess", "About StrikeChess %1")
+    title: str = title_format.replace("%1", __version__)
+
+    message: str = QApplication.translate(
+        "StrikeChess",
+        "Play chess and analyze games across\n"
+        "Windows, Linux, and macOS platforms.\n\n"
+        "Copyright © 2026 Boštjan Mejak\n"
+        "MIT License",
     )
+
+    QMessageBox.about(parent, title, message)
 
 
 def show_file_manager(parent: QWidget | None, caption: str, file_filter: str = "") -> str | None:

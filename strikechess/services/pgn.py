@@ -2,6 +2,7 @@ from datetime import datetime
 from io import StringIO
 
 from chess.pgn import Game as PgnGame, read_game
+from PySide6.QtWidgets import QApplication
 
 
 class PgnService:
@@ -14,9 +15,12 @@ class PgnService:
 
         if game is None:
             raise ValueError(
-                "Cannot load game.\n\n"
-                "No valid PGN game found.\n"
-                "Try selecting a different PGN."
+                QApplication.translate(
+                    "PgnService",
+                    "Cannot load game.\n\n"
+                    "No valid PGN game found.\n"
+                    "Try selecting a different PGN.",
+                )
             )
 
         moves: list[str] = []
@@ -30,9 +34,12 @@ class PgnService:
                 board.push(move)
         except Exception:
             raise ValueError(
-                "Cannot load game.\n\n"
-                "PGN content might be invalid.\n"
-                "Check whether your PGN is corrupted or incomplete."
+                QApplication.translate(
+                    "PgnService",
+                    "Cannot load game.\n\n"
+                    "PGN content might be invalid.\n"
+                    "Check whether your PGN is corrupted or incomplete.",
+                )
             )
 
         return moves, fen

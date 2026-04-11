@@ -456,4 +456,27 @@ MIT-Lizenz</translation>
     <translation>Info</translation>
   </message>
 </context>
+<context>
+  <name>PgnService</name>
+  <message>
+    <source>Cannot load game.
+
+No valid PGN game found.
+Try selecting a different PGN.</source>
+    <translation>Spiel kann nicht geladen werden.
+
+Keine gültige PGN-Partie gefunden.
+Versuchen Sie, eine andere PGN auszuwählen.</translation>
+  </message>
+  <message>
+    <source>Cannot load game.
+
+PGN content might be invalid.
+Check whether your PGN is corrupted or incomplete.</source>
+    <translation>Spiel kann nicht geladen werden.
+
+Der PGN-Inhalt ist möglicherweise ungültig.
+Prüfen Sie, ob Ihre PGN beschädigt oder unvollständig ist.</translation>
+  </message>
+</context>
 </TS>
