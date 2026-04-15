@@ -800,14 +800,14 @@ class MainWindow(QMainWindow):
         is_engine_analyzing: bool = self._engine.is_analyzing
         is_engine_not_loaded: bool = not self._engine.is_loaded()
 
-        is_game_over: bool = self._game.is_over()
         is_game_in_progress: bool = self._game.is_in_progress()
         is_game_over_by_rules: bool = self._game.is_over_by_rules()
+        is_game_over_by_result: bool = self._game.is_over_by_result()
 
         is_last_move: bool = self._table_view.is_last_move()
 
         should_disable_play_move_now: bool = (
-            is_engine_not_loaded or is_game_over or is_game_over_by_rules
+            is_engine_not_loaded or is_game_over_by_result or is_game_over_by_rules
         )
         should_disable_start_analysis: bool = (
             is_engine_thinking
@@ -827,7 +827,7 @@ class MainWindow(QMainWindow):
 
     def update_clock_timers(self) -> None:
         """Start/stop clocks and add increment based on current turn."""
-        if self._game.is_over() or self._game.is_viewing_history:
+        if self._game.is_over_by_result() or self._game.is_viewing_history:
             return
 
         if self._game.is_white_to_move():
@@ -854,7 +854,7 @@ class MainWindow(QMainWindow):
         self.show_opening()
         self.stop_analysis()
 
-        if self._game.is_over():
+        if self._game.is_over_by_result():
             self._black_clock.stop_timer()
             self._white_clock.stop_timer()
             self._board.disable_interaction()
@@ -960,7 +960,7 @@ class MainWindow(QMainWindow):
         self.show_opening()
         self.stop_analysis()
 
-        if self._game.is_over():
+        if self._game.is_over_by_result():
             self._notifications_label.setText(self._game.result())
 
     def closeEvent(self, event: QCloseEvent) -> None:

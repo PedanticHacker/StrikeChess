@@ -49,7 +49,7 @@ class SoundPlayer:
 
     def _sound_effect_name(self, move: Move) -> SoundEffectName:
         """Get sound effect name based on `move`."""
-        if self._game.is_over_after(move):
+        if self._game.is_over_by_rules_after(move):
             return SoundEffectName.GameOver
         if self._game.gives_check(move):
             return SoundEffectName.Check

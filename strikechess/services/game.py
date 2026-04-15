@@ -109,16 +109,10 @@ class GameService(QObject):
     def load_moves(self, moves: list[str]) -> None:
         """Load `moves` into current game."""
         for san_move in moves:
-            try:
-                move: Move = self._board.parse_san(san_move)
-
-                if self._board.is_legal(move):
-                    new_san_move: str = self._board.san_and_push(move)
-                    self.moves.append(new_san_move)
-                    self.positions.append(self._board.copy())
-
-            except ValueError:
-                continue
+            move: Move = self._board.parse_san(san_move)
+            new_san_move: str = self._board.san_and_push(move)
+            self.moves.append(new_san_move)
+            self.positions.append(self._board.copy())
 
     def expire_clock_for(self, player_color: Color) -> None:
         """Set `player_color` as player whose clock expired."""
@@ -223,19 +217,20 @@ class GameService(QObject):
         """Return True if `move` is legal."""
         return self._board.is_legal(move)
 
-    def is_over(self) -> bool:
+    def is_over_by_result(self) -> bool:
         """Return True if game is over by rules or by expired clock."""
         return (
-            self._board.is_game_over(claim_draw=True) or self.player_with_expired_clock is not None
+            self._board.is_game_over(claim_draw=True)
+            or self.player_with_expired_clock is not None
         )
 
     def is_over_by_rules(self) -> bool:
-        """Return True if game is over by chess rules."""
+        """Return True if game is over only by rules."""
         position: Board = self.positions[-1] if self.positions else self._board
         return position.is_game_over(claim_draw=True)
 
-    def is_over_after(self, move: Move) -> bool:
-        """Return True if game is over by chess rules after `move`."""
+    def is_over_by_rules_after(self, move: Move) -> bool:
+        """Return True if game is over by rules after `move`."""
         board: Board = self._board.copy()
         board.push(move)
         return board.is_game_over(claim_draw=True)
