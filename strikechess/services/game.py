@@ -55,6 +55,11 @@ class GameService(QObject):
         self.reset_game_state()
 
     @property
+    def move_stack(self) -> list[Move]:
+        """Stack of moves in game, unaffected by viewing history."""
+        return self.positions[-1].move_stack if self.positions else self._board.move_stack
+
+    @property
     def root_fen(self) -> str:
         """Initial position in FEN format before any moves."""
         return self._board.root().fen()

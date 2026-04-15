@@ -68,7 +68,7 @@ class PgnService:
         board.set_fen(game.root_fen)
         pgn_game.setup(board)
 
-        pgn_game.add_line(game.board.move_stack)
+        pgn_game.add_line(game.move_stack)
 
         return str(pgn_game)
 
