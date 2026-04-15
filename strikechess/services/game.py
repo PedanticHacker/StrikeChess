@@ -203,6 +203,14 @@ class GameService(QObject):
         """Return True if `move` puts opponent's king in check."""
         return self._board.gives_check(move)
 
+    def is_capture(self, move: Move) -> bool:
+        """Return True if `move` is capture."""
+        return self._board.is_capture(move)
+
+    def is_castling(self, move: Move) -> bool:
+        """Return True if `move` is castling."""
+        return self._board.is_castling(move)
+
     def is_engine_to_move(self) -> bool:
         """Return True if engine is to move."""
         return self._board.turn == self._settings.value("engine", "is_white")

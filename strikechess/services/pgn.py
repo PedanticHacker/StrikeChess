@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from io import StringIO
 
@@ -79,7 +80,11 @@ class PgnService:
         is_engine_white: bool,
     ) -> str:
         """Suggest PGN file name based on player names and timestamp."""
-        white: str = engine_name if is_engine_white else human_name
-        black: str = human_name if is_engine_white else engine_name
+        white: str = self._sanitize(engine_name if is_engine_white else human_name)
+        black: str = self._sanitize(human_name if is_engine_white else engine_name)
         timestamp: str = datetime.now().strftime("%Y.%m.%d %H-%M-%S")
         return f"{white} versus {black} ({timestamp}).pgn"
+
+    def _sanitize(self, name: str) -> str:
+        """Replace unsafe characters in `name` with underscores."""
+        return re.sub(r'[<>:"/\\|?*]', "_", name)

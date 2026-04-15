@@ -55,8 +55,8 @@ class SoundPlayer:
             return SoundEffectName.Check
         if move.promotion is not None:
             return SoundEffectName.Promotion
-        if self._game.board.is_capture(move):
+        if self._game.is_capture(move):
             return SoundEffectName.Capture
-        if self._game.board.is_castling(move):
+        if self._game.is_castling(move):
             return SoundEffectName.Castling
         return SoundEffectName.Move
