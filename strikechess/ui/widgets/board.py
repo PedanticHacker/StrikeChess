@@ -216,13 +216,11 @@ class SvgBoard(QSvgWidget):
         self.is_dragging = True
         self.dragged_piece = piece
         self.origin_square = square
-        self._game.origin_square = square
 
         self.update_cursor_at(self.cursor_point)
 
     def drop_piece(self, target_square: Square) -> None:
         """Drop dragged piece at `target_square`."""
-        self._game.target_square = target_square
         self._game.find_legal_move(self.origin_square, target_square)
 
         self.stop_dragging()
