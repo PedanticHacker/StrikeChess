@@ -9,8 +9,8 @@ from PySide6.QtWidgets import QApplication
 class PgnService:
     """Portable Game Notation (PGN) parsing and exporting."""
 
-    def parse_pgn(self, pgn_text: str) -> tuple[list[str], str | None]:
-        """Parse `pgn_text` into moves and optional FEN."""
+    def parse_pgn(self, pgn_text: str) -> tuple[list[str], str | None, str]:
+        """Parse `pgn_text` into moves, optional FEN, and result."""
         pgn_data: StringIO = StringIO(pgn_text)
         game: PgnGame | None = read_game(pgn_data)
 
@@ -37,13 +37,14 @@ class PgnService:
         moves: list[str] = []
         board: Board = game.board()
         fen: str | None = game.headers.get("FEN")
+        result: str = game.headers.get("Result", "*")
 
         for move in game.mainline_moves():
             san_move: str = board.san(move)
             moves.append(san_move)
             board.push(move)
 
-        return moves, fen
+        return moves, fen, result
 
     def export_to_pgn(
         self,

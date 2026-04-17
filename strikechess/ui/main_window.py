@@ -533,7 +533,7 @@ class MainWindow(QMainWindow):
 
         try:
             pgn_text: str = read_pgn_file(file_path)
-            moves, fen = self._pgn.parse_pgn(pgn_text)
+            moves, fen, result = self._pgn.parse_pgn(pgn_text)
 
             self._game.reset()
 
@@ -545,6 +545,13 @@ class MainWindow(QMainWindow):
             self._black_clock.reset()
             self._white_clock.reset()
             self._openings_label.clear()
+
+            if result == "1-0" and not self._game.is_over_by_rules():
+                self._game.expire_clock_for(BLACK)
+                self._black_clock.zero_time()
+            elif result == "0-1" and not self._game.is_over_by_rules():
+                self._game.expire_clock_for(WHITE)
+                self._white_clock.zero_time()
 
             self.update_ui_state()
 

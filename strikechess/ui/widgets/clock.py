@@ -69,6 +69,12 @@ class DigitalClock(QLCDNumber):
         self.time += self.increment
         self.show_time()
 
+    def zero_time(self) -> None:
+        """Set remaining time to zero and stop timer countdown."""
+        self.time = 0.0
+        self.stop_timer()
+        self.show_time()
+
     @Slot()
     def update_time(self) -> None:
         """Update remaining time and check for timer expiration."""
