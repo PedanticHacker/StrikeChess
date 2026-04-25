@@ -637,10 +637,10 @@ class MainWindow(QMainWindow):
 
     def request_engine_analysis(self) -> None:
         """Request engine to analyze current position."""
-        QThreadPool.globalInstance().start(self._engine.start_analysis)
-
         self._engine.is_analyzing = True
         self._notifications_label.setText(self.tr("Analyzing..."))
+
+        QThreadPool.globalInstance().start(self._engine.start_analysis)
 
     def request_engine_move(self, force: bool = False) -> None:
         """Request engine to play move if loaded, on turn, or forced."""
