@@ -115,13 +115,16 @@ class EngineService(QObject):
 
     def start_analysis(self) -> None:
         """Start analyzing current position."""
+        if self._engine is None:
+            return
+
         with self._engine.analysis(self._game.board) as analysis:
             for info in analysis:
                 if not self.is_analyzing:
                     break
 
                 if "pv" in info:
-                    pv: list[Move] = info["pv"]
+                    pv: list[Move] = info["pv"][0:50]
 
                     best_move: Move = pv[0]
                     score: Score = info["score"].white()
