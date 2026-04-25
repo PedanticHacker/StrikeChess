@@ -124,7 +124,7 @@ class EngineService(QObject):
                     break
 
                 if "pv" in info:
-                    pv: list[Move] = info["pv"][0:50]
+                    pv: list[Move] = info["pv"][:50]
 
                     best_move: Move = pv[0]
                     score: Score = info["score"].white()
