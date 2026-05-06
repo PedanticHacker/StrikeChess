@@ -51,19 +51,19 @@ class EngineService(QObject):
 
     def load_file(self, file_path: str) -> None:
         """Load UCI-compliant engine from `file_path`."""
+        new_engine: SimpleEngine | None = None
+
         try:
             _delete_quarantine_attribute(file_path)
             _make_executable(file_path)
 
-            new_engine: SimpleEngine = SimpleEngine.popen_uci(file_path)
+            new_engine = SimpleEngine.popen_uci(file_path)
             new_engine.configure(_engine_options())
 
-            self.terminate()
-            self._engine = new_engine
-
         except Exception:
-            self._engine = None
-            self._settings.set_value("engine", "name", "(no engine)")
+            if new_engine is not None:
+                with suppress(Exception):
+                    new_engine.quit()
 
             raise EngineError(
                 self.tr(
@@ -73,7 +73,10 @@ class EngineService(QObject):
                 )
             )
 
-        self._settings.set_value("engine", "name", self._engine.id["name"])
+        self.terminate()
+        self._engine = new_engine
+
+        self._settings.set_value("engine", "name", new_engine.id["name"])
 
     def unload(self) -> None:
         """Terminate currently loaded engine."""
@@ -158,7 +161,9 @@ def _engine_options() -> dict[str, int]:
     allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores // 2)
 
     available_ram_in_megabytes: int = virtual_memory().available // bytes_per_megabyte
-    allowed_hash_size_in_megabytes: int = int(available_ram_in_megabytes * engine_hash_size_percentage)
+    allowed_hash_size_in_megabytes: int = int(
+        available_ram_in_megabytes * engine_hash_size_percentage
+    )
 
     return {
         "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
