@@ -160,27 +160,27 @@ class SettingsDialog(QDialog):
     def save_settings(self) -> None:
         """Save edited settings to storage."""
         self._settings.set_value(
-            section="human",
-            key="name",
-            value=self._human_name_option.text().strip(),
+            "human",
+            "name",
+            self._human_name_option.text().strip(),
         )
         self._settings.set_value(
-            section="engine",
-            key="is_white",
-            value=self._engine_white_option.isChecked(),
+            "engine",
+            "is_white",
+            self._engine_white_option.isChecked(),
         )
         self._settings.set_value(
-            section="engine",
-            key="is_ponder_enabled",
-            value=self._engine_ponder_option.isChecked(),
+            "engine",
+            "is_ponder_enabled",
+            self._engine_ponder_option.isChecked(),
         )
         self._settings.set_value(
-            section="clock",
-            key="time",
-            value=self._clock_time_option.currentData(),
+            "clock",
+            "time",
+            self._clock_time_option.currentData(),
         )
         self._settings.set_value(
-            section="clock",
-            key="increment",
-            value=self._clock_increment_option.currentData(),
+            "clock",
+            "increment",
+            self._clock_increment_option.currentData(),
         )

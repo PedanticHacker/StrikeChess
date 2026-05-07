@@ -42,10 +42,16 @@ class SvgBoard(QSvgWidget):
     square_dark_lastmove = _create_color("_square_dark_lastmove")
     square_light_lastmove = _create_color("_square_light_lastmove")
 
-    def __init__(self, game: GameService, settings: SettingsService) -> None:
+    def __init__(
+        self,
+        game: GameService,
+        engine: EngineService,
+        settings: SettingsService,
+    ) -> None:
         super().__init__()
 
         self._game: GameService = game
+        self._engine: EngineService = engine
         self._settings: SettingsService = settings
 
         self.is_dragging: bool = False
@@ -183,10 +189,9 @@ class SvgBoard(QSvgWidget):
         if piece is None or not self.is_interactive:
             return False
 
-        is_engine_loaded: bool = self._settings.value("engine", "name") != "(no engine)"
         is_engine_piece: bool = piece.color == self._settings.value("engine", "is_white")
 
-        if is_engine_loaded and is_engine_piece:
+        if self._engine.is_loaded() and is_engine_piece:
             return False
 
         return True

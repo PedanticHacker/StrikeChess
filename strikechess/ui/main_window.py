@@ -102,8 +102,8 @@ class MainWindow(QMainWindow):
         self._sound_player: SoundPlayer = SoundPlayer(self._game)
 
         # Widgets
-        self._board: SvgBoard = SvgBoard(self._game, self._settings)
         self._evaluation_bar: EvaluationBar = EvaluationBar(self._settings)
+        self._board: SvgBoard = SvgBoard(self._game, self._engine, self._settings)
         self._black_clock: DigitalClock = DigitalClock(ClockStyleSheet.Black, self._settings)
         self._white_clock: DigitalClock = DigitalClock(ClockStyleSheet.White, self._settings)
         self._table_model: TableModel = TableModel(self._game.moves)
@@ -509,6 +509,7 @@ class MainWindow(QMainWindow):
             self._engine.load_file(file_path)
             self._engine_name_label.setText(self._engine.name)
 
+            self.update_actions()
             self.request_engine_move()
 
         except EngineError as error:

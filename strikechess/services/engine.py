@@ -46,8 +46,10 @@ class EngineService(QObject):
 
     def load_default_engine(self) -> None:
         """Load executable file of Stockfish engine."""
-        with suppress(EngineError):
+        try:
             self.load_file(_stockfish_executable())
+        except EngineError:
+            self._settings.set_value("engine", "name", "(no engine)")
 
     def load_file(self, file_path: str) -> None:
         """Load UCI-compliant engine from `file_path`."""
