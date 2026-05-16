@@ -821,8 +821,7 @@ class MainWindow(QMainWindow):
             is_engine_thinking
             or is_engine_analyzing
             or is_engine_not_loaded
-            or is_game_over_by_rules
-            and is_last_move
+            or (is_game_over_by_rules and is_last_move)
         )
 
         self.save_as_pgn_action.setEnabled(is_game_in_progress)
