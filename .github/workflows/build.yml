@@ -17,10 +17,13 @@ jobs:
         include:
           - os: windows-latest
             artifact-name: StrikeChess-Windows
+            engine-platform: Windows
           - os: ubuntu-latest
             artifact-name: StrikeChess-Linux
+            engine-platform: Linux
           - os: macos-latest
             artifact-name: StrikeChess-macOS
+            engine-platform: Darwin
 
     runs-on: ${{ matrix.os }}
 
@@ -28,10 +31,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          lfs: true
+          lfs: false
 
       - name: Pull LFS objects
-        run: git lfs pull
+        run: git lfs pull --include="strikechess/assets/engines/stockfish-18/${{ matrix.engine-platform }}/**"
 
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
