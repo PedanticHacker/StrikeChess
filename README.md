@@ -69,6 +69,8 @@ pyinstaller --clean bundle.spec
 | Load PGN | `Ctrl+O` |
 | Save PGN | `Ctrl+S` |
 | Set custom position | Double-click FEN editor to paste from clipboard |
+| About StrikeChess | `F1` |
+| Quit | `Ctrl+Q` |
 
 **Analysis**
 
