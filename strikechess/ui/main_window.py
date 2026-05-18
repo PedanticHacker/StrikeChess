@@ -175,7 +175,7 @@ class MainWindow(QMainWindow):
             status_tip=self.tr("Shows the About dialog."),
         )
         self.dark_forest_theme_action: QAction = create_action(
-            icon=create_colored_icon("#2d382d"),
+            icon=create_colored_icon("#1f291f"),
             name=self.tr("Dark Forest"),
             handler=partial(self.apply_theme, ThemeName.DarkForest),
             shortcut="Alt+1",
@@ -189,14 +189,14 @@ class MainWindow(QMainWindow):
             status_tip=self.tr("Applies the Dark Mint theme."),
         )
         self.dark_nebula_theme_action: QAction = create_action(
-            icon=create_colored_icon("#1a1025"),
+            icon=create_colored_icon("#351d4d"),
             name=self.tr("Dark Nebula"),
             handler=partial(self.apply_theme, ThemeName.DarkNebula),
             shortcut="Alt+3",
             status_tip=self.tr("Applies the Dark Nebula theme."),
         )
         self.dark_ocean_theme_action: QAction = create_action(
-            icon=create_colored_icon("#1a2838"),
+            icon=create_colored_icon("#2e455e"),
             name=self.tr("Dark Ocean"),
             handler=partial(self.apply_theme, ThemeName.DarkOcean),
             shortcut="Alt+4",
@@ -231,28 +231,28 @@ class MainWindow(QMainWindow):
             status_tip=self.tr("Applies the Italian language."),
         )
         self.light_forest_theme_action: QAction = create_action(
-            icon=create_colored_icon("#e8efe6"),
+            icon=create_colored_icon("#95a88c"),
             name=self.tr("Light Forest"),
             handler=partial(self.apply_theme, ThemeName.LightForest),
             shortcut="Alt+5",
             status_tip=self.tr("Applies the Light Forest theme."),
         )
         self.light_mint_theme_action: QAction = create_action(
-            icon=create_colored_icon("#ebf5f3"),
+            icon=create_colored_icon("#97cbc5"),
             name=self.tr("Light Mint"),
             handler=partial(self.apply_theme, ThemeName.LightMint),
             shortcut="Alt+6",
             status_tip=self.tr("Applies the Light Mint theme."),
         )
         self.light_nebula_theme_action: QAction = create_action(
-            icon=create_colored_icon("#f4ebff"),
+            icon=create_colored_icon("#c385f7"),
             name=self.tr("Light Nebula"),
             handler=partial(self.apply_theme, ThemeName.LightNebula),
             shortcut="Alt+7",
             status_tip=self.tr("Applies the Light Nebula theme."),
         )
         self.light_ocean_theme_action: QAction = create_action(
-            icon=create_colored_icon("#ebf3f8"),
+            icon=create_colored_icon("#87a6c3"),
             name=self.tr("Light Ocean"),
             handler=partial(self.apply_theme, ThemeName.LightOcean),
             shortcut="Alt+8",
