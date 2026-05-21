@@ -40,7 +40,7 @@ class SoundPlayer:
 
         for name in SoundEffectName:
             file_path: Path = root_path() / "assets" / "audio" / f"{name}.wav"
-            file_url: QUrl = QUrl(f"file:{file_path}")
+            file_url: QUrl = QUrl.fromLocalFile(str(file_path))
             sound_effect: QSoundEffect = QSoundEffect()
             sound_effect.setSource(file_url)
             sound_effects[name] = sound_effect
