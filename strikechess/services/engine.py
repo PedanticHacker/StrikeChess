@@ -106,8 +106,11 @@ class EngineService(QObject):
         if self._engine is None:
             return
 
-        play_result: PlayResult = self._engine.play(
-            board=self._game.board,
+        engine: SimpleEngine = self._engine
+        board: Board = self._game.board.copy()
+
+        play_result: PlayResult = engine.play(
+            board=board,
             limit=Limit(
                 black_clock=black_time,
                 black_inc=black_increment,
@@ -123,7 +126,10 @@ class EngineService(QObject):
         if self._engine is None:
             return
 
-        with self._engine.analysis(self._game.board) as analysis:
+        engine: SimpleEngine = self._engine
+        board: Board = self._game.board.copy()
+
+        with engine.analysis(board) as analysis:
             for info in analysis:
                 if not self.is_analyzing:
                     break
@@ -133,7 +139,7 @@ class EngineService(QObject):
 
                     best_move: Move = pv[0]
                     score: Score = info["score"].white()
-                    variation: str = self._game.board.variation_san(pv)
+                    variation: str = board.variation_san(pv)
 
                     self.best_move_analyzed.emit(best_move)
                     self.score_analyzed.emit(score)
