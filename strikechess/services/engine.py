@@ -106,10 +106,9 @@ class EngineService(QObject):
         if self._engine is None:
             return
 
-        engine: SimpleEngine = self._engine
         board: Board = self._game.board.copy()
 
-        play_result: PlayResult = engine.play(
+        play_result: PlayResult = self._engine.play(
             board=board,
             limit=Limit(
                 black_clock=black_time,
@@ -126,10 +125,9 @@ class EngineService(QObject):
         if self._engine is None:
             return
 
-        engine: SimpleEngine = self._engine
         board: Board = self._game.board.copy()
 
-        with engine.analysis(board) as analysis:
+        with self._engine.analysis(board) as analysis:
             for info in analysis:
                 if not self.is_analyzing:
                     break

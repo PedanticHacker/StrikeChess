@@ -649,6 +649,11 @@ class MainWindow(QMainWindow):
             return
 
         if self._game.is_engine_to_move() or force:
+            black_time: float = self._black_clock.time
+            black_increment: float = self._black_clock.increment
+            white_time: float = self._white_clock.time
+            white_increment: float = self._white_clock.increment
+
             self._engine.is_thinking = True
             self._notifications_label.setText(self.tr("Thinking..."))
 
@@ -656,10 +661,10 @@ class MainWindow(QMainWindow):
 
             QThreadPool.globalInstance().start(
                 lambda: self._engine.play_move(
-                    black_time=self._black_clock.time,
-                    black_increment=self._black_clock.increment,
-                    white_time=self._white_clock.time,
-                    white_increment=self._white_clock.increment,
+                    black_time=black_time,
+                    black_increment=black_increment,
+                    white_time=white_time,
+                    white_increment=white_increment,
                 )
             )
 
