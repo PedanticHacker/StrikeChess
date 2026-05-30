@@ -118,7 +118,9 @@ class EngineService(QObject):
             ),
             ponder=self._settings.value("engine", "is_ponder_enabled"),
         )
-        self.move_played.emit(play_result.move)
+
+        if play_result.move is not None:
+            self.move_played.emit(play_result.move)
 
     def start_analysis(self) -> None:
         """Start analyzing current position."""
