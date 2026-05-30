@@ -6,28 +6,15 @@ from pathlib import Path
 from multiprocessing import freeze_support
 
 from PySide6.QtCore import QLockFile, QTimer
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 from strikechess import __version__
+from strikechess.services import SettingsService
 from strikechess.ui import MainWindow, SplashScreen
-from strikechess.utils import create_svg_icon, show_warning
+from strikechess.utils import create_svg_icon, root_path
 
 
 SplashScreenDurationMilliseconds: Final[int] = 3000
-
-
-def _abort_duplicate_launch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
-    """Warn user about duplicate launch and quit app."""
-    splash_screen.close()
-
-    show_warning(
-        main_window,
-        QApplication.translate("StrikeChess", "App Error"),
-        QApplication.translate("StrikeChess", "StrikeChess has already been launched!"),
-    )
-
-    main_window.terminate_engine()
-    sys.exit()
 
 
 def _create_app() -> QApplication:
@@ -42,6 +29,24 @@ def _create_app() -> QApplication:
     return app
 
 
+def _show_duplicate_launch_warning() -> None:
+    """Show warning that StrikeChess has already been launched."""
+    settings: SettingsService = SettingsService()
+    file_name: str = settings.value("ui", "theme")
+    file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
+
+    message_box: QMessageBox = QMessageBox(
+        QMessageBox.Icon.Warning,
+        QApplication.translate("StrikeChess", "App Error"),
+        QApplication.translate("StrikeChess", "StrikeChess has already been launched!"),
+    )
+
+    with open(file_path, encoding="utf-8") as qss_file:
+        message_box.setStyleSheet(qss_file.read())
+
+    message_box.exec()
+
+
 def _switch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
     """Switch from splash screen to main window."""
     splash_screen.finish(main_window)
@@ -54,15 +59,17 @@ def _switch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
 def main() -> None:
     """Launch app with splash screen, abort duplicate launch attempt."""
     app: QApplication = _create_app()
-    splash_screen: SplashScreen = SplashScreen().show_raised()
-    main_window: MainWindow = MainWindow()
 
     lock_directory: Path = Path.home() / ".StrikeChess"
     lock_directory.mkdir(exist_ok=True)
     lock_file: QLockFile = QLockFile(str(lock_directory / "StrikeChess.lock"))
 
     if not lock_file.tryLock(1):
-        _abort_duplicate_launch(splash_screen, main_window)
+        _show_duplicate_launch_warning()
+        sys.exit()
+
+    splash_screen: SplashScreen = SplashScreen().show_raised()
+    main_window: MainWindow = MainWindow()
 
     QTimer.singleShot(
         SplashScreenDurationMilliseconds,
