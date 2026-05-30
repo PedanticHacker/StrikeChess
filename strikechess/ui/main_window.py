@@ -469,7 +469,7 @@ class MainWindow(QMainWindow):
         """Apply QSS theme based on `file_name` and show theme name."""
         file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
 
-        with open(file_path) as qss_file:
+        with open(file_path, encoding="utf-8") as qss_file:
             self.setStyleSheet(qss_file.read())
 
         self._settings.set_value("ui", "theme", file_name)
