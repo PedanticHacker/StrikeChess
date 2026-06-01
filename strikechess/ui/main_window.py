@@ -6,10 +6,9 @@ from re import sub
 
 from chess import BLACK, Move, WHITE
 from chess.engine import EngineError, Score
-from PySide6.QtCore import QLibraryInfo, QThreadPool, QTimer, QTranslator, Slot
+from PySide6.QtCore import QThreadPool, QTimer, Slot
 from PySide6.QtGui import QAction, QCloseEvent, QIcon, QWheelEvent
 from PySide6.QtWidgets import (
-    QApplication,
     QDialog,
     QGridLayout,
     QLabel,
@@ -42,6 +41,7 @@ from strikechess.utils import (
     create_colored_icon,
     create_svg_icon,
     find_opening,
+    install_translators,
     read_pgn_file,
     root_path,
     save_with_file_manager,
@@ -433,24 +433,7 @@ class MainWindow(QMainWindow):
 
     def apply_language(self) -> None:
         """Apply language from settings on app launch."""
-        language_code: str = self._settings.value("ui", "language")
-
-        if language_code != "en":
-            app_translations_directory: Path = root_path() / "assets" / "translations"
-            qt_translations_directory: str = QLibraryInfo.path(
-                QLibraryInfo.LibraryPath.TranslationsPath
-            )
-
-            self._app_translator: QTranslator = QTranslator()
-            self._qt_translator: QTranslator = QTranslator()
-
-            if self._app_translator.load(
-                f"strikechess_{language_code}", str(app_translations_directory)
-            ):
-                QApplication.installTranslator(self._app_translator)
-
-            if self._qt_translator.load(f"qtbase_{language_code}", qt_translations_directory):
-                QApplication.installTranslator(self._qt_translator)
+        install_translators(self._settings.value("ui", "language"))
 
     def apply_saved_settings(self) -> None:
         """Act on edited settings being saved."""

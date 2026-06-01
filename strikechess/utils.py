@@ -3,6 +3,7 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
+from PySide6.QtCore import QLibraryInfo, QTranslator
 from PySide6.QtGui import QAction, QColor, QIcon, QPixmap
 from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
 
@@ -45,6 +46,25 @@ def create_svg_icon(file_name: str) -> QIcon:
 def find_opening(fen: str) -> str | None:
     """Get opening name based on `fen`."""
     return _openings().get(fen)
+
+
+def install_translators(language_code: str) -> None:
+    """Install app and Qt translators for `language_code`."""
+    if language_code == "en":
+        return
+
+    app_translations_directory: Path = root_path() / "assets" / "translations"
+    qt_translations_directory: str = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
+
+    app: QApplication = QApplication.instance()
+    app_translator: QTranslator = QTranslator(app)
+    qt_translator: QTranslator = QTranslator(app)
+
+    if app_translator.load(f"strikechess_{language_code}", str(app_translations_directory)):
+        QApplication.installTranslator(app_translator)
+
+    if qt_translator.load(f"qtbase_{language_code}", qt_translations_directory):
+        QApplication.installTranslator(qt_translator)
 
 
 def read_pgn_file(file_path: str) -> str:

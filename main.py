@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QApplication, QMessageBox
 from strikechess import __version__
 from strikechess.services import SettingsService
 from strikechess.ui import MainWindow, SplashScreen
-from strikechess.utils import create_svg_icon, root_path
+from strikechess.utils import create_svg_icon, install_translators, root_path
 
 
 SplashScreenDurationMilliseconds: Final[int] = 3000
@@ -32,8 +32,10 @@ def _create_app() -> QApplication:
 def _show_duplicate_launch_warning() -> None:
     """Show warning that StrikeChess has already been launched."""
     settings: SettingsService = SettingsService()
-    file_name: str = settings.value("ui", "theme")
-    file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
+    install_translators(settings.value("ui", "language"))
+
+    theme_name: str = settings.value("ui", "theme")
+    file_path: Path = root_path() / "assets" / "themes" / f"{theme_name}.qss"
 
     message_box: QMessageBox = QMessageBox(
         QMessageBox.Icon.Warning,
