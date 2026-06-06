@@ -851,7 +851,7 @@ class MainWindow(QMainWindow):
         self._expire_clock(WHITE)
 
     def _expire_clock(self, color: Color) -> None:
-        """End game when the clock of player with `color` expires."""
+        """End game when clock of player with `color` expires."""
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 

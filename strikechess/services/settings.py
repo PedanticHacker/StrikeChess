@@ -56,7 +56,7 @@ class SettingsService:
         self._save()
 
     def _is_allowed(self, section: str, key: str, value: Any) -> bool:
-        """Return True if `value` is within the allowed set for `key`."""
+        """Return True if `value` is within allowed set for `key`."""
         allowed_values: set[str] | None = self._allowed_values.get(section, {}).get(key)
         return allowed_values is None or value in allowed_values
 
