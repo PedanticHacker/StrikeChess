@@ -8,6 +8,22 @@ from strikechess.utils import root_path
 class SettingsService:
     """App settings retrieval and storage, ensuring persistence."""
 
+    _allowed_values: dict[str, dict[str, set[str]]] = {
+        "ui": {
+            "theme": {
+                "dark-forest",
+                "dark-mint",
+                "dark-nebula",
+                "dark-ocean",
+                "light-forest",
+                "light-mint",
+                "light-nebula",
+                "light-ocean",
+            },
+            "language": {"en", "de", "es", "it"},
+        },
+    }
+
     def __init__(self) -> None:
         self._ensure_settings_exist()
 
@@ -27,9 +43,10 @@ class SettingsService:
             return default_value
 
         if not isinstance(stored_value, type(default_value)):
-            self._user_settings[section][key] = default_value
-            self._save()
-            return default_value
+            return self._reset_to_default(section, key, default_value)
+
+        if not self._is_allowed(section, key, stored_value):
+            return self._reset_to_default(section, key, default_value)
 
         return stored_value
 
@@ -37,6 +54,17 @@ class SettingsService:
         """Set `value` to `key` for `section` in settings."""
         self._user_settings[section][key] = value
         self._save()
+
+    def _is_allowed(self, section: str, key: str, value: Any) -> bool:
+        """Return True if `value` is within the allowed set for `key`."""
+        allowed_values: set[str] | None = self._allowed_values.get(section, {}).get(key)
+        return allowed_values is None or value in allowed_values
+
+    def _reset_to_default(self, section: str, key: str, default_value: Any) -> Any:
+        """Store and return `default_value` for invalid `key` in `section`."""
+        self._user_settings[section][key] = default_value
+        self._save()
+        return default_value
 
     def _user_settings_file_path(self) -> Path:
         """Get path to user's settings.json file."""

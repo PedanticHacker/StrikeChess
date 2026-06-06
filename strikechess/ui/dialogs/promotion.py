@@ -1,3 +1,5 @@
+from functools import partial
+
 from chess import BISHOP, KNIGHT, QUEEN, ROOK, WHITE
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QPushButton
@@ -24,57 +26,31 @@ class PromotionDialog(QDialog):
         self.piece_type: PieceType | None = None
 
         self.create_buttons()
-        self.set_horizontal_layout()
-        self.connect_signals_to_slots()
 
         self.setWindowTitle(self.tr("Pawn Promotion"))
 
     def create_buttons(self) -> None:
-        """Create buttons based on player's color."""
-        if self._player_color == WHITE:
-            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
-            self.rook_button: QPushButton = _create_button(create_svg_icon("white-rook"))
-            self.bishop_button: QPushButton = _create_button(create_svg_icon("white-bishop"))
-            self.knight_button: QPushButton = _create_button(create_svg_icon("white-knight"))
-        else:
-            self.queen_button = _create_button(create_svg_icon("black-queen"))
-            self.rook_button = _create_button(create_svg_icon("black-rook"))
-            self.bishop_button = _create_button(create_svg_icon("black-bishop"))
-            self.knight_button = _create_button(create_svg_icon("black-knight"))
+        """Create one piece-selecting button per promotable piece type."""
+        color_prefix: str = "white" if self._player_color == WHITE else "black"
 
-    def set_horizontal_layout(self) -> None:
-        """Add buttons to horizontal layout."""
+        piece_specs: list[tuple[PieceType, str]] = [
+            (QUEEN, "queen"),
+            (ROOK, "rook"),
+            (BISHOP, "bishop"),
+            (KNIGHT, "knight"),
+        ]
+
         horizontal_layout: QHBoxLayout = QHBoxLayout()
-        horizontal_layout.addWidget(self.queen_button)
-        horizontal_layout.addWidget(self.rook_button)
-        horizontal_layout.addWidget(self.bishop_button)
-        horizontal_layout.addWidget(self.knight_button)
+
+        for piece_type, piece_name in piece_specs:
+            icon: QIcon = create_svg_icon(f"{color_prefix}-{piece_name}")
+            button: QPushButton = _create_button(icon)
+            button.clicked.connect(partial(self.select_piece, piece_type))
+            horizontal_layout.addWidget(button)
 
         self.setLayout(horizontal_layout)
 
-    def connect_signals_to_slots(self) -> None:
-        """Connect button signals to corresponding slot methods."""
-        self.queen_button.clicked.connect(self.select_queen)
-        self.rook_button.clicked.connect(self.select_rook)
-        self.bishop_button.clicked.connect(self.select_bishop)
-        self.knight_button.clicked.connect(self.select_knight)
-
-    def select_queen(self) -> None:
-        """Set promotion piece type to queen."""
-        self.piece_type = QUEEN
-        self.accept()
-
-    def select_rook(self) -> None:
-        """Set promotion piece type to rook."""
-        self.piece_type = ROOK
-        self.accept()
-
-    def select_bishop(self) -> None:
-        """Set promotion piece type to bishop."""
-        self.piece_type = BISHOP
-        self.accept()
-
-    def select_knight(self) -> None:
-        """Set promotion piece type to knight."""
-        self.piece_type = KNIGHT
+    def select_piece(self, piece_type: PieceType) -> None:
+        """Set promotion to `piece_type` and accept dialog."""
+        self.piece_type = piece_type
         self.accept()

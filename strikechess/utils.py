@@ -73,6 +73,14 @@ def read_pgn_file(file_path: str) -> str:
         return file.read()
 
 
+def read_theme_stylesheet(theme_name: str) -> str:
+    """Read and return QSS stylesheet text for theme `theme_name`."""
+    file_path: Path = root_path() / "assets" / "themes" / f"{theme_name}.qss"
+
+    with open(file_path, encoding="utf-8") as qss_file:
+        return qss_file.read()
+
+
 def root_path() -> Path:
     """Get path to app's root directory."""
     if hasattr(sys, "_MEIPASS"):

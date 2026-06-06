@@ -4,6 +4,7 @@ import stat
 import subprocess
 from contextlib import suppress
 from pathlib import Path
+from threading import Lock
 
 from chess import Move
 from chess.engine import EngineError, Limit, Score, SimpleEngine
@@ -22,13 +23,13 @@ class EngineService(QObject):
     variation_analyzed: ClassVar[Signal] = Signal(str)
     best_move_analyzed: ClassVar[Signal] = Signal(Move)
 
-    def __init__(self, game: GameService, settings: SettingsService) -> None:
+    def __init__(self, settings: SettingsService) -> None:
         super().__init__()
 
-        self._game: GameService = game
         self._settings: SettingsService = settings
 
         self._engine: SimpleEngine | None = None
+        self._lock: Lock = Lock()
 
         self.is_thinking: bool = False
         self.is_analyzing: bool = False
@@ -76,7 +77,9 @@ class EngineService(QObject):
             )
 
         self.terminate()
-        self._engine = new_engine
+
+        with self._lock:
+            self._engine = new_engine
 
         self._settings.set_value("engine", "name", new_engine.id["name"])
 
@@ -87,62 +90,66 @@ class EngineService(QObject):
 
     def terminate(self) -> None:
         """Stop analysis and terminate engine."""
-        if self._engine is None:
-            return
-
         self.stop_analysis()
 
-        self._engine.quit()
-        self._engine = None
+        with self._lock:
+            if self._engine is None:
+                return
+
+            self._engine.quit()
+            self._engine = None
 
     def play_move(
         self,
+        board: Board,
         black_time: float,
         black_increment: float,
         white_time: float,
         white_increment: float,
     ) -> None:
-        """Invoke engine to play move."""
-        if self._engine is None:
-            return
+        """Invoke engine to play move on `board` snapshot."""
+        with self._lock:
+            engine: SimpleEngine | None = self._engine
 
-        board: Board = self._game.board.copy()
+            if engine is None:
+                return
 
-        play_result: PlayResult = self._engine.play(
-            board=board,
-            limit=Limit(
-                black_clock=black_time,
-                black_inc=black_increment,
-                white_clock=white_time,
-                white_inc=white_increment,
-            ),
-            ponder=self._settings.value("engine", "is_ponder_enabled"),
-        )
+            play_result: PlayResult = engine.play(
+                board=board,
+                limit=Limit(
+                    black_clock=black_time,
+                    black_inc=black_increment,
+                    white_clock=white_time,
+                    white_inc=white_increment,
+                ),
+                ponder=self._settings.value("engine", "is_ponder_enabled"),
+            )
 
         self.move_played.emit(play_result.move)
 
-    def start_analysis(self) -> None:
-        """Start analyzing current position."""
-        if self._engine is None:
-            return
+    def start_analysis(self, board: Board) -> None:
+        """Start analyzing `board` snapshot."""
+        with self._lock:
+            engine: SimpleEngine | None = self._engine
 
-        board: Board = self._game.board.copy()
+            if engine is None:
+                return
 
-        with self._engine.analysis(board) as analysis:
-            for info in analysis:
-                if not self.is_analyzing:
-                    break
+            with engine.analysis(board) as analysis:
+                for info in analysis:
+                    if not self.is_analyzing:
+                        break
 
-                if "pv" in info:
-                    pv: list[Move] = info["pv"][:50]
+                    if "pv" in info:
+                        pv: list[Move] = info["pv"][:50]
 
-                    best_move: Move = pv[0]
-                    score: Score = info["score"].white()
-                    variation: str = board.variation_san(pv)
+                        best_move: Move = pv[0]
+                        score: Score = info["score"].white()
+                        variation: str = board.variation_san(pv)
 
-                    self.best_move_analyzed.emit(best_move)
-                    self.score_analyzed.emit(score)
-                    self.variation_analyzed.emit(variation)
+                        self.best_move_analyzed.emit(best_move)
+                        self.score_analyzed.emit(score)
+                        self.variation_analyzed.emit(variation)
 
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""

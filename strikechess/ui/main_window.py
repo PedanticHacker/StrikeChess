@@ -1,6 +1,4 @@
-from enum import StrEnum
 from functools import partial
-from pathlib import Path
 from platform import system
 from re import sub
 
@@ -29,6 +27,7 @@ from strikechess.services import (
 from strikechess.ui.dialogs import PromotionDialog, SettingsDialog
 from strikechess.ui.sounds import SoundPlayer
 from strikechess.ui.table import TableModel, TableView
+from strikechess.ui.themes import ClockStyleSheet, THEME_SWATCH, ThemeName
 from strikechess.ui.widgets import (
     DigitalClock,
     EvaluationBar,
@@ -43,7 +42,7 @@ from strikechess.utils import (
     find_opening,
     install_translators,
     read_pgn_file,
-    root_path,
+    read_theme_stylesheet,
     save_with_file_manager,
     show_about,
     show_file_manager,
@@ -54,31 +53,6 @@ from strikechess.utils import (
 
 
 ScrollThrottleIntervalMilliseconds: Final[int] = 180
-
-
-class ClockStyleSheet(StrEnum):
-    """QSS style sheets for clock widgets."""
-
-    Black = "color: white; background-color: black;"
-    White = "color: black; background-color: white;"
-
-
-class ThemeName(StrEnum):
-    """Available dark and light themes."""
-
-    DarkForest = "dark-forest"
-    DarkMint = "dark-mint"
-    DarkNebula = "dark-nebula"
-    DarkOcean = "dark-ocean"
-    LightForest = "light-forest"
-    LightMint = "light-mint"
-    LightNebula = "light-nebula"
-    LightOcean = "light-ocean"
-
-    @property
-    def text(self) -> str:
-        """Theme name in title-cased format."""
-        return self.value.replace("-", " ").title()
 
 
 class MainWindow(QMainWindow):
@@ -95,7 +69,7 @@ class MainWindow(QMainWindow):
 
         # Core services
         self._game: GameService = GameService(self._settings)
-        self._engine: EngineService = EngineService(self._game, self._settings)
+        self._engine: EngineService = EngineService(self._settings)
         self._pgn: PgnService = PgnService()
 
         # Sound player
@@ -174,89 +148,12 @@ class MainWindow(QMainWindow):
             shortcut="F1",
             status_tip=self.tr("Shows the About dialog."),
         )
-        self.dark_forest_theme_action: QAction = create_action(
-            icon=create_colored_icon("#1f291f"),
-            name=self.tr("Dark Forest"),
-            handler=partial(self.apply_theme, ThemeName.DarkForest),
-            shortcut="Alt+1",
-            status_tip=self.tr("Applies the Dark Forest theme."),
-        )
-        self.dark_mint_theme_action: QAction = create_action(
-            icon=create_colored_icon("#1a2e2e"),
-            name=self.tr("Dark Mint"),
-            handler=partial(self.apply_theme, ThemeName.DarkMint),
-            shortcut="Alt+2",
-            status_tip=self.tr("Applies the Dark Mint theme."),
-        )
-        self.dark_nebula_theme_action: QAction = create_action(
-            icon=create_colored_icon("#351d4d"),
-            name=self.tr("Dark Nebula"),
-            handler=partial(self.apply_theme, ThemeName.DarkNebula),
-            shortcut="Alt+3",
-            status_tip=self.tr("Applies the Dark Nebula theme."),
-        )
-        self.dark_ocean_theme_action: QAction = create_action(
-            icon=create_colored_icon("#2e455e"),
-            name=self.tr("Dark Ocean"),
-            handler=partial(self.apply_theme, ThemeName.DarkOcean),
-            shortcut="Alt+4",
-            status_tip=self.tr("Applies the Dark Ocean theme."),
-        )
-        self.english_language_action: QAction = create_action(
-            icon=create_svg_icon("american-flag"),
-            name="English",
-            handler=partial(self.change_language, "en"),
-            shortcut="",
-            status_tip=self.tr("Applies the American English language."),
-        )
         self.flip_action: QAction = create_action(
             icon=create_svg_icon("flip"),
             name=self.tr("Flip"),
             handler=self.flip,
             shortcut="Ctrl+F",
             status_tip=self.tr("Flips board orientation and board-related elements."),
-        )
-        self.german_language_action: QAction = create_action(
-            icon=create_svg_icon("german-flag"),
-            name="Deutsch",
-            handler=partial(self.change_language, "de"),
-            shortcut="",
-            status_tip=self.tr("Applies the German language."),
-        )
-        self.italian_language_action: QAction = create_action(
-            icon=create_svg_icon("italian-flag"),
-            name="Italiano",
-            handler=partial(self.change_language, "it"),
-            shortcut="",
-            status_tip=self.tr("Applies the Italian language."),
-        )
-        self.light_forest_theme_action: QAction = create_action(
-            icon=create_colored_icon("#95a88c"),
-            name=self.tr("Light Forest"),
-            handler=partial(self.apply_theme, ThemeName.LightForest),
-            shortcut="Alt+5",
-            status_tip=self.tr("Applies the Light Forest theme."),
-        )
-        self.light_mint_theme_action: QAction = create_action(
-            icon=create_colored_icon("#97cbc5"),
-            name=self.tr("Light Mint"),
-            handler=partial(self.apply_theme, ThemeName.LightMint),
-            shortcut="Alt+6",
-            status_tip=self.tr("Applies the Light Mint theme."),
-        )
-        self.light_nebula_theme_action: QAction = create_action(
-            icon=create_colored_icon("#c385f7"),
-            name=self.tr("Light Nebula"),
-            handler=partial(self.apply_theme, ThemeName.LightNebula),
-            shortcut="Alt+7",
-            status_tip=self.tr("Applies the Light Nebula theme."),
-        )
-        self.light_ocean_theme_action: QAction = create_action(
-            icon=create_colored_icon("#87a6c3"),
-            name=self.tr("Light Ocean"),
-            handler=partial(self.apply_theme, ThemeName.LightOcean),
-            shortcut="Alt+8",
-            status_tip=self.tr("Applies the Light Ocean theme."),
         )
         self.load_engine_action: QAction = create_action(
             icon=create_svg_icon("load-engine"),
@@ -307,13 +204,6 @@ class MainWindow(QMainWindow):
             shortcut="F2",
             status_tip=self.tr("Shows a dialog to edit the settings."),
         )
-        self.spanish_language_action: QAction = create_action(
-            icon=create_svg_icon("spanish-flag"),
-            name="Español",
-            handler=partial(self.change_language, "es"),
-            shortcut="",
-            status_tip=self.tr("Applies the Spanish language."),
-        )
         self.start_analysis_action: QAction = create_action(
             icon=create_svg_icon("start-analysis"),
             name=self.tr("Start analysis"),
@@ -335,6 +225,92 @@ class MainWindow(QMainWindow):
             shortcut="Ctrl+U",
             status_tip=self.tr("Prompts whether to unload the currently loaded engine."),
         )
+
+        self.create_theme_actions()
+        self.create_language_actions()
+
+    def create_theme_actions(self) -> None:
+        """Create one theme-applying action per available theme."""
+        theme_specs: list[tuple[ThemeName, str, str]] = [
+            (
+                ThemeName.DarkForest,
+                self.tr("Dark Forest"),
+                self.tr("Applies the Dark Forest theme."),
+            ),
+            (
+                ThemeName.DarkMint,
+                self.tr("Dark Mint"),
+                self.tr("Applies the Dark Mint theme."),
+            ),
+            (
+                ThemeName.DarkNebula,
+                self.tr("Dark Nebula"),
+                self.tr("Applies the Dark Nebula theme."),
+            ),
+            (
+                ThemeName.DarkOcean,
+                self.tr("Dark Ocean"),
+                self.tr("Applies the Dark Ocean theme."),
+            ),
+            (
+                ThemeName.LightForest,
+                self.tr("Light Forest"),
+                self.tr("Applies the Light Forest theme."),
+            ),
+            (
+                ThemeName.LightMint,
+                self.tr("Light Mint"),
+                self.tr("Applies the Light Mint theme."),
+            ),
+            (
+                ThemeName.LightNebula,
+                self.tr("Light Nebula"),
+                self.tr("Applies the Light Nebula theme."),
+            ),
+            (
+                ThemeName.LightOcean,
+                self.tr("Light Ocean"),
+                self.tr("Applies the Light Ocean theme."),
+            ),
+        ]
+
+        self._theme_actions: dict[ThemeName, QAction] = {}
+
+        for index, (theme, name, status_tip) in enumerate(theme_specs, start=1):
+            self._theme_actions[theme] = create_action(
+                icon=create_colored_icon(THEME_SWATCH[theme]),
+                name=name,
+                handler=partial(self.apply_theme, theme),
+                shortcut=f"Alt+{index}",
+                status_tip=status_tip,
+            )
+
+    def create_language_actions(self) -> None:
+        """Create one language-applying action per available language."""
+        language_specs: list[tuple[str, str, str, str]] = [
+            ("de", "german-flag", "Deutsch", self.tr("Applies the German language.")),
+            (
+                "en",
+                "american-flag",
+                "English",
+                self.tr("Applies the American English language."),
+            ),
+            ("es", "spanish-flag", "Español", self.tr("Applies the Spanish language.")),
+            ("it", "italian-flag", "Italiano", self.tr("Applies the Italian language.")),
+        ]
+
+        self._language_actions: list[QAction] = []
+
+        for language_code, flag_icon, name, status_tip in language_specs:
+            self._language_actions.append(
+                create_action(
+                    icon=create_svg_icon(flag_icon),
+                    name=name,
+                    handler=partial(self.change_language, language_code),
+                    shortcut="",
+                    status_tip=status_tip,
+                )
+            )
 
     def create_layout(self) -> None:
         """Create grid layout with fixed widget positions."""
@@ -380,19 +356,11 @@ class MainWindow(QMainWindow):
         general_menu.addSeparator()
         general_menu.addAction(self.quit_action)
 
-        theme_menu.addAction(self.dark_forest_theme_action)
-        theme_menu.addAction(self.dark_mint_theme_action)
-        theme_menu.addAction(self.dark_nebula_theme_action)
-        theme_menu.addAction(self.dark_ocean_theme_action)
-        theme_menu.addAction(self.light_forest_theme_action)
-        theme_menu.addAction(self.light_mint_theme_action)
-        theme_menu.addAction(self.light_nebula_theme_action)
-        theme_menu.addAction(self.light_ocean_theme_action)
+        for theme_action in self._theme_actions.values():
+            theme_menu.addAction(theme_action)
 
-        language_menu.addAction(self.german_language_action)
-        language_menu.addAction(self.english_language_action)
-        language_menu.addAction(self.spanish_language_action)
-        language_menu.addAction(self.italian_language_action)
+        for language_action in self._language_actions:
+            language_menu.addAction(language_action)
 
         edit_menu.addAction(self.show_settings_dialog_action)
 
@@ -450,10 +418,7 @@ class MainWindow(QMainWindow):
 
     def apply_theme(self, file_name: str) -> None:
         """Apply QSS theme based on `file_name` and show theme name."""
-        file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
-
-        with open(file_path, encoding="utf-8") as qss_file:
-            self.setStyleSheet(qss_file.read())
+        self.setStyleSheet(read_theme_stylesheet(file_name))
 
         self._settings.set_value("ui", "theme", file_name)
         theme_name: ThemeName = ThemeName(file_name)
@@ -624,7 +589,8 @@ class MainWindow(QMainWindow):
         self._engine.is_analyzing = True
         self._notifications_label.setText(self.tr("Analyzing..."))
 
-        QThreadPool.globalInstance().start(self._engine.start_analysis)
+        board: Board = self._game.board.copy()
+        QThreadPool.globalInstance().start(lambda: self._engine.start_analysis(board))
 
     def request_engine_move(self, force: bool = False) -> None:
         """Request engine to play move if loaded, on turn, or forced."""
@@ -642,8 +608,10 @@ class MainWindow(QMainWindow):
 
             self.update_actions()
 
+            board: Board = self._game.board.copy()
             QThreadPool.globalInstance().start(
                 lambda: self._engine.play_move(
+                    board,
                     black_time=black_time,
                     black_increment=black_increment,
                     white_time=white_time,
@@ -875,28 +843,21 @@ class MainWindow(QMainWindow):
     @Slot()
     def expire_clock_for_black(self) -> None:
         """End game when Black's clock expires."""
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
-
-        self._sound_player.play_game_over()
-
-        self._game.expire_clock_for(BLACK)
-        self._notifications_label.setText(self._game.result())
-
-        self._board.disable_interaction()
-        self._board.update()
-
-        self.update_actions()
+        self._expire_clock(BLACK)
 
     @Slot()
     def expire_clock_for_white(self) -> None:
         """End game when White's clock expires."""
+        self._expire_clock(WHITE)
+
+    def _expire_clock(self, color: Color) -> None:
+        """End game when the clock of player with `color` expires."""
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
         self._sound_player.play_game_over()
 
-        self._game.expire_clock_for(WHITE)
+        self._game.expire_clock_for(color)
         self._notifications_label.setText(self._game.result())
 
         self._board.disable_interaction()
