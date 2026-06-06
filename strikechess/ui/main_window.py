@@ -231,59 +231,72 @@ class MainWindow(QMainWindow):
 
     def create_theme_actions(self) -> None:
         """Create one theme-applying action per available theme."""
-        theme_specs: list[tuple[ThemeName, str, str]] = [
-            (
-                ThemeName.DarkForest,
-                self.tr("Dark Forest"),
-                self.tr("Applies the Dark Forest theme."),
-            ),
-            (
-                ThemeName.DarkMint,
-                self.tr("Dark Mint"),
-                self.tr("Applies the Dark Mint theme."),
-            ),
-            (
-                ThemeName.DarkNebula,
-                self.tr("Dark Nebula"),
-                self.tr("Applies the Dark Nebula theme."),
-            ),
-            (
-                ThemeName.DarkOcean,
-                self.tr("Dark Ocean"),
-                self.tr("Applies the Dark Ocean theme."),
-            ),
-            (
-                ThemeName.LightForest,
-                self.tr("Light Forest"),
-                self.tr("Applies the Light Forest theme."),
-            ),
-            (
-                ThemeName.LightMint,
-                self.tr("Light Mint"),
-                self.tr("Applies the Light Mint theme."),
-            ),
-            (
-                ThemeName.LightNebula,
-                self.tr("Light Nebula"),
-                self.tr("Applies the Light Nebula theme."),
-            ),
-            (
-                ThemeName.LightOcean,
-                self.tr("Light Ocean"),
-                self.tr("Applies the Light Ocean theme."),
-            ),
-        ]
-
         self._theme_actions: dict[ThemeName, QAction] = {}
 
-        for index, (theme, name, status_tip) in enumerate(theme_specs, start=1):
-            self._theme_actions[theme] = create_action(
-                icon=create_colored_icon(THEME_SWATCH[theme]),
-                name=name,
-                handler=partial(self.apply_theme, theme),
-                shortcut=f"Alt+{index}",
-                status_tip=status_tip,
-            )
+        self.create_theme_action(
+            ThemeName.DarkForest,
+            self.tr("Dark Forest"),
+            self.tr("Applies the Dark Forest theme."),
+            "Alt+1",
+        )
+        self.create_theme_action(
+            ThemeName.DarkMint,
+            self.tr("Dark Mint"),
+            self.tr("Applies the Dark Mint theme."),
+            "Alt+2",
+        )
+        self.create_theme_action(
+            ThemeName.DarkNebula,
+            self.tr("Dark Nebula"),
+            self.tr("Applies the Dark Nebula theme."),
+            "Alt+3",
+        )
+        self.create_theme_action(
+            ThemeName.DarkOcean,
+            self.tr("Dark Ocean"),
+            self.tr("Applies the Dark Ocean theme."),
+            "Alt+4",
+        )
+        self.create_theme_action(
+            ThemeName.LightForest,
+            self.tr("Light Forest"),
+            self.tr("Applies the Light Forest theme."),
+            "Alt+5",
+        )
+        self.create_theme_action(
+            ThemeName.LightMint,
+            self.tr("Light Mint"),
+            self.tr("Applies the Light Mint theme."),
+            "Alt+6",
+        )
+        self.create_theme_action(
+            ThemeName.LightNebula,
+            self.tr("Light Nebula"),
+            self.tr("Applies the Light Nebula theme."),
+            "Alt+7",
+        )
+        self.create_theme_action(
+            ThemeName.LightOcean,
+            self.tr("Light Ocean"),
+            self.tr("Applies the Light Ocean theme."),
+            "Alt+8",
+        )
+
+    def create_theme_action(
+        self,
+        theme: ThemeName,
+        name: str,
+        status_tip: str,
+        shortcut: str,
+    ) -> None:
+        """Create theme-applying action for `theme` and store it."""
+        self._theme_actions[theme] = create_action(
+            icon=create_colored_icon(THEME_SWATCH[theme]),
+            name=name,
+            handler=partial(self.apply_theme, theme),
+            shortcut=shortcut,
+            status_tip=status_tip,
+        )
 
     def create_language_actions(self) -> None:
         """Create one language-applying action per available language."""
