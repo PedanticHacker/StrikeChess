@@ -457,7 +457,7 @@ class MainWindow(QMainWindow):
 
         self._settings.set_value("ui", "theme", file_name)
         theme_name: ThemeName = ThemeName(file_name)
-        self._theme_name_label.setText(f"Theme: {theme_name.text}")
+        self._theme_name_label.setText(f"{self.tr('Theme')}: {self.tr(theme_name.text)}")
 
     def change_language(self, language_code: str) -> None:
         """Save new language setting and prompt for app relaunch."""
