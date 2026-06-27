@@ -7,7 +7,7 @@ from re import sub
 from chess import BLACK, Move, WHITE
 from chess.engine import EngineError, Score
 from PySide6.QtCore import QThreadPool, QTimer, Slot
-from PySide6.QtGui import QAction, QCloseEvent, QIcon, QWheelEvent
+from PySide6.QtGui import QAction, QCloseEvent, QWheelEvent
 from PySide6.QtWidgets import (
     QDialog,
     QGridLayout,

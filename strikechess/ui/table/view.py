@@ -2,7 +2,6 @@ from PySide6.QtCore import (
     QAbstractTableModel,
     QItemSelectionModel,
     QModelIndex,
-    QSize,
     Qt,
     Signal,
     Slot,
