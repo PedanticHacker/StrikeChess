@@ -1,5 +1,3 @@
-# mypy: ignore-errors
-
 import platform
 
 dependency_analysis = Analysis(
