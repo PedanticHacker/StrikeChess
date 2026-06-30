@@ -821,20 +821,26 @@ class MainWindow(QMainWindow):
         self.play_move_now_action.setDisabled(should_disable_play_move_now)
 
     def update_clock_timers(self) -> None:
-        """Start/stop clocks and add increment based on current turn."""
+        """Start/stop clocks based on current turn."""
         if self._game.is_over_by_result() or self._game.is_viewing_history:
             return
 
         if self._game.is_white_to_move():
             self._black_clock.stop_timer()
             self._white_clock.start_timer()
-            if self._game.is_in_progress():
-                self._black_clock.add_increment()
         else:
             self._white_clock.stop_timer()
             self._black_clock.start_timer()
-            if self._game.is_in_progress():
-                self._white_clock.add_increment()
+
+    def apply_increment(self) -> None:
+        """Add increment to player's clock based on current turn."""
+        if self._game.player_with_expired_clock is not None:
+            return
+
+        if self._game.is_white_to_move():
+            self._black_clock.add_increment()
+        else:
+            self._white_clock.add_increment()
 
     def update_ui_state(self) -> None:
         """Update UI to reflect current game state."""
@@ -906,7 +912,7 @@ class MainWindow(QMainWindow):
 
     @Slot(Move)
     def play_move(self, move: Move) -> None:
-        """Play `move` with optional promotion and update UI."""
+        """Play `move` with optional promotion and update UI state."""
         is_promotion: bool = move.promotion is not None
         is_human_move: bool = self.sender() is self._game
 
@@ -920,7 +926,9 @@ class MainWindow(QMainWindow):
                 return
 
         self._sound_player.play(move)
+
         self._game.push(move)
+        self.apply_increment()
 
         self._engine.is_thinking = False
 
