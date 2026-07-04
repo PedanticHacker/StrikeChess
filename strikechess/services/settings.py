@@ -35,6 +35,9 @@ class SettingsService:
 
     def set_value(self, section: str, key: str, value: Any) -> None:
         """Set `value` to `key` for `section` in settings."""
+        if section not in self._user_settings:
+            self._user_settings[section] = {}
+
         self._user_settings[section][key] = value
         self._save()
 

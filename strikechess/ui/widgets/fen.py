@@ -1,3 +1,4 @@
+from chess import Board
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QLineEdit
 
@@ -34,10 +35,17 @@ class FenEditor(QLineEdit):
     def validate_fen(self, fen: str) -> None:
         """Validate whether `fen` represents valid position."""
         try:
-            self._game.fen = fen
+            position: Board = Board(fen)
         except (IndexError, ValueError):
             self.show_warning()
-        else:
-            if self._game.is_position_valid():
-                self.hide_warning()
-                self.fen_validated.emit()
+            return
+
+        if not position.is_valid():
+            self.show_warning()
+            return
+
+        self.hide_warning()
+
+        if position.fen() != self._game.fen:
+            self._game.fen = fen
+            self.fen_validated.emit()

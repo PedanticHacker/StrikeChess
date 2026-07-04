@@ -98,6 +98,8 @@ class MainWindow(QMainWindow):
         self._engine: EngineService = EngineService(self._game, self._settings)
         self._pgn: PgnService = PgnService()
 
+        self._engine_fen: str = self._game.fen
+
         # Sound player
         self._sound_player: SoundPlayer = SoundPlayer(self._game)
 
@@ -631,7 +633,18 @@ class MainWindow(QMainWindow):
         if not self._engine.is_loaded():
             return
 
+        if self._engine.is_thinking:
+            return
+
+        if self._game.is_over_by_result():
+            return
+
+        if self._game.is_viewing_history and not force:
+            return
+
         if self._game.is_engine_to_move() or force:
+            self._engine_fen = self._game.fen
+
             black_time: float = self._black_clock.time
             black_increment: float = self._black_clock.increment
             white_time: float = self._white_clock.time
@@ -803,7 +816,10 @@ class MainWindow(QMainWindow):
         is_last_move: bool = self._table_view.is_last_move()
 
         should_disable_play_move_now: bool = (
-            is_engine_not_loaded or is_game_over_by_result or is_game_over_by_rules
+            is_engine_thinking
+            or is_engine_not_loaded
+            or is_game_over_by_result
+            or is_game_over_by_rules
         )
         should_disable_start_analysis: bool = (
             is_engine_thinking
@@ -913,8 +929,27 @@ class MainWindow(QMainWindow):
     @Slot(Move)
     def play_move(self, move: Move) -> None:
         """Play `move` with optional promotion and update UI state."""
-        is_promotion: bool = move.promotion is not None
         is_human_move: bool = self.sender() is self._game
+
+        if not is_human_move:
+            self._engine.is_thinking = False
+
+            is_game_over_by_result: bool = self._game.is_over_by_result()
+
+            if self._game.fen != self._engine_fen or is_game_over_by_result:
+                if is_game_over_by_result:
+                    self._notifications_label.setText(self._game.result())
+                else:
+                    self._notifications_label.clear()
+
+                self.update_actions()
+                self.request_engine_move()
+                return
+
+        if not self._game.is_legal(move):
+            return
+
+        is_promotion: bool = move.promotion is not None
 
         if is_promotion and is_human_move:
             promotion_dialog: PromotionDialog = PromotionDialog(self, self._game.turn)

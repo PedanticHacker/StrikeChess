@@ -119,6 +119,10 @@ class EngineService(QObject):
             ponder=self._settings.value("engine", "is_ponder_enabled"),
         )
 
+        if play_result.move is None:
+            self.is_thinking = False
+            return
+
         self.move_played.emit(play_result.move)
 
     def start_analysis(self) -> None:
