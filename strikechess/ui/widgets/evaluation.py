@@ -40,6 +40,11 @@ class EvaluationBar(QProgressBar):
             animation_value = 500 - evaluation_score
             evaluation_text = f"{evaluation_score / 100 :.2f}"
 
+        if animation_value < 0:
+            animation_value = 0
+        elif animation_value > 1000:
+            animation_value = 1000
+
         self.setFormat(evaluation_text)
         self._animation.setEndValue(animation_value)
         self._animation.start()
