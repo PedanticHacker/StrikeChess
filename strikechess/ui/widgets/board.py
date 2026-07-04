@@ -326,6 +326,9 @@ class SvgBoard(QSvgWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Drag piece if draggable."""
+        if event.button() != Qt.MouseButton.LeftButton:
+            return
+
         if self.is_animating or not self.is_interactive:
             return
 
@@ -343,6 +346,9 @@ class SvgBoard(QSvgWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """Drop piece if legal move, else slide it back."""
+        if event.button() != Qt.MouseButton.LeftButton:
+            return
+
         cursor_point: QPointF = self.cursor_point_from(event)
         square: Square = self.square(cursor_point)
 

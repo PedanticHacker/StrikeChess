@@ -68,4 +68,5 @@ class TableModel(QAbstractTableModel):
 
     def update_view(self) -> None:
         """Update view to reflect model changes."""
+        self.layoutAboutToBeChanged.emit()
         self.layoutChanged.emit()

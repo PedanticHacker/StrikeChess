@@ -838,6 +838,11 @@ class MainWindow(QMainWindow):
 
     def update_clock_timers(self) -> None:
         """Start/stop clocks based on current turn."""
+        if not self._game.is_in_progress():
+            self._black_clock.stop_timer()
+            self._white_clock.stop_timer()
+            return
+
         if self._game.is_over_by_result() or self._game.is_viewing_history:
             return
 
@@ -860,12 +865,12 @@ class MainWindow(QMainWindow):
 
     def update_ui_state(self) -> None:
         """Update UI to reflect current game state."""
+        self._game.is_viewing_history = False
+
         self._board.enable_interaction()
 
         self._table_model.update_view()
         self._table_view.select_last_move()
-
-        self._game.is_viewing_history = False
 
         self.show_fen()
         self.show_opening()
@@ -983,7 +988,10 @@ class MainWindow(QMainWindow):
     @Slot(int)
     def show_historical_move(self, move_index: int) -> None:
         """Show position from historical move at `move_index`."""
-        self._game.is_viewing_history = True
+        is_last_move: bool = move_index == len(self._game.moves) - 1 or not self._game.moves
+        is_returning_from_history: bool = is_last_move and self._game.is_viewing_history
+
+        self._game.is_viewing_history = not is_last_move
 
         if move_index < 0:
             self._openings_label.clear()
@@ -991,8 +999,9 @@ class MainWindow(QMainWindow):
         else:
             self._game.update_state(move_index)
 
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
+        if not is_last_move:
+            self._black_clock.stop_timer()
+            self._white_clock.stop_timer()
 
         self.show_fen()
         self.show_opening()
@@ -1000,6 +1009,9 @@ class MainWindow(QMainWindow):
 
         if self._game.is_over_by_result():
             self._notifications_label.setText(self._game.result())
+
+        if is_returning_from_history:
+            self.request_engine_move()
 
     def closeEvent(self, event: QCloseEvent) -> None:
         """Prompt whether to quit app."""
