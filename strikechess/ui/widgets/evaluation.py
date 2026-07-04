@@ -34,7 +34,7 @@ class EvaluationBar(QProgressBar):
         if evaluation.is_mate():
             moves_to_mate: int = evaluation.mate() or 0
             animation_value: int = 0 if moves_to_mate > 0 else 1000
-            evaluation_text: str = f"M{moves_to_mate}"
+            evaluation_text: str = f"M{abs(moves_to_mate)}"
         else:
             evaluation_score: int = evaluation.score() or 0
             animation_value = 500 - evaluation_score
