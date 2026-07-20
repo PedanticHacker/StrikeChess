@@ -30,6 +30,7 @@ from strikechess.ui.dialogs import PromotionDialog, SettingsDialog
 from strikechess.ui.sounds import SoundPlayer
 from strikechess.ui.table import TableModel, TableView
 from strikechess.ui.widgets import (
+    ClockStyleSheet,
     DigitalClock,
     EvaluationBar,
     FenEditor,
@@ -54,13 +55,6 @@ from strikechess.utils import (
 
 
 ScrollThrottleIntervalMilliseconds: Final[int] = 180
-
-
-class ClockStyleSheet(StrEnum):
-    """QSS style sheets for clock widgets."""
-
-    Black = "color: white; background-color: black;"
-    White = "color: black; background-color: white;"
 
 
 class ThemeName(StrEnum):
@@ -587,6 +581,7 @@ class MainWindow(QMainWindow):
     def play_move_now(self) -> None:
         """Force engine to play move on current turn."""
         self._game.clear_arrow()
+        self._board.update()
 
         self.stop_analysis()
         self.request_engine_move(force=True)
@@ -868,6 +863,7 @@ class MainWindow(QMainWindow):
         self._game.is_viewing_history = False
 
         self._board.enable_interaction()
+        self._board.update()
 
         self._table_model.update_view()
         self._table_view.select_last_move()
@@ -978,6 +974,7 @@ class MainWindow(QMainWindow):
     def show_best_move_arrow(self, best_move: Move) -> None:
         """Show `best_move` as arrow marker on board."""
         self._game.set_arrow(best_move)
+        self._board.update()
 
     @Slot(str)
     def show_engine_variation(self, variation: str) -> None:
@@ -1009,6 +1006,8 @@ class MainWindow(QMainWindow):
 
         if self._game.is_over_by_result():
             self._notifications_label.setText(self._game.result())
+
+        self._board.update()
 
         if is_returning_from_history:
             self.request_engine_move()

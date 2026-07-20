@@ -40,7 +40,7 @@ cd ~/Downloads/StrikeChess-Linux  # Adjust path if needed
 
 ## Development
 
-Requirements: Python 3.14+, 2+ GB RAM, 1.5+ GB storage
+Requirements: Python 3.14+, 2+ GB RAM, 8+ GB storage
 ```bash
 git clone https://github.com/PedanticHacker/StrikeChess.git
 cd StrikeChess

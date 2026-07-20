@@ -114,6 +114,8 @@ class GameService(QObject):
             self.moves.append(new_san_move)
             self.positions.append(self._board.copy())
 
+        self.move_index = len(self.moves) - 1
+
     def expire_clock_for(self, player_color: Color) -> None:
         """Set `player_color` as player whose clock expired."""
         self.player_with_expired_clock = player_color
@@ -130,6 +132,8 @@ class GameService(QObject):
 
         position: Board = self._board.copy()
         self.positions.append(position)
+
+        self.move_index = len(self.moves) - 1
 
     def find_legal_move(self, origin_square: Square, target_square: Square) -> None:
         """Detect legal move by `origin_square` and `target_square`."""
@@ -188,6 +192,7 @@ class GameService(QObject):
         if self.move_index < 0 and not self.is_white_to_move():
             self.moves.append("...")
             self.positions.append(self._board.copy())
+            self.move_index = 0
 
     def piece_at(self, square: Square) -> Piece | None:
         """Get piece at `square`, if any."""

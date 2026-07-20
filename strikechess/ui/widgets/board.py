@@ -52,6 +52,7 @@ class SvgBoard(QSvgWidget):
 
         self._game: GameService = game
         self._engine: EngineService = engine
+        self._loaded_svg: bytes | None = None
         self._settings: SettingsService = settings
 
         self.is_dragging: bool = False
@@ -136,6 +137,7 @@ class SvgBoard(QSvgWidget):
     def set_orientation(self, is_white_at_bottom: bool) -> None:
         """Set board orientation based on `is_white_at_bottom`."""
         self.is_white_at_bottom = is_white_at_bottom
+        self.update()
 
     def color_names(self) -> dict[str, str]:
         """Get color names for SVG rendering."""
@@ -223,6 +225,7 @@ class SvgBoard(QSvgWidget):
         self.origin_square = square
 
         self.update_cursor_at(self.cursor_point)
+        self.update()
 
     def drop_piece(self, target_square: Square) -> None:
         """Drop dragged piece at `target_square`."""
@@ -264,6 +267,7 @@ class SvgBoard(QSvgWidget):
     def update_animation_point(self, point: QPointF) -> None:
         """Update animated piece position based on `point`."""
         self.animation_point = point
+        self.update()
 
     @Slot()
     def stop_dragging(self) -> None:
@@ -275,6 +279,7 @@ class SvgBoard(QSvgWidget):
         self.animated_piece = None
 
         self.update_cursor_at(self.cursor_point)
+        self.update()
 
     def svg_data(self) -> bytes:
         """Convert current board state to SVG data as bytes."""
@@ -344,6 +349,9 @@ class SvgBoard(QSvgWidget):
         cursor_point: QPointF = self.cursor_point_from(event)
         self.update_cursor_at(cursor_point)
 
+        if self.is_dragging:
+            self.update()
+
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         """Drop piece if legal move, else slide it back."""
         if event.button() != Qt.MouseButton.LeftButton:
@@ -360,10 +368,14 @@ class SvgBoard(QSvgWidget):
     def paintEvent(self, event: QPaintEvent) -> None:
         """Render board and any dragged or animated piece."""
         board_svg: bytes = self.svg_data()
-        self.load(board_svg)
+
+        if board_svg != self._loaded_svg:
+            self._loaded_svg = board_svg
+            self.load(board_svg)
+
         super().paintEvent(event)
 
-        if self.is_dragging and self.dragged_piece is not None:
+        if self.is_dragging and self.dragged_piece is not None and self.origin_square is not None:
             current_piece: Piece | None = self._game.piece_at(self.origin_square)
 
             if current_piece is not None and current_piece.color != self.dragged_piece.color:

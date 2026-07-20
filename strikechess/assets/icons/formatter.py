@@ -2,10 +2,10 @@ from pathlib import Path
 import re
 
 
-def transform_icons_rc() -> None:
-    """Format and restructure icons_rc.py file."""
+def format_icon_resources() -> None:
+    """Restructure icon_resources.py file."""
     icons_directory: Path = Path(__file__).parent
-    file_path: Path = icons_directory / "icons_rc.py"
+    file_path: Path = icons_directory / "icon_resources.py"
 
     with open(file_path, encoding="utf-8") as file:
         text: str = file.read()
@@ -17,7 +17,7 @@ def transform_icons_rc() -> None:
     data_match = re.search(r"qt_resource_data\s*=\s*(b\".*?\")", formatted_text, re.DOTALL)
 
     if not all([structure_match, names_match, data_match]):
-        print("Error: Could not find all required data in icons_rc.py file")
+        print("Error: Could not find all required data in icon_resources.py file")
         return
 
     icon_structure: str = structure_match.group(1)
@@ -42,4 +42,5 @@ qRegisterResourceData(icon_compiler_version, icon_structure, icon_names, icon_da
     print("Formatting complete!")
 
 
-transform_icons_rc()
+if __name__ == "__main__":
+    format_icon_resources()

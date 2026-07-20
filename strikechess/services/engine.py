@@ -137,7 +137,7 @@ class EngineService(QObject):
                 if not self.is_analyzing:
                     break
 
-                if "pv" in info:
+                if "pv" in info and "score" in info:
                     pv: list[Move] = info["pv"][:50]
 
                     best_move: Move = pv[0]
@@ -172,8 +172,8 @@ def _engine_options() -> dict[str, int]:
     allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores // 2)
 
     available_ram_in_megabytes: int = virtual_memory().available // bytes_per_megabyte
-    allowed_hash_size_in_megabytes: int = int(
-        available_ram_in_megabytes * engine_hash_size_percentage
+    allowed_hash_size_in_megabytes: int = max(
+        16, int(available_ram_in_megabytes * engine_hash_size_percentage)
     )
 
     return {

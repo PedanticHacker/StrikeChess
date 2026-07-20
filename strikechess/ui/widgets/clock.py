@@ -1,9 +1,18 @@
+from enum import StrEnum
+
 from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 from PySide6.QtWidgets import QLCDNumber
 
 
 CountdownIntervalMilliseconds: Final[int] = 30
 CountdownThresholdSeconds: Final[float] = CountdownIntervalMilliseconds / 1000
+
+
+class ClockStyleSheet(StrEnum):
+    """QSS style sheets for clock widgets."""
+
+    Black = "color: white; background-color: black;"
+    White = "color: black; background-color: white;"
 
 
 class DigitalClock(QLCDNumber):
