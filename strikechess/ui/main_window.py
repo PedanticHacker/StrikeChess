@@ -895,19 +895,16 @@ class MainWindow(QMainWindow):
 
         self.update_ui_state()
 
-    @Slot()
+@Slot()
     def expire_clock_for_black(self) -> None:
         """End game when Black's clock expires."""
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
-        self._sound_player.play_game_over()
-
-        self._game.expire_clock_for(BLACK)
-        self._notifications_label.setText(self._game.result())
-
         self._board.disable_interaction()
-        self._board.update()
+        self._game.expire_clock_for(BLACK)
+        self._sound_player.play_game_over()
+        self._notifications_label.setText(self._game.result())
 
         self.update_actions()
 
@@ -917,13 +914,10 @@ class MainWindow(QMainWindow):
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
-        self._sound_player.play_game_over()
-
-        self._game.expire_clock_for(WHITE)
-        self._notifications_label.setText(self._game.result())
-
         self._board.disable_interaction()
-        self._board.update()
+        self._game.expire_clock_for(WHITE)
+        self._sound_player.play_game_over()
+        self._notifications_label.setText(self._game.result())
 
         self.update_actions()
 
