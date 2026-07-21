@@ -895,7 +895,7 @@ class MainWindow(QMainWindow):
 
         self.update_ui_state()
 
-@Slot()
+    @Slot()
     def expire_clock_for_black(self) -> None:
         """End game when Black's clock expires."""
         self._black_clock.stop_timer()
