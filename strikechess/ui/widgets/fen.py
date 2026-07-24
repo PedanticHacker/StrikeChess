@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QLineEdit
 class FenEditor(QLineEdit):
     """Editor for Forsyth-Edwards Notation (FEN)."""
 
-    fen_validated: ClassVar[Signal] = Signal()
+    fen_validated: ClassVar[Signal] = Signal(str)
 
     def __init__(self, game: GameService) -> None:
         super().__init__()
@@ -15,6 +15,7 @@ class FenEditor(QLineEdit):
 
         self.setText(game.fen)
         self.textEdited.connect(self.validate_fen)
+        self.returnPressed.connect(self.apply_fen)
 
     def show_warning(self) -> None:
         """Show red background color to indicate invalid FEN."""
@@ -31,21 +32,33 @@ class FenEditor(QLineEdit):
         self.selectAll()
         self.paste()
 
+    @Slot()
+    def apply_fen(self) -> None:
+        """Emit edited FEN when Return key is pressed."""
+        position: Board | None = self.validated_position(self.text())
+
+        if position is None:
+            return
+
+        if position.fen() != self._game.fen:
+            self.fen_validated.emit(self.text())
+
     @Slot(str)
     def validate_fen(self, fen: str) -> None:
         """Validate whether `fen` represents valid position."""
+        if self.validated_position(fen) is None:
+            self.show_warning()
+        else:
+            self.hide_warning()
+
+    def validated_position(self, fen: str) -> Board | None:
+        """Get position based on `fen`, or None if `fen` is invalid."""
         try:
             position: Board = Board(fen)
         except (IndexError, ValueError):
-            self.show_warning()
-            return
+            return None
 
         if not position.is_valid():
-            self.show_warning()
-            return
+            return None
 
-        self.hide_warning()
-
-        if position.fen() != self._game.fen:
-            self._game.fen = fen
-            self.fen_validated.emit()
+        return position

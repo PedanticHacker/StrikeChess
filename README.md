@@ -68,7 +68,7 @@ pyinstaller --clean bundle.spec
 | Navigate moves | `←`/`→` or scroll up/down |
 | Load PGN | `Ctrl+O` |
 | Save PGN | `Ctrl+S` |
-| Set custom position | Double-click FEN editor to paste from clipboard |
+| Set custom position | Double-click FEN editor to paste from clipboard and press `Enter` |
 | About StrikeChess | `F1` |
 | Quit | `Ctrl+Q` |
 

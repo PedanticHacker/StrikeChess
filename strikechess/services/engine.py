@@ -22,10 +22,9 @@ class EngineService(QObject):
     variation_analyzed: ClassVar[Signal] = Signal(str)
     best_move_analyzed: ClassVar[Signal] = Signal(Move)
 
-    def __init__(self, game: GameService, settings: SettingsService) -> None:
+    def __init__(self, settings: SettingsService) -> None:
         super().__init__()
 
-        self._game: GameService = game
         self._settings: SettingsService = settings
 
         self._engine: SimpleEngine | None = None
@@ -87,66 +86,76 @@ class EngineService(QObject):
 
     def terminate(self) -> None:
         """Stop analysis and terminate engine."""
-        if self._engine is None:
+        engine: SimpleEngine | None = self._engine
+
+        if engine is None:
             return
 
         self.stop_analysis()
 
-        self._engine.quit()
         self._engine = None
+        engine.quit()
 
     def play_move(
         self,
+        board: Board,
         black_time: float,
         black_increment: float,
         white_time: float,
         white_increment: float,
     ) -> None:
-        """Invoke engine to play move."""
-        if self._engine is None:
+        """Invoke engine to play move on `board`."""
+        engine: SimpleEngine | None = self._engine
+
+        if engine is None:
             return
 
-        board: Board = self._game.board.copy()
+        try:
+            play_result: PlayResult = engine.play(
+                board=board,
+                limit=Limit(
+                    black_clock=black_time,
+                    black_inc=black_increment,
+                    white_clock=white_time,
+                    white_inc=white_increment,
+                ),
+                ponder=self._settings.value("engine", "is_ponder_enabled"),
+            )
+        except EngineError:
+            self.is_thinking = False
+            return
 
-        play_result: PlayResult = self._engine.play(
-            board=board,
-            limit=Limit(
-                black_clock=black_time,
-                black_inc=black_increment,
-                white_clock=white_time,
-                white_inc=white_increment,
-            ),
-            ponder=self._settings.value("engine", "is_ponder_enabled"),
-        )
-
-        if play_result.move is None:
+        if play_result.move is None or engine is not self._engine:
             self.is_thinking = False
             return
 
         self.move_played.emit(play_result.move)
 
-    def start_analysis(self) -> None:
-        """Start analyzing current position."""
-        if self._engine is None:
+    def start_analysis(self, board: Board) -> None:
+        """Start analyzing position on `board`."""
+        engine: SimpleEngine | None = self._engine
+
+        if engine is None:
             return
 
-        board: Board = self._game.board.copy()
+        try:
+            with engine.analysis(board) as analysis:
+                for info in analysis:
+                    if not self.is_analyzing:
+                        break
 
-        with self._engine.analysis(board) as analysis:
-            for info in analysis:
-                if not self.is_analyzing:
-                    break
+                    if "pv" in info and "score" in info:
+                        pv: list[Move] = info["pv"][:50]
 
-                if "pv" in info and "score" in info:
-                    pv: list[Move] = info["pv"][:50]
+                        best_move: Move = pv[0]
+                        score: Score = info["score"].white()
+                        variation: str = board.variation_san(pv)
 
-                    best_move: Move = pv[0]
-                    score: Score = info["score"].white()
-                    variation: str = board.variation_san(pv)
-
-                    self.best_move_analyzed.emit(best_move)
-                    self.score_analyzed.emit(score)
-                    self.variation_analyzed.emit(variation)
+                        self.best_move_analyzed.emit(best_move)
+                        self.score_analyzed.emit(score)
+                        self.variation_analyzed.emit(variation)
+        except (EngineError, TimeoutError):
+            self.is_analyzing = False
 
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""

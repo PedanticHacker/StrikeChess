@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
 
         # Core services
         self._game: GameService = GameService(self._settings)
-        self._engine: EngineService = EngineService(self._game, self._settings)
+        self._engine: EngineService = EngineService(self._settings)
         self._pgn: PgnService = PgnService()
 
         self._engine_fen: str = self._game.fen
@@ -150,12 +150,12 @@ class MainWindow(QMainWindow):
 
         # Engine
         self._engine.best_move_analyzed.connect(self.show_best_move_arrow)
-        self._engine.move_played.connect(self.play_move)
+        self._engine.move_played.connect(self.play_engine_move)
         self._engine.score_analyzed.connect(self.animate_evaluation)
         self._engine.variation_analyzed.connect(self.show_engine_variation)
 
         # Game
-        self._game.move_played.connect(self.play_move)
+        self._game.move_played.connect(self.play_human_move)
 
         # Widgets
         self._fen_editor.fen_validated.connect(self.apply_validated_fen)
@@ -621,7 +621,8 @@ class MainWindow(QMainWindow):
         self._engine.is_analyzing = True
         self._notifications_label.setText(self.tr("Analyzing..."))
 
-        QThreadPool.globalInstance().start(self._engine.start_analysis)
+        board: Board = self._game.board.copy()
+        QThreadPool.globalInstance().start(partial(self._engine.start_analysis, board))
 
     def request_engine_move(self, force: bool = False) -> None:
         """Request engine to play move if loaded, on turn, or forced."""
@@ -640,6 +641,8 @@ class MainWindow(QMainWindow):
         if self._game.is_engine_to_move() or force:
             self._engine_fen = self._game.fen
 
+            board: Board = self._game.board.copy()
+
             black_time: float = self._black_clock.time
             black_increment: float = self._black_clock.increment
             white_time: float = self._white_clock.time
@@ -651,7 +654,9 @@ class MainWindow(QMainWindow):
             self.update_actions()
 
             QThreadPool.globalInstance().start(
-                lambda: self._engine.play_move(
+                partial(
+                    self._engine.play_move,
+                    board=board,
                     black_time=black_time,
                     black_increment=black_increment,
                     white_time=white_time,
@@ -712,9 +717,9 @@ class MainWindow(QMainWindow):
 
     def show_fen(self) -> None:
         """Show FEN in editor."""
-        self._fen_editor.clearFocus()
         self._fen_editor.hide_warning()
         self._fen_editor.setText(self._game.fen)
+        self._fen_editor.clearFocus()
 
     def show_opening(self) -> None:
         """Show name of current opening."""
@@ -886,9 +891,20 @@ class MainWindow(QMainWindow):
         """Show position evaluation based on `score`."""
         self._evaluation_bar.animate(score)
 
-    @Slot()
-    def apply_validated_fen(self) -> None:
-        """Apply new position based on validated FEN."""
+    @Slot(str)
+    def apply_validated_fen(self, fen: str) -> None:
+        """Apply position based on `fen`, prompt if game is in progress."""
+        if self._game.is_in_progress():
+            if not ask_question(
+                self,
+                self.tr("Apply FEN"),
+                self.tr("You will lose the current game.\n" "Apply the FEN anyway?"),
+            ):
+                self.show_fen()
+                return
+
+        self._game.fen = fen
+
         self._black_clock.reset()
         self._white_clock.reset()
         self._openings_label.clear()
@@ -922,31 +938,28 @@ class MainWindow(QMainWindow):
         self.update_actions()
 
     @Slot(Move)
-    def play_move(self, move: Move) -> None:
-        """Play `move` with optional promotion and update UI state."""
-        is_human_move: bool = self.sender() is self._game
+    def play_engine_move(self, move: Move) -> None:
+        """Play engine's `move` or discard it when stale."""
+        self._engine.is_thinking = False
 
-        if not is_human_move:
-            self._engine.is_thinking = False
+        is_game_over_by_result: bool = self._game.is_over_by_result()
 
-            is_game_over_by_result: bool = self._game.is_over_by_result()
+        if self._game.fen != self._engine_fen or is_game_over_by_result:
+            if is_game_over_by_result:
+                self._notifications_label.setText(self._game.result())
+            else:
+                self._notifications_label.clear()
 
-            if self._game.fen != self._engine_fen or is_game_over_by_result:
-                if is_game_over_by_result:
-                    self._notifications_label.setText(self._game.result())
-                else:
-                    self._notifications_label.clear()
-
-                self.update_actions()
-                self.request_engine_move()
-                return
-
-        if not self._game.is_legal(move):
+            self.update_actions()
+            self.request_engine_move()
             return
 
-        is_promotion: bool = move.promotion is not None
+        self.play_move(move)
 
-        if is_promotion and is_human_move:
+    @Slot(Move)
+    def play_human_move(self, move: Move) -> None:
+        """Play human's `move` with optional promotion."""
+        if move.promotion is not None:
             promotion_dialog: PromotionDialog = PromotionDialog(self, self._game.turn)
             promotion_dialog.exec()
 
@@ -954,6 +967,13 @@ class MainWindow(QMainWindow):
 
             if move.promotion is None:
                 return
+
+        self.play_move(move)
+
+    def play_move(self, move: Move) -> None:
+        """Play `move` and update UI state."""
+        if not self._game.is_legal(move):
+            return
 
         self._sound_player.play(move)
 
