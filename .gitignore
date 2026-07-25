@@ -3,6 +3,13 @@
 build/
 dist/
 
+# Icon resource management
+strikechess/assets/icons/*.svg
+strikechess/assets/icons/formatter.py
+strikechess/assets/icons/icon_resources.py
+strikechess/assets/icons/icons.qrc
+!strikechess/assets/icons/logo.svg
+
 # IDE settings
 *.code-workspace
 .idea/

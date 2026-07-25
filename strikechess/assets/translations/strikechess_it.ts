@@ -4,6 +4,10 @@
 <context>
   <name>MainWindow</name>
   <message>
+    <source>Player</source>
+    <translation>Giocatore</translation>
+  </message>
+  <message>
     <source>About StrikeChess</source>
     <translation>Informazioni su StrikeChess</translation>
   </message>
@@ -312,16 +316,22 @@ Prova a salvare in un'altra posizione.</translation>
     <translation>(nessun motore)</translation>
   </message>
   <message>
+    <source>Apply FEN</source>
+    <translation>Applica FEN</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Apply the FEN anyway?</source>
+    <translation>Perderai la partita corrente.
+Applicare il FEN comunque?</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Esci</translation>
   </message>
   <message>
     <source>Are you sure you want to quit?</source>
     <translation>Sei sicuro di voler uscire?</translation>
-  </message>
-  <message>
-    <source>Player</source>
-    <translation>Giocatore</translation>
   </message>
 </context>
 <context>
@@ -454,6 +464,50 @@ Licenza MIT</translation>
   <message>
     <source>Info</source>
     <translation>Informazioni</translation>
+  </message>
+</context>
+<context>
+  <name>EngineService</name>
+  <message>
+    <source>(no engine)</source>
+    <translation>(nessun motore)</translation>
+  </message>
+  <message>
+    <source>Cannot load UCI engine.
+
+The engine file may be incompatible.
+Ensure the engine matches your platform and CPU architecture.</source>
+    <translation>Impossibile caricare il motore UCI.
+
+Il file del motore potrebbe essere incompatibile.
+Assicurati che il motore corrisponda alla tua piattaforma e architettura della CPU.</translation>
+  </message>
+</context>
+<context>
+  <name>GameService</name>
+  <message>
+    <source>White wins on time</source>
+    <translation>Il Bianco vince per tempo</translation>
+  </message>
+  <message>
+    <source>Black wins on time</source>
+    <translation>Il Nero vince per tempo</translation>
+  </message>
+  <message>
+    <source>Draw</source>
+    <translation>Patta</translation>
+  </message>
+  <message>
+    <source>Black wins</source>
+    <translation>Il Nero vince</translation>
+  </message>
+  <message>
+    <source>White wins</source>
+    <translation>Il Bianco vince</translation>
+  </message>
+  <message>
+    <source>Undetermined game</source>
+    <translation>Partita indeterminata</translation>
   </message>
 </context>
 <context>

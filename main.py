@@ -2,8 +2,9 @@
 
 
 import sys
-from pathlib import Path
+from functools import partial
 from multiprocessing import freeze_support
+from pathlib import Path
 
 from PySide6.QtCore import QLockFile, QTimer
 from PySide6.QtWidgets import QApplication, QMessageBox
@@ -75,7 +76,7 @@ def main() -> None:
 
     QTimer.singleShot(
         SplashScreenDurationMilliseconds,
-        lambda: _switch(splash_screen, main_window),
+        partial(_switch, splash_screen, main_window),
     )
 
     app.exec()
