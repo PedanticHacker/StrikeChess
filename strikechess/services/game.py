@@ -194,6 +194,10 @@ class GameService(QObject):
             self.positions.append(self._board.copy())
             self.move_index = 0
 
+    def board_copy(self) -> Board:
+        """Get copy of current position, unaffected by game state updates."""
+        return self._board.copy()
+
     def piece_at(self, square: Square) -> Piece | None:
         """Get piece at `square`, if any."""
         return self._board.piece_at(square)

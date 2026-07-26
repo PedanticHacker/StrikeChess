@@ -79,6 +79,8 @@ class SettingsService:
 
     def _save(self) -> None:
         """Save settings to user's settings.json file."""
+        self._user_file_path.parent.mkdir(exist_ok=True)
+
         temporary_file_path: Path = self._user_file_path.with_suffix(".tmp")
 
         with open(

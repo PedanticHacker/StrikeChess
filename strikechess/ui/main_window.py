@@ -621,7 +621,7 @@ class MainWindow(QMainWindow):
         self._engine.is_analyzing = True
         self._notifications_label.setText(self.tr("Analyzing..."))
 
-        board: Board = self._game.board.copy()
+        board: Board = self._game.board_copy()
         QThreadPool.globalInstance().start(partial(self._engine.start_analysis, board))
 
     def request_engine_move(self, force: bool = False) -> None:
@@ -641,7 +641,7 @@ class MainWindow(QMainWindow):
         if self._game.is_engine_to_move() or force:
             self._engine_fen = self._game.fen
 
-            board: Board = self._game.board.copy()
+            board: Board = self._game.board_copy()
 
             black_time: float = self._black_clock.time
             black_increment: float = self._black_clock.increment
