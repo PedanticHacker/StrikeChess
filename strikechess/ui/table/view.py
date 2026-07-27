@@ -62,13 +62,13 @@ class TableView(QTableView):
         last_row: int = self.model().rowCount() - 1
         last_column: int = 1 if self.model().index(last_row, 1).data() is not None else 0
         last_model_index: QModelIndex = self.model().index(last_row, last_column)
-        self.select_model_index(last_model_index)
+        self._select_model_index(last_model_index)
 
     def select_previous_move(self) -> None:
         """Select move that exists before current move."""
         if self.current_move == 0 and self.model().index(0, 0).data() == "...":
             return
-        self.select_model_index(self.previous_model_index)
+        self._select_model_index(self.previous_model_index)
 
     def select_next_move(self) -> None:
         """Select move that exists after current move."""
@@ -78,14 +78,7 @@ class TableView(QTableView):
             next_model_index = self.next_model_index
 
         if next_model_index.isValid():
-            self.select_model_index(next_model_index)
-
-    def select_model_index(self, model_index: QModelIndex) -> None:
-        """Select move based on `model_index`."""
-        self.selectionModel().setCurrentIndex(
-            model_index,
-            QItemSelectionModel.SelectionFlag.ClearAndSelect,
-        )
+            self._select_model_index(next_model_index)
 
     def is_last_move(self) -> bool:
         """Return True if currently selected move is last."""
@@ -106,3 +99,10 @@ class TableView(QTableView):
     def send_selected_move(self) -> None:
         """Send currently selected move when move selection changes."""
         self.move_selected.emit(self.current_move)
+
+    def _select_model_index(self, model_index: QModelIndex) -> None:
+        """Select move based on `model_index`."""
+        self.selectionModel().setCurrentIndex(
+            model_index,
+            QItemSelectionModel.SelectionFlag.ClearAndSelect,
+        )

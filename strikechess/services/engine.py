@@ -32,7 +32,7 @@ class EngineService(QObject):
         self.is_thinking: bool = False
         self.is_analyzing: bool = False
 
-        self.load_default_engine()
+        self._load_default_engine()
 
     @property
     def name(self) -> str:
@@ -43,13 +43,6 @@ class EngineService(QObject):
         """Return True if engine is loaded."""
         return self._engine is not None
 
-    def load_default_engine(self) -> None:
-        """Load executable file of Stockfish engine."""
-        try:
-            self.load_file(_stockfish_executable())
-        except EngineError:
-            self._settings.set_value("engine", "name", "(no engine)")
-
     def load_file(self, file_path: str) -> None:
         """Load UCI-compliant engine from `file_path`."""
         new_engine: SimpleEngine | None = None
@@ -59,7 +52,7 @@ class EngineService(QObject):
             _make_executable(file_path)
 
             new_engine = SimpleEngine.popen_uci(file_path)
-            new_engine.configure(_engine_options())
+            new_engine.configure(_engine_options(new_engine.options))
 
         except Exception:
             if new_engine is not None:
@@ -161,6 +154,13 @@ class EngineService(QObject):
         """Stop analyzing current position."""
         self.is_analyzing = False
 
+    def _load_default_engine(self) -> None:
+        """Load executable file of Stockfish engine."""
+        try:
+            self.load_file(_stockfish_executable())
+        except EngineError:
+            self._settings.set_value("engine", "name", "(no engine)")
+
 
 def _delete_quarantine_attribute(file_path: str) -> None:
     """Delete quarantine attribute from `file_path`."""
@@ -171,8 +171,8 @@ def _delete_quarantine_attribute(file_path: str) -> None:
         )
 
 
-def _engine_options() -> dict[str, int]:
-    """Get UCI engine Hash and Threads options based on OS resources."""
+def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
+    """Get Hash and Threads options based on OS resources, if engine supports them."""
     bytes_per_megabyte: int = 2**20
     engine_hash_size_percentage: float = 0.25
     maximum_hash_size_in_megabytes: int = 4096
@@ -185,10 +185,11 @@ def _engine_options() -> dict[str, int]:
         16, int(available_ram_in_megabytes * engine_hash_size_percentage)
     )
 
-    return {
+    options: dict[str, int] = {
         "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
         "Threads": allowed_cpu_threads,
     }
+    return {name: value for name, value in options.items() if name in available_options}
 
 
 def _make_executable(file_path: str) -> None:

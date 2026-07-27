@@ -19,8 +19,8 @@ Save: Final[QDialogButtonBox.StandardButton] = QDialogButtonBox.StandardButton.S
 class SettingsDialog(QDialog):
     """Dialog for editing and saving settings."""
 
-    def __init__(self, settings: SettingsService) -> None:
-        super().__init__()
+    def __init__(self, parent: QWidget | None, settings: SettingsService) -> None:
+        super().__init__(parent)
 
         self._settings: SettingsService = settings
 
@@ -35,20 +35,66 @@ class SettingsDialog(QDialog):
         self._button_box: QDialogButtonBox = QDialogButtonBox(Save | Cancel)
         self._button_box.button(Save).setDisabled(True)
 
-        self.create_groups()
-        self.create_options()
-        self.set_vertical_layout()
-        self.connect_signals_to_slots()
+        self._create_groups()
+        self._create_options()
+        self._set_vertical_layout()
+        self._connect_signals_to_slots()
 
         self.setWindowTitle(self.tr("Settings"))
 
-    def create_groups(self) -> None:
+    def disable_engine_group(self) -> None:
+        """Disable engine settings if no engine is loaded."""
+        self._engine_group.setDisabled(True)
+
+    def disable_human_name_group(self) -> None:
+        """Disable changing human name to preserve player identity."""
+        self._human_name_group.setDisabled(True)
+
+    def disable_time_control_group(self) -> None:
+        """Disable time control settings if game is in progress."""
+        self._time_control_group.setDisabled(True)
+
+    @Slot()
+    def enable_saving(self) -> None:
+        """Enable Save button if any setting is edited."""
+        self._button_box.button(Save).setEnabled(self._is_edited())
+
+    @Slot()
+    def save_settings(self) -> None:
+        """Save edited settings to storage."""
+        self._settings.set_value(
+            "human",
+            "name",
+            self._human_name_option.text().strip(),
+        )
+        self._settings.set_value(
+            "engine",
+            "is_white",
+            self._engine_white_option.isChecked(),
+        )
+        self._settings.set_value(
+            "engine",
+            "is_ponder_enabled",
+            self._engine_ponder_option.isChecked(),
+        )
+        self._settings.set_value(
+            "clock",
+            "time",
+            self._clock_time_option.currentData(),
+        )
+        self._settings.set_value(
+            "clock",
+            "increment",
+            self._clock_increment_option.currentData(),
+        )
+
+    def _create_groups(self) -> None:
         """Create group boxes for related settings."""
         self._human_name_group: QGroupBox = QGroupBox(self.tr("Human name"))
         self._engine_group: QGroupBox = QGroupBox(self.tr("Engine"))
         self._time_control_group: QGroupBox = QGroupBox(self.tr("Time control"))
 
-    def create_options(self) -> None:
+    def _create_options(self) -> None:
         """Create option widgets to represent settings."""
         clock_increment: float = self._settings.value("clock", "increment")
         clock_time: float = self._settings.value("clock", "time")
@@ -88,7 +134,7 @@ class SettingsDialog(QDialog):
             self._clock_increment_option.findData(clock_increment)
         )
 
-    def set_vertical_layout(self) -> None:
+    def _set_vertical_layout(self) -> None:
         """Set dialog layout for widgets to be arranged vertically."""
         human_name_layout: QVBoxLayout = QVBoxLayout()
         human_name_layout.addWidget(self._human_name_option)
@@ -112,7 +158,7 @@ class SettingsDialog(QDialog):
         vertical_layout.addWidget(self._button_box)
         self.setLayout(vertical_layout)
 
-    def connect_signals_to_slots(self) -> None:
+    def _connect_signals_to_slots(self) -> None:
         """Connect signals to appropriate slot methods."""
         self.accepted.connect(self.save_settings)
 
@@ -128,19 +174,7 @@ class SettingsDialog(QDialog):
 
         self._human_name_option.textChanged.connect(self.enable_saving)
 
-    def disable_engine_group(self) -> None:
-        """Disable engine settings if no engine is loaded."""
-        self._engine_group.setDisabled(True)
-
-    def disable_human_name_group(self) -> None:
-        """Disable changing human name to preserve player identity."""
-        self._human_name_group.setDisabled(True)
-
-    def disable_time_control_group(self) -> None:
-        """Disable time control settings if game is in progress."""
-        self._time_control_group.setDisabled(True)
-
-    def is_edited(self) -> bool:
+    def _is_edited(self) -> bool:
         """Return True if any setting is edited."""
         current_settings: dict[str, bool | float | str] = {
             "clock_increment": self._clock_increment_option.currentData(),
@@ -150,37 +184,3 @@ class SettingsDialog(QDialog):
             "is_engine_white": self._engine_white_option.isChecked(),
         }
         return current_settings != self._initial_settings
-
-    @Slot()
-    def enable_saving(self) -> None:
-        """Enable Save button if any setting is edited."""
-        self._button_box.button(Save).setEnabled(self.is_edited())
-
-    @Slot()
-    def save_settings(self) -> None:
-        """Save edited settings to storage."""
-        self._settings.set_value(
-            "human",
-            "name",
-            self._human_name_option.text().strip(),
-        )
-        self._settings.set_value(
-            "engine",
-            "is_white",
-            self._engine_white_option.isChecked(),
-        )
-        self._settings.set_value(
-            "engine",
-            "is_ponder_enabled",
-            self._engine_ponder_option.isChecked(),
-        )
-        self._settings.set_value(
-            "clock",
-            "time",
-            self._clock_time_option.currentData(),
-        )
-        self._settings.set_value(
-            "clock",
-            "increment",
-            self._clock_increment_option.currentData(),
-        )

@@ -49,20 +49,7 @@ class DigitalClock(QLCDNumber):
         """Set time to values from settings."""
         self.time: float = self._settings.value("clock", "time")
         self.increment: float = self._settings.value("clock", "increment")
-        self.show_time()
-
-    def show_time(self) -> None:
-        """Show time on clock in hh:mm:ss or mm:ss format."""
-        time_as_text: str = self.format_time()
-        self.setDigitCount(len(time_as_text))
-        self.display(time_as_text)
-
-    def format_time(self) -> str:
-        """Get time on clock in hh:mm:ss or mm:ss format."""
-        time_in_seconds: int = round(self.time)
-        hours, remaining_time = divmod(time_in_seconds, 3600)
-        minutes, seconds = divmod(remaining_time, 60)
-        return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"
+        self._show_time()
 
     def start_timer(self) -> None:
         """Start tracking elapsed time, then start timer countdown."""
@@ -76,13 +63,13 @@ class DigitalClock(QLCDNumber):
     def add_increment(self) -> None:
         """Add increment to time on clock."""
         self.time += self.increment
-        self.show_time()
+        self._show_time()
 
     def zero_time(self) -> None:
         """Set remaining time to zero and stop timer countdown."""
         self.time = 0.0
         self.stop_timer()
-        self.show_time()
+        self._show_time()
 
     @Slot()
     def update_time(self) -> None:
@@ -95,4 +82,17 @@ class DigitalClock(QLCDNumber):
             elapsed_time: float = self._elapsed_timer.restart() / 1000.0
             self.time -= elapsed_time
 
-        self.show_time()
+        self._show_time()
+
+    def _show_time(self) -> None:
+        """Show time on clock in hh:mm:ss or mm:ss format."""
+        time_as_text: str = self._format_time()
+        self.setDigitCount(len(time_as_text))
+        self.display(time_as_text)
+
+    def _format_time(self) -> str:
+        """Get time on clock in hh:mm:ss or mm:ss format."""
+        time_in_seconds: int = round(self.time)
+        hours, remaining_time = divmod(time_in_seconds, 3600)
+        minutes, seconds = divmod(remaining_time, 60)
+        return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"

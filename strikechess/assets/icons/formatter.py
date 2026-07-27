@@ -12,9 +12,15 @@ def format_icon_resources() -> None:
 
     formatted_text: str = text.replace("\\\r\n", "").replace("\\\n", "")
 
-    structure_match = re.search(r"qt_resource_struct\s*=\s*(b\".*?\")", formatted_text, re.DOTALL)
-    names_match = re.search(r"qt_resource_name\s*=\s*(b\".*?\")", formatted_text, re.DOTALL)
-    data_match = re.search(r"qt_resource_data\s*=\s*(b\".*?\")", formatted_text, re.DOTALL)
+    structure_match: re.Match[str] | None = re.search(
+        r"qt_resource_struct\s*=\s*(b\".*?\")", formatted_text, re.DOTALL
+    )
+    names_match: re.Match[str] | None = re.search(
+        r"qt_resource_name\s*=\s*(b\".*?\")", formatted_text, re.DOTALL
+    )
+    data_match: re.Match[str] | None = re.search(
+        r"qt_resource_data\s*=\s*(b\".*?\")", formatted_text, re.DOTALL
+    )
 
     if not all([structure_match, names_match, data_match]):
         print("Error: Could not find all required data in icon_resources.py file")

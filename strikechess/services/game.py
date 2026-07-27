@@ -52,7 +52,7 @@ class GameService(QObject):
     def fen(self, value: str) -> None:
         """New position from `value` in FEN format."""
         self._board.set_fen(value)
-        self.reset_game_state()
+        self._reset_game_state()
 
     @property
     def move_stack(self) -> list[Move]:
@@ -92,19 +92,7 @@ class GameService(QObject):
     def reset(self) -> None:
         """Reset board to initial position and game to default state."""
         self._board.reset()
-        self.reset_game_state()
-
-    def reset_game_state(self) -> None:
-        """Reset game to default state."""
-        self.move_index = -1
-        self.is_viewing_history = False
-        self.player_with_expired_clock = None
-
-        self.moves.clear()
-        self.positions.clear()
-
-        self.clear_arrow()
-        self.add_ellipsis_as_first_move()
+        self._reset_game_state()
 
     def load_moves(self, moves: list[str]) -> None:
         """Load `moves` into current game."""
@@ -125,7 +113,7 @@ class GameService(QObject):
         if not self._board.is_legal(move):
             return
 
-        self.delete_game_data_after_index()
+        self._delete_game_data_after_index()
 
         san_move: str = self._board.san_and_push(move)
         self.moves.append(san_move)
@@ -170,15 +158,6 @@ class GameService(QObject):
         else:
             self.set_arrow(self._board.move_stack[-1])
 
-    def delete_game_data_after_index(self) -> None:
-        """Delete moves and positions after internal move index."""
-        last_move_index: int = len(self.moves) - 1
-
-        if self.move_index < last_move_index:
-            after_move_index: slice = slice(self.move_index + 1, len(self.moves))
-            del self.moves[after_move_index]
-            del self.positions[after_move_index]
-
     def set_arrow(self, move: Move) -> None:
         """Set arrow marker for `move`."""
         self.arrow = [(move.from_square, move.to_square)]
@@ -186,13 +165,6 @@ class GameService(QObject):
     def clear_arrow(self) -> None:
         """Clear current arrow marker from board."""
         self.arrow.clear()
-
-    def add_ellipsis_as_first_move(self) -> None:
-        """Add ellipsis as White's missing move if Black starts."""
-        if self.move_index < 0 and not self.is_white_to_move():
-            self.moves.append("...")
-            self.positions.append(self._board.copy())
-            self.move_index = 0
 
     def board_copy(self) -> Board:
         """Get copy of current position, unaffected by game state updates."""
@@ -244,10 +216,34 @@ class GameService(QObject):
         board.push(move)
         return board.is_game_over(claim_draw=True)
 
-    def is_position_valid(self) -> bool:
-        """Return True if current position is valid by chess rules."""
-        return self._board.is_valid()
-
     def is_white_to_move(self) -> bool:
         """Return True if White is to move."""
         return self._board.turn == WHITE
+
+    def _reset_game_state(self) -> None:
+        """Reset game to default state."""
+        self.move_index = -1
+        self.is_viewing_history = False
+        self.player_with_expired_clock = None
+
+        self.moves.clear()
+        self.positions.clear()
+
+        self.clear_arrow()
+        self._add_ellipsis_as_first_move()
+
+    def _delete_game_data_after_index(self) -> None:
+        """Delete moves and positions after internal move index."""
+        last_move_index: int = len(self.moves) - 1
+
+        if self.move_index < last_move_index:
+            after_move_index: slice = slice(self.move_index + 1, len(self.moves))
+            del self.moves[after_move_index]
+            del self.positions[after_move_index]
+
+    def _add_ellipsis_as_first_move(self) -> None:
+        """Add ellipsis as White's missing move if Black starts."""
+        if self.move_index < 0 and not self.is_white_to_move():
+            self.moves.append("...")
+            self.positions.append(self._board.copy())
+            self.move_index = 0

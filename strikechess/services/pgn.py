@@ -34,8 +34,19 @@ class PgnService:
                 )
             )
 
-        moves: list[str] = []
         board: Board = game.board()
+
+        if not board.is_valid():
+            raise ValueError(
+                QApplication.translate(
+                    "PgnService",
+                    "Cannot load game.\n\n"
+                    "PGN content might be invalid.\n"
+                    "Check whether your PGN is corrupted or incomplete.",
+                )
+            )
+
+        moves: list[str] = []
         fen: str | None = game.headers.get("FEN")
         result: str = game.headers.get("Result", "*")
 

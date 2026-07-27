@@ -23,41 +23,11 @@ class PromotionDialog(QDialog):
 
         self.piece_type: PieceType | None = None
 
-        self.create_buttons()
-        self.set_horizontal_layout()
-        self.connect_signals_to_slots()
+        self._create_buttons()
+        self._set_horizontal_layout()
+        self._connect_signals_to_slots()
 
         self.setWindowTitle(self.tr("Pawn Promotion"))
-
-    def create_buttons(self) -> None:
-        """Create buttons based on player's color."""
-        if self._player_color == WHITE:
-            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
-            self.rook_button: QPushButton = _create_button(create_svg_icon("white-rook"))
-            self.bishop_button: QPushButton = _create_button(create_svg_icon("white-bishop"))
-            self.knight_button: QPushButton = _create_button(create_svg_icon("white-knight"))
-        else:
-            self.queen_button = _create_button(create_svg_icon("black-queen"))
-            self.rook_button = _create_button(create_svg_icon("black-rook"))
-            self.bishop_button = _create_button(create_svg_icon("black-bishop"))
-            self.knight_button = _create_button(create_svg_icon("black-knight"))
-
-    def set_horizontal_layout(self) -> None:
-        """Add buttons to horizontal layout."""
-        horizontal_layout: QHBoxLayout = QHBoxLayout()
-        horizontal_layout.addWidget(self.queen_button)
-        horizontal_layout.addWidget(self.rook_button)
-        horizontal_layout.addWidget(self.bishop_button)
-        horizontal_layout.addWidget(self.knight_button)
-
-        self.setLayout(horizontal_layout)
-
-    def connect_signals_to_slots(self) -> None:
-        """Connect button signals to corresponding slot methods."""
-        self.queen_button.clicked.connect(self.select_queen)
-        self.rook_button.clicked.connect(self.select_rook)
-        self.bishop_button.clicked.connect(self.select_bishop)
-        self.knight_button.clicked.connect(self.select_knight)
 
     def select_queen(self) -> None:
         """Set promotion piece type to queen."""
@@ -78,3 +48,33 @@ class PromotionDialog(QDialog):
         """Set promotion piece type to knight."""
         self.piece_type = KNIGHT
         self.accept()
+
+    def _create_buttons(self) -> None:
+        """Create buttons based on player's color."""
+        if self._player_color == WHITE:
+            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
+            self.rook_button: QPushButton = _create_button(create_svg_icon("white-rook"))
+            self.bishop_button: QPushButton = _create_button(create_svg_icon("white-bishop"))
+            self.knight_button: QPushButton = _create_button(create_svg_icon("white-knight"))
+        else:
+            self.queen_button = _create_button(create_svg_icon("black-queen"))
+            self.rook_button = _create_button(create_svg_icon("black-rook"))
+            self.bishop_button = _create_button(create_svg_icon("black-bishop"))
+            self.knight_button = _create_button(create_svg_icon("black-knight"))
+
+    def _set_horizontal_layout(self) -> None:
+        """Add buttons to horizontal layout."""
+        horizontal_layout: QHBoxLayout = QHBoxLayout()
+        horizontal_layout.addWidget(self.queen_button)
+        horizontal_layout.addWidget(self.rook_button)
+        horizontal_layout.addWidget(self.bishop_button)
+        horizontal_layout.addWidget(self.knight_button)
+
+        self.setLayout(horizontal_layout)
+
+    def _connect_signals_to_slots(self) -> None:
+        """Connect button signals to corresponding slot methods."""
+        self.queen_button.clicked.connect(self.select_queen)
+        self.rook_button.clicked.connect(self.select_rook)
+        self.bishop_button.clicked.connect(self.select_bishop)
+        self.knight_button.clicked.connect(self.select_knight)
