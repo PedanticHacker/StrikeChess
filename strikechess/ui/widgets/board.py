@@ -194,6 +194,9 @@ class SvgBoard(QSvgWidget):
         if event.button() != Qt.MouseButton.LeftButton:
             return
 
+        if not self.is_dragging:
+            return
+
         cursor_point: QPointF = self._cursor_point_from(event)
         square: Square = self._square(cursor_point)
 

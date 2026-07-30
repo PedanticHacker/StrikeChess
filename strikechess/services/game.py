@@ -55,9 +55,14 @@ class GameService(QObject):
         self._reset_game_state()
 
     @property
+    def last_position(self) -> Board:
+        """Position after last move played, unaffected by viewing history."""
+        return self.positions[-1] if self.positions else self._board
+
+    @property
     def move_stack(self) -> list[Move]:
         """Stack of moves in game, unaffected by viewing history."""
-        return self.positions[-1].move_stack if self.positions else self._board.move_stack
+        return self.last_position.move_stack
 
     @property
     def root_fen(self) -> str:
@@ -76,7 +81,7 @@ class GameService(QObject):
         elif self.player_with_expired_clock == WHITE:
             return "0-1" if format_type == "pgn" else self.tr("Black wins on time")
 
-        pgn_result: str = self._board.result(claim_draw=True)
+        pgn_result: str = self.last_position.result(claim_draw=True)
 
         if format_type == "pgn":
             return pgn_result
@@ -207,8 +212,7 @@ class GameService(QObject):
 
     def is_over_by_rules(self) -> bool:
         """Return True if game is over only by rules."""
-        position: Board = self.positions[-1] if self.positions else self._board
-        return position.is_game_over(claim_draw=True)
+        return self.last_position.is_game_over(claim_draw=True)
 
     def is_over_by_rules_after(self, move: Move) -> bool:
         """Return True if game is over by rules after `move`."""

@@ -94,6 +94,8 @@ class TableView(QTableView):
             self.select_previous_move()
         elif event.key() == Qt.Key.Key_Right:
             self.select_next_move()
+        else:
+            super().keyPressEvent(event)
 
     @Slot()
     def send_selected_move(self) -> None:

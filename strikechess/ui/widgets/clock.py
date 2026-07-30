@@ -92,7 +92,7 @@ class DigitalClock(QLCDNumber):
 
     def _format_time(self) -> str:
         """Get time on clock in hh:mm:ss or mm:ss format."""
-        time_in_seconds: int = round(self.time)
+        time_in_seconds: int = max(0, round(self.time))
         hours, remaining_time = divmod(time_in_seconds, 3600)
         minutes, seconds = divmod(remaining_time, 60)
         return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"
