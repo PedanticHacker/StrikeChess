@@ -155,7 +155,7 @@ class EngineService(QObject):
         self.is_analyzing = False
 
     def _load_default_engine(self) -> None:
-        """Load executable file of Stockfish engine."""
+        """Load executable file of default Stockfish engine."""
         try:
             self.load_file(_stockfish_executable())
         except EngineError:
