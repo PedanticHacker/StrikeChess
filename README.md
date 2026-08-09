@@ -30,7 +30,7 @@ Download the latest stable release for your platform from the [Releases](https:/
 Extract the downloaded ZIP file, navigate to the extracted directory in your terminal, and run the `install.sh` script:
 ```bash
 cd ~/Downloads/StrikeChess-Linux  # Adjust path if needed
-./install.sh
+bash install.sh
 ```
 
 ## Uninstallation
