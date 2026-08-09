@@ -209,32 +209,62 @@ def _stockfish_executable() -> str:
 
 
 def _stockfish_build() -> str:
-    """Detect best Stockfish build for current CPU."""
-    if platform.machine() == "arm64":
+    """Get best Stockfish build for current CPU."""
+    if platform.system() == "Darwin" and platform.machine() == "arm64":
         return "apple-silicon"
 
     cpu_info: dict[str, Any] = get_cpu_info()
-    supported_instructions: set[str] = set(cpu_info.get("flags", []))
+    supported_instructions: set[str] | None = _supported_instructions(cpu_info)
+
+    if supported_instructions is None:
+        return "x86-64"
 
     if platform.system() == "Darwin":
-        builds: list[tuple[str, set[str]]] = [
-            ("bmi2", {"bmi2", "popcnt"}),
-            ("avx2", {"avx2", "popcnt"}),
-            ("sse41-popcnt", {"sse4_1", "popcnt"}),
-        ]
+        builds: dict[str, set[str]] = {
+            "bmi2": {"bmi2"},
+            "avx2": {"avx2"},
+            "sse41-popcnt": {"sse41", "popcnt"},
+        }
     else:
-        builds = [
-            ("avx512icl", {"avx512f", "avx512_vnni", "avx512_vbmi", "popcnt"}),
-            ("vnni512", {"avx512_vnni", "avx512f", "popcnt"}),
-            ("avx512", {"avx512f", "popcnt"}),
-            ("avxvnni", {"avx_vnni", "popcnt"}),
-            ("bmi2", {"bmi2", "popcnt"}),
-            ("avx2", {"avx2", "popcnt"}),
-            ("sse41-popcnt", {"sse4_1", "popcnt"}),
-        ]
+        builds = {
+            "avx512icl": {
+                "avx512bitalg", "avx512bw", "avx512cd", "avx512dq", "avx512f",
+                "avx512ifma", "avx512vbmi", "avx512vbmi2", "avx512vl",
+                "avx512vnni", "avx512vpopcntdq", "gfni", "vaes", "vpclmulqdq",
+            },
+            "vnni512": {"avx512bw", "avx512dq", "avx512f", "avx512vl", "avx512vnni"},
+            "avx512": {"avx512bw", "avx512f"},
+            "avxvnni": {"avxvnni"},
+            "bmi2": {"bmi2"},
+            "avx2": {"avx2"},
+            "sse41-popcnt": {"sse41", "popcnt"},
+        }
 
-    for build, required_instructions in builds:
+    if _is_bmi2_slow(cpu_info):
+        supported_instructions.discard("bmi2")
+
+    for build, required_instructions in builds.items():
         if required_instructions <= supported_instructions:
             return build
 
     return "x86-64"
+
+
+def _is_bmi2_slow(cpu_info: dict[str, Any]) -> bool:
+    """Return True if CPU runs BMI2 instructions in slow microcode."""
+    zen_1_and_zen_2_family: int = 23
+
+    if cpu_info.get("vendor_id_raw") != "AuthenticAMD":
+        return False
+
+    return cpu_info.get("family") == zen_1_and_zen_2_family
+
+
+def _supported_instructions(cpu_info: dict[str, Any]) -> set[str] | None:
+    """Get CPU instructions, if any."""
+    instruction_names: list[str] | None = cpu_info.get("flags")
+
+    if instruction_names is None:
+        return None
+
+    return {instruction_name.replace("_", "") for instruction_name in instruction_names}
