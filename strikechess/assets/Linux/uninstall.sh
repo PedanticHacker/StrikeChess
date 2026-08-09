@@ -7,7 +7,7 @@ DESKTOP_FILE="$HOME/.local/share/applications/StrikeChess.desktop"
 rm -f "$DESKTOP_FILE"
 rm -rf "$INSTALLATION_DIRECTORY"
 
-read -p "Remove personal settings? [y/N] " response
+read -rp "Remove personal settings? [y/N] " response
 
 if [[ "$response" =~ ^[Yy]$ ]]; then
     rm -rf "$SETTINGS_DIRECTORY"

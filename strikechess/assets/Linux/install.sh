@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+cd "$(dirname "$0")"
+
 DESKTOP_DIRECTORY="$HOME/.local/share/applications"
 INSTALLATION_DIRECTORY="$HOME/.local/share/StrikeChess"
 
