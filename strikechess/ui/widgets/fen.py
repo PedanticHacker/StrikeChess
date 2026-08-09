@@ -34,7 +34,7 @@ class FenEditor(QLineEdit):
 
     @Slot()
     def apply_fen(self) -> None:
-        """Emit edited FEN when Return key is pressed."""
+        """Send edited FEN when Return key is pressed."""
         position: Board | None = self._validated_position(self.text())
 
         if position is None:

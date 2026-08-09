@@ -129,7 +129,7 @@ class GameService(QObject):
         self.move_index = len(self.moves) - 1
 
     def find_legal_move(self, origin_square: Square, target_square: Square) -> None:
-        """Detect legal move by `origin_square` and `target_square`."""
+        """Send legal move from `origin_square` to `target_square`."""
         if origin_square is None or target_square is None:
             return
 
