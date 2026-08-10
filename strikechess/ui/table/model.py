@@ -31,7 +31,7 @@ class TableModel(QAbstractTableModel):
 
     def rowCount(
         self,
-        index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+        parent: QModelIndex | QPersistentModelIndex = QModelIndex(),
     ) -> int:
         """Get calculated row count needed for White/Black moves."""
         all_moves: int = len(self._moves) + 1
@@ -39,7 +39,7 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(
         self,
-        index: QModelIndex | QPersistentModelIndex = QModelIndex(),
+        parent: QModelIndex | QPersistentModelIndex = QModelIndex(),
     ) -> int:
         """Get fixed two column count needed for White/Black moves."""
         return 2

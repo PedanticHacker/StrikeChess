@@ -132,10 +132,6 @@
     <translation>Zwingt die Engine, im aktuellen Zug zu spielen.</translation>
   </message>
   <message>
-    <source>Quit...</source>
-    <translation>Beenden...</translation>
-  </message>
-  <message>
     <source>Quits the app by closing the main window.</source>
     <translation>Beendet die App durch Schließen des Hauptfensters.</translation>
   </message>
@@ -176,8 +172,8 @@
     <translation>Stoppt die Analyse der aktuellen Stellung.</translation>
   </message>
   <message>
-    <source>Unload engine...</source>
-    <translation>Engine entladen...</translation>
+    <source>Unload engine</source>
+    <translation>Engine entladen</translation>
   </message>
   <message>
     <source>Prompts whether to unload the currently loaded engine.</source>

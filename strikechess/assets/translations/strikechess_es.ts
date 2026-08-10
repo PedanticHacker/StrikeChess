@@ -132,10 +132,6 @@
     <translation>Fuerza al motor a jugar un movimiento en el turno actual.</translation>
   </message>
   <message>
-    <source>Quit...</source>
-    <translation>Salir...</translation>
-  </message>
-  <message>
     <source>Quits the app by closing the main window.</source>
     <translation>Sale de la aplicación cerrando la ventana principal.</translation>
   </message>
@@ -176,8 +172,8 @@
     <translation>Detiene el análisis de la posición actual.</translation>
   </message>
   <message>
-    <source>Unload engine...</source>
-    <translation>Descargar motor...</translation>
+    <source>Unload engine</source>
+    <translation>Descargar motor</translation>
   </message>
   <message>
     <source>Prompts whether to unload the currently loaded engine.</source>

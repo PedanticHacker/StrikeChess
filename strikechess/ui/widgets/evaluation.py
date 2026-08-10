@@ -38,7 +38,7 @@ class EvaluationBar(QProgressBar):
         else:
             evaluation_score: int = evaluation.score() or 0
             animation_value = 500 - evaluation_score
-            evaluation_text = f"{evaluation_score / 100 :.2f}"
+            evaluation_text = f"{evaluation_score / 100:.2f}"
 
         if animation_value < 0:
             animation_value = 0

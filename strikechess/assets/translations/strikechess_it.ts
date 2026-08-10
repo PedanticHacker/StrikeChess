@@ -132,10 +132,6 @@
     <translation>Forza il motore a giocare una mossa nel turno corrente.</translation>
   </message>
   <message>
-    <source>Quit...</source>
-    <translation>Esci...</translation>
-  </message>
-  <message>
     <source>Quits the app by closing the main window.</source>
     <translation>Esce dall'applicazione chiudendo la finestra principale.</translation>
   </message>
@@ -176,8 +172,8 @@
     <translation>Ferma l'analisi della posizione corrente.</translation>
   </message>
   <message>
-    <source>Unload engine...</source>
-    <translation>Scarica motore...</translation>
+    <source>Unload engine</source>
+    <translation>Scarica motore</translation>
   </message>
   <message>
     <source>Prompts whether to unload the currently loaded engine.</source>

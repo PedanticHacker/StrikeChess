@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
         )
         self._human_name_label.setObjectName("humanName")
 
-        self._openings_label: QLabel = QLabel()
+        self._opening_label: QLabel = QLabel()
         self._theme_name_label: QLabel = QLabel()
 
         # Timers
@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
 
             self._black_clock.reset()
             self._white_clock.reset()
-            self._openings_label.clear()
+            self._opening_label.clear()
 
             if result == "1-0" and not self._game.is_over_by_rules():
                 self._game.expire_clock_for(BLACK)
@@ -450,7 +450,7 @@ class MainWindow(QMainWindow):
 
         self._black_clock.reset()
         self._white_clock.reset()
-        self._openings_label.clear()
+        self._opening_label.clear()
 
         self._update_ui_state()
 
@@ -534,7 +534,7 @@ class MainWindow(QMainWindow):
         self._game.is_viewing_history = not is_last_move
 
         if move_index < 0:
-            self._openings_label.clear()
+            self._opening_label.clear()
             self._game.set_root_position()
         else:
             self._game.update_state(move_index)
@@ -564,7 +564,7 @@ class MainWindow(QMainWindow):
             event.ignore()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
-        """Handle wheel scroll events with timer-based throttling."""
+        """Select previous or next move on wheel scroll."""
         if not self._scroll_throttle_timer.isActive():
             scroll_step: int = event.angleDelta().y()
 
@@ -745,7 +745,7 @@ class MainWindow(QMainWindow):
         )
         self.quit_action: QAction = create_action(
             icon=create_svg_icon("quit"),
-            name=self.tr("Quit..."),
+            name=self.tr("Quit"),
             handler=self.quit,
             shortcut="Ctrl+Q",
             status_tip=self.tr("Quits the app by closing the main window."),
@@ -787,7 +787,7 @@ class MainWindow(QMainWindow):
         )
         self.unload_engine_action: QAction = create_action(
             icon=create_svg_icon("unload-engine"),
-            name=self.tr("Unload engine..."),
+            name=self.tr("Unload engine"),
             handler=self.unload_engine,
             shortcut="Ctrl+U",
             status_tip=self.tr("Prompts whether to unload the currently loaded engine."),
@@ -857,7 +857,7 @@ class MainWindow(QMainWindow):
 
     def _create_status_bar(self) -> None:
         """Create status bar to show opening name and theme name."""
-        self.statusBar().addWidget(self._openings_label)
+        self.statusBar().addWidget(self._opening_label)
         self.statusBar().addPermanentWidget(self._theme_name_label)
 
     def _create_tool_bar(self) -> None:
@@ -960,12 +960,10 @@ class MainWindow(QMainWindow):
 
     def _show_opening(self) -> None:
         """Show name of current opening."""
-        opening_data: str | None = find_opening(self._game.fen) or find_opening(
-            self._game.root_fen
-        )
+        opening_name: str | None = find_opening(self._game.fen)
 
-        if opening_data is not None:
-            self._openings_label.setText(opening_data)
+        if opening_name is not None:
+            self._opening_label.setText(opening_name)
 
     def _start_new_game(self) -> None:
         """Reset game and UI states to start new game."""
@@ -977,7 +975,7 @@ class MainWindow(QMainWindow):
         self._black_clock.reset()
         self._white_clock.reset()
 
-        self._openings_label.clear()
+        self._opening_label.clear()
         self._board.enable_interaction()
 
         self._show_fen()
