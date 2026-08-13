@@ -53,6 +53,7 @@ class EngineService(QObject):
 
             new_engine = SimpleEngine.popen_uci(file_path)
             new_engine.configure(_engine_options(new_engine.options))
+            engine_name: str = new_engine.id["name"]
 
         except Exception:
             if new_engine is not None:
@@ -70,7 +71,7 @@ class EngineService(QObject):
         self.terminate()
         self._engine = new_engine
 
-        self._settings.set_value("engine", "name", new_engine.id["name"])
+        self._settings.set_value("engine", "name", engine_name)
 
     def unload(self) -> None:
         """Terminate currently loaded engine."""
@@ -189,11 +190,18 @@ def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
         "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
         "Threads": allowed_cpu_threads,
     }
-    return {name: value for name, value in options.items() if name in available_options}
+    return {
+        option: min(available_options[option].max or value, value)
+        for option, value in options.items()
+        if option in available_options
+    }
 
 
 def _make_executable(file_path: str) -> None:
     """Make `file_path` have executable permission."""
+    if os.access(file_path, os.X_OK):
+        return
+
     os.chmod(file_path, os.stat(file_path).st_mode | stat.S_IXUSR)
 
 
