@@ -72,11 +72,15 @@ jobs:
           cp strikechess/assets/Linux/install.sh dist/
           cp strikechess/assets/Linux/uninstall.sh dist/
 
-      - name: Compress artifact (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Compress artifact (Linux)
+        if: runner.os == 'Linux'
         run: |
           cd dist
           zip -r ../${{ matrix.artifact-name }}.zip .
+
+      - name: Compress artifact (macOS)
+        if: runner.os == 'macOS'
+        run: ditto -c -k --keepParent dist/StrikeChess.app ${{ matrix.artifact-name }}.zip
 
       - name: Compress artifact (Windows)
         if: runner.os == 'Windows'

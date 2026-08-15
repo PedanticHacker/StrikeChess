@@ -33,10 +33,18 @@ cd ~/Downloads/StrikeChess-Linux  # Adjust path if needed
 bash install.sh
 ```
 
+### macOS users
+
+StrikeChess isn't signed with an Apple Developer certificate, so macOS blocks it on first launch. Extract the downloaded ZIP file, navigate to the directory holding `StrikeChess.app` in your terminal, and delete the quarantine attribute that macOS applied to it:
+```bash
+cd ~/Downloads  # Adjust path if needed
+xattr -dr com.apple.quarantine StrikeChess.app
+```
+
 ## Uninstallation
 
 - **Linux:** Run the `uninstall.sh` script from the extracted `StrikeChess-Linux` directory.
-- **Windows/macOS:** Delete the extracted `StrikeChess-Windows` or `StrikeChess-macOS` directory. To also delete personal settings of StrikeChess, delete the `.StrikeChess` directory from your home directory.
+- **Windows/macOS:** Delete the extracted `StrikeChess-Windows` directory or `StrikeChess.app`. To also delete personal settings of StrikeChess, delete the `.StrikeChess` directory from your home directory.
 
 ## Development
 
