@@ -39,6 +39,7 @@ if is_macos:
         name="StrikeChess.app",
         icon=icon_path,
         bundle_identifier="com.pedantichacker.strikechess",
+        version="1.0",
         info_plist={"NSHumanReadableCopyright": "© 2026 Boštjan Mejak"},
     )
 else:
