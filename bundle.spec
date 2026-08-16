@@ -31,19 +31,15 @@ if is_macos:
         icon=icon_path,
     )
 
-    collection = COLLECT(
+    app = BUNDLE(
         executable,
         dependency_analysis.binaries,
         dependency_analysis.zipfiles,
         dependency_analysis.datas,
-        name="StrikeChess",
-    )
-
-    application = BUNDLE(
-        collection,
         name="StrikeChess.app",
         icon=icon_path,
         bundle_identifier="com.pedantichacker.strikechess",
+        info_plist={"NSHumanReadableCopyright": "© 2026 Boštjan Mejak"},
     )
 else:
     executable = EXE(
