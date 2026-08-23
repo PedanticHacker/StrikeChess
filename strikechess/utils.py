@@ -22,11 +22,13 @@ def create_action(
     handler: Callable[[], None],
     shortcut: str,
     status_tip: str,
+    menu_role: QAction.MenuRole = QAction.MenuRole.TextHeuristicRole,
 ) -> QAction:
     """Create action for menu item or tool bar button."""
     action: QAction = QAction(icon, name)
     action.setShortcut(shortcut)
     action.setStatusTip(status_tip)
+    action.setMenuRole(menu_role)
     action.triggered.connect(handler)
     return action
 

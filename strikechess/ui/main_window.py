@@ -630,6 +630,7 @@ class MainWindow(QMainWindow):
             handler=self.show_about,
             shortcut="F1",
             status_tip=self.tr("Shows the About dialog."),
+            menu_role=QAction.MenuRole.AboutRole,
         )
         self.dark_forest_theme_action: QAction = create_action(
             icon=create_colored_icon("#1f291f"),
@@ -749,6 +750,7 @@ class MainWindow(QMainWindow):
             handler=self.quit,
             shortcut="Ctrl+Q",
             status_tip=self.tr("Quits the app by closing the main window."),
+            menu_role=QAction.MenuRole.QuitRole,
         )
         self.save_as_pgn_action: QAction = create_action(
             icon=create_svg_icon("save-as-pgn"),
@@ -763,6 +765,7 @@ class MainWindow(QMainWindow):
             handler=self.show_settings_dialog,
             shortcut="F2",
             status_tip=self.tr("Shows a dialog to edit the settings."),
+            menu_role=QAction.MenuRole.PreferencesRole,
         )
         self.spanish_language_action: QAction = create_action(
             icon=create_svg_icon("spanish-flag"),
