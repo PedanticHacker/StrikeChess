@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.14+-blue)
 ![Stockfish](https://img.shields.io/badge/Stockfish-18-blue)
 
-A chess app with Stockfish 18, 8 themes, 32 time controls, and 3500 openings.
+A chess app with Stockfish 18, 4 languages, 8 themes, 32 time controls, and 3500 openings.
 
 ![Preview](https://github.com/user-attachments/assets/3c864e33-1d64-4186-a0c4-c82563c4db08)
 
@@ -18,6 +18,7 @@ A chess app with Stockfish 18, 8 themes, 32 time controls, and 3500 openings.
 - **Move history** → navigate with arrow keys, mouse wheel, or click
 - **Drag-and-drop** → smooth piece movement with slide-back animation
 - **Sound effects** → distinct audio output for moves, captures, checks, castling, promotion, and game over
+- **4 languages** → German, English, Spanish, and Italian
 - **8 themes** → 4 dark and 4 light theme variants
 - **32 time controls** → 8 time settings × 4 increment options
 
