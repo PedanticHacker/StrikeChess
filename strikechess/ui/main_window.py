@@ -846,10 +846,22 @@ class MainWindow(QMainWindow):
         theme_menu.addAction(self.light_nebula_theme_action)
         theme_menu.addAction(self.light_ocean_theme_action)
 
-        language_menu.addAction(self.german_language_action)
-        language_menu.addAction(self.english_language_action)
-        language_menu.addAction(self.spanish_language_action)
-        language_menu.addAction(self.italian_language_action)
+        language_actions: dict[str, QAction] = {
+            "de": self.german_language_action,
+            "en": self.english_language_action,
+            "es": self.spanish_language_action,
+            "it": self.italian_language_action,
+        }
+        language_code: str = self._settings.value("ui", "language")
+
+        if language_code not in language_actions:
+            language_code = "en"
+
+        language_menu.addAction(language_actions.pop(language_code))
+        language_menu.addSeparator()
+
+        for language_action in language_actions.values():
+            language_menu.addAction(language_action)
 
         edit_menu.addAction(self.show_settings_dialog_action)
 
