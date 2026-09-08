@@ -1,0 +1,34 @@
+# Build and distribution artifacts
+*.zip
+build/
+dist/
+
+# Icon resource management
+strikechess/assets/icons/*.svg
+strikechess/assets/icons/formatter.py
+strikechess/assets/icons/icon_resources.py
+strikechess/assets/icons/icons.qrc
+!strikechess/assets/icons/logo.svg
+
+# IDE settings
+*.code-workspace
+.idea/
+.vscode/
+
+# Lock files
+*.lock
+
+# macOS-specific files
+.DS_Store
+
+# Python bytecode
+__pycache__/
+
+# Type checking
+.dmypy.json
+.mypy_cache/
+dmypy.json
+
+# Virtual environments
+.venv/
+venv/

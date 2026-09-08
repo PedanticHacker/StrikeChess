@@ -1,0 +1,1 @@
+strikechess/assets/engines/**/* filter=lfs diff=lfs merge=lfs -text
