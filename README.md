@@ -38,10 +38,20 @@ bash install.sh
 
 > **Intel Mac:** The download is built for Apple Silicon only. Launch StrikeChess from source instead, as described in the Development section.
 
-StrikeChess isn't signed with an Apple Developer certificate, so macOS blocks it on first launch. Extract the downloaded ZIP file, navigate to the directory holding `StrikeChess.app` in your terminal, and delete the quarantine attribute that macOS applied to it:
+StrikeChess isn't signed with an Apple Developer certificate, so macOS blocks it when downloaded through a browser. Download it in your terminal instead, which avoids the quarantine attribute entirely:
+```bash
+cd ~/Downloads
+curl -LO https://github.com/PedanticHacker/StrikeChess/releases/latest/download/StrikeChess-macOS.zip
+unzip StrikeChess-macOS.zip
+open StrikeChess.app
+```
+
+If you've already downloaded the ZIP file through a browser, extract it and delete the quarantine attribute that macOS applied to the app:
 ```bash
 cd ~/Downloads  # Adjust path if needed
+unzip -o StrikeChess-macOS.zip
 xattr -dr com.apple.quarantine StrikeChess.app
+open StrikeChess.app
 ```
 
 ## Uninstallation
