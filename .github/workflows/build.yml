@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write
 
+env:
+  STOCKFISH_URL: https://github.com/official-stockfish/Stockfish/releases/download/sf_18
+
 jobs:
   build:
     strategy:
@@ -18,12 +21,15 @@ jobs:
           - os: windows-latest
             artifact-name: StrikeChess-Windows
             engine-platform: Windows
+            engine-slug: windows
           - os: ubuntu-latest
             artifact-name: StrikeChess-Linux
             engine-platform: Linux
+            engine-slug: ubuntu
           - os: macos-latest
             artifact-name: StrikeChess-macOS
             engine-platform: Darwin
+            engine-slug: macos
 
     runs-on: ${{ matrix.os }}
 
@@ -33,8 +39,49 @@ jobs:
         with:
           lfs: false
 
-      - name: Pull LFS objects
-        run: git lfs pull --include="strikechess/assets/engines/stockfish-18/${{ matrix.engine-platform }}/**"
+      - name: Fetch Stockfish engines (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          engine_directory="strikechess/assets/engines/stockfish-18/${{ matrix.engine-platform }}"
+
+          for variant_directory in "$engine_directory"/*; do
+            variant=$(basename "$variant_directory")
+
+            if [ "$variant" = "apple-silicon" ]; then
+              asset="stockfish-macos-m1-apple-silicon"
+            elif [ "$variant" = "x86-64" ]; then
+              asset="stockfish-${{ matrix.engine-slug }}-x86-64"
+            else
+              asset="stockfish-${{ matrix.engine-slug }}-x86-64-$variant"
+            fi
+
+            curl -sSfL -o engine.tar "$STOCKFISH_URL/$asset.tar"
+            tar -xf engine.tar
+            mv "stockfish/$asset" "$variant_directory/stockfish"
+            chmod +x "$variant_directory/stockfish"
+            rm -rf stockfish engine.tar
+          done
+
+      - name: Fetch Stockfish engines (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          $engineDirectory = "strikechess/assets/engines/stockfish-18/Windows"
+
+          foreach ($variantDirectory in Get-ChildItem $engineDirectory -Directory) {
+            $variant = $variantDirectory.Name
+
+            if ($variant -eq "x86-64") {
+              $asset = "stockfish-windows-x86-64"
+            } else {
+              $asset = "stockfish-windows-x86-64-$variant"
+            }
+
+            Invoke-WebRequest -Uri "$env:STOCKFISH_URL/$asset.zip" -OutFile engine.zip
+            Expand-Archive engine.zip -DestinationPath . -Force
+            Move-Item "stockfish/$asset.exe" "$($variantDirectory.FullName)/stockfish.exe" -Force
+            Remove-Item stockfish, engine.zip -Recurse -Force
+          }
 
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
