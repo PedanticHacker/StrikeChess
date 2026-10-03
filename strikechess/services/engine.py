@@ -17,6 +17,7 @@ from strikechess.utils import root_path
 class EngineService(QObject):
     """Chess engine operations using Universal Chess Interface (UCI)."""
 
+    error_occurred: ClassVar[Signal] = Signal()
     move_played: ClassVar[Signal] = Signal(Move)
     score_analyzed: ClassVar[Signal] = Signal(Score)
     variation_analyzed: ClassVar[Signal] = Signal(str)
@@ -88,7 +89,9 @@ class EngineService(QObject):
         self.stop_analysis()
 
         self._engine = None
-        engine.quit()
+
+        with suppress(EngineError):
+            engine.quit()
 
     def play_move(
         self,
@@ -117,6 +120,10 @@ class EngineService(QObject):
             )
         except EngineError:
             self.is_thinking = False
+
+            if engine is self._engine:
+                self.error_occurred.emit()
+
             return
 
         if play_result.move is None or engine is not self._engine:
@@ -148,7 +155,12 @@ class EngineService(QObject):
                         self.best_move_analyzed.emit(best_move)
                         self.score_analyzed.emit(score)
                         self.variation_analyzed.emit(variation)
-        except (EngineError, TimeoutError):
+        except EngineError:
+            self.is_analyzing = False
+
+            if engine is self._engine:
+                self.error_occurred.emit()
+        except TimeoutError:
             self.is_analyzing = False
 
     def stop_analysis(self) -> None:

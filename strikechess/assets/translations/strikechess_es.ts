@@ -322,6 +322,16 @@ Apply the FEN anyway?</source>
 ¿Aplicar el FEN de todos modos?</translation>
   </message>
   <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Relaunch StrikeChess or load an engine.</source>
+    <translation>No se puede comunicar con el motor UCI.
+
+El motor puede haberse cerrado inesperadamente.
+Reinicie StrikeChess o cargue un motor.</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Salir</translation>
   </message>

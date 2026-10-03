@@ -87,7 +87,7 @@ def save_with_file_manager(
     file_path, _ = QFileDialog.getSaveFileName(
         parent=parent,
         caption=caption,
-        dir=suggested_name,
+        dir=str(Path.home() / suggested_name),
         filter=file_filter,
     )
     return file_path if file_path else None

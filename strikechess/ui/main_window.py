@@ -555,6 +555,26 @@ class MainWindow(QMainWindow):
         if is_returning_from_history:
             self.request_engine_move()
 
+    @Slot()
+    def unload_engine_on_error(self) -> None:
+        """Unload engine and show warning when engine error occurs."""
+        self.stop_analysis()
+
+        self._engine.unload()
+        self._engine_name_label.setText(self.tr("(no engine)"))
+
+        self._update_actions()
+
+        show_warning(
+            self,
+            self.tr("Engine Error"),
+            self.tr(
+                "Cannot communicate with UCI engine.\n\n"
+                "The engine may have crashed.\n"
+                "Relaunch StrikeChess or load an engine."
+            ),
+        )
+
     def closeEvent(self, event: QCloseEvent) -> None:
         """Prompt whether to quit app."""
         if ask_question(self, self.tr("Quit"), self.tr("Are you sure you want to quit?")):
@@ -611,6 +631,7 @@ class MainWindow(QMainWindow):
 
         # Engine
         self._engine.best_move_analyzed.connect(self.show_best_move_arrow)
+        self._engine.error_occurred.connect(self.unload_engine_on_error)
         self._engine.move_played.connect(self.play_engine_move)
         self._engine.score_analyzed.connect(self.animate_evaluation)
         self._engine.variation_analyzed.connect(self.show_engine_variation)

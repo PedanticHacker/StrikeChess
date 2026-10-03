@@ -76,12 +76,21 @@ class GameService(QObject):
 
     def result(self, format_type: Literal["message", "pgn"] = "message") -> str:
         """Get game result in `format_type` as message or PGN format."""
+        if self.player_with_expired_clock is not None:
+            opponent: Color = not self.player_with_expired_clock
+
+            if self.last_position.has_insufficient_material(opponent):
+                return "1/2-1/2" if format_type == "pgn" else self.tr("Draw")
+
         if self.player_with_expired_clock == BLACK:
             return "1-0" if format_type == "pgn" else self.tr("White wins on time")
         elif self.player_with_expired_clock == WHITE:
             return "0-1" if format_type == "pgn" else self.tr("Black wins on time")
 
-        pgn_result: str = self.last_position.result(claim_draw=True)
+        pgn_result: str = "*"
+
+        if self.is_over_by_rules():
+            pgn_result = self.last_position.result(claim_draw=True)
 
         if format_type == "pgn":
             return pgn_result
@@ -206,19 +215,19 @@ class GameService(QObject):
     def is_over_by_result(self) -> bool:
         """Return True if game is over by rules or by expired clock."""
         return (
-            self._board.is_game_over(claim_draw=True)
+            _is_game_over(self._board)
             or self.player_with_expired_clock is not None
         )
 
     def is_over_by_rules(self) -> bool:
         """Return True if game is over only by rules."""
-        return self.last_position.is_game_over(claim_draw=True)
+        return _is_game_over(self.last_position)
 
     def is_over_by_rules_after(self, move: Move) -> bool:
         """Return True if game is over by rules after `move`."""
         board: Board = self._board.copy()
         board.push(move)
-        return board.is_game_over(claim_draw=True)
+        return _is_game_over(board)
 
     def is_white_to_move(self) -> bool:
         """Return True if White is to move."""
@@ -251,3 +260,8 @@ class GameService(QObject):
             self.moves.append("...")
             self.positions.append(self._board.copy())
             self.move_index = 0
+
+
+def _is_game_over(board: Board) -> bool:
+    """Return True if game on `board` is over by rules."""
+    return board.is_game_over() or board.is_repetition() or board.is_fifty_moves()
