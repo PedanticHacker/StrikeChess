@@ -175,8 +175,8 @@ class SvgBoard(QSvgWidget):
             return
 
         cursor_point: QPointF = self._cursor_point_from(event)
-        square: Square | None = self._square(cursor_point)
-        piece: Piece | None = None if square is None else self._game.piece_at(square)
+        square: Square = self._square(cursor_point)
+        piece: Piece | None = self._game.piece_at(square)
 
         if piece is not None and self._can_drag(piece):
             self.start_dragging(square, piece)
@@ -198,7 +198,7 @@ class SvgBoard(QSvgWidget):
             return
 
         cursor_point: QPointF = self._cursor_point_from(event)
-        square: Square | None = self._square(cursor_point)
+        square: Square = self._square(cursor_point)
 
         if self._is_legal(square):
             self._drop_piece(square)
@@ -255,18 +255,18 @@ class SvgBoard(QSvgWidget):
 
         return QPointF(x, y)
 
-    def _square(self, cursor_point: QPointF) -> Square | None:
-        """Get square at `cursor_point`, if any."""
-        column: int = int((cursor_point.x() - self.board_margin) // self.square_size)
-        row: int = int((cursor_point.y() - self.board_margin) // self.square_size)
-
-        if not (0 <= column <= 7 and 0 <= row <= 7):
-            return None
-
+    def _square(self, cursor_point: QPointF) -> Square:
+        """Get square based on `cursor_point`."""
         if self.is_white_at_bottom:
-            return square(column, 7 - row)
+            file: float = (cursor_point.x() - self.board_margin) // self.square_size
+            rank: float = 7 - (cursor_point.y() - self.board_margin) // self.square_size
+        else:
+            file = 7 - (cursor_point.x() - self.board_margin) // self.square_size
+            rank = (cursor_point.y() - self.board_margin) // self.square_size
 
-        return square(7 - column, row)
+        file_index: int = max(0, min(7, round(file)))
+        rank_index: int = max(0, min(7, round(rank)))
+        return square(file_index, rank_index)
 
     def _cursor_point_from(self, event: QMouseEvent) -> QPointF:
         """Get cursor point from position data of `event`."""
@@ -285,15 +285,15 @@ class SvgBoard(QSvgWidget):
 
         return True
 
-    def _is_legal(self, target_square: Square | None) -> bool:
+    def _is_legal(self, target_square: Square) -> bool:
         """Return True if dropping piece at `target_square` is legal."""
         legal_target_squares: list[Square] = self._game.legal_target_squares(self.origin_square)
         return target_square in legal_target_squares
 
     def _update_cursor_at(self, cursor_point: QPointF) -> None:
         """Update cursor based on draggability at `cursor_point`."""
-        square: Square | None = self._square(cursor_point)
-        piece: Piece | None = None if square is None else self._game.piece_at(square)
+        square: Square = self._square(cursor_point)
+        piece: Piece | None = self._game.piece_at(square)
 
         if self.is_dragging:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
