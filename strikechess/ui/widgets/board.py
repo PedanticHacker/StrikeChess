@@ -200,7 +200,7 @@ class SvgBoard(QSvgWidget):
         cursor_point: QPointF = self._cursor_point_from(event)
         square: Square = self._square(cursor_point)
 
-        if self._is_legal(square):
+        if self._is_on_square(cursor_point) and self._is_legal(square):
             self._drop_piece(square)
         else:
             self._slide_piece_back(cursor_point)
@@ -267,6 +267,12 @@ class SvgBoard(QSvgWidget):
         file_index: int = max(0, min(7, round(file)))
         rank_index: int = max(0, min(7, round(rank)))
         return square(file_index, rank_index)
+
+    def _is_on_square(self, cursor_point: QPointF) -> bool:
+        """Return True if `cursor_point` is on a square."""
+        column: float = (cursor_point.x() - self.board_margin) // self.square_size
+        row: float = (cursor_point.y() - self.board_margin) // self.square_size
+        return 0 <= column <= 7 and 0 <= row <= 7
 
     def _cursor_point_from(self, event: QMouseEvent) -> QPointF:
         """Get cursor point from position data of `event`."""
