@@ -29,6 +29,7 @@ class GameService(QObject):
 
         self.move_index: int = -1
         self.is_viewing_history: bool = False
+        self.loaded_result: str | None = None
         self.player_with_expired_clock: Color | None = None
 
     @property
@@ -91,6 +92,8 @@ class GameService(QObject):
 
         if self.is_over_by_rules():
             pgn_result = self.last_position.result(claim_draw=True)
+        elif self.loaded_result is not None:
+            pgn_result = self.loaded_result
 
         if format_type == "pgn":
             return pgn_result
@@ -213,9 +216,10 @@ class GameService(QObject):
         return self._board.is_legal(move)
 
     def is_over_by_result(self) -> bool:
-        """Return True if game is over by rules or by expired clock."""
+        """Return True if game ended by rules, clock, or PGN result."""
         return (
             _is_game_over(self._board)
+            or self.loaded_result is not None
             or self.player_with_expired_clock is not None
         )
 
@@ -236,6 +240,7 @@ class GameService(QObject):
     def _reset_game_state(self) -> None:
         """Reset game to default state."""
         self.move_index = -1
+        self.loaded_result = None
         self.is_viewing_history = False
         self.player_with_expired_clock = None
 

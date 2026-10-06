@@ -167,6 +167,16 @@ class EngineService(QObject):
         """Stop analyzing current position."""
         self.is_analyzing = False
 
+    def stop_pondering(self) -> None:
+        """Stop engine from pondering in background."""
+        engine: SimpleEngine | None = self._engine
+
+        if engine is None or self.is_thinking or self.is_analyzing:
+            return
+
+        with suppress(EngineError):
+            engine.ping()
+
     def _load_default_engine(self) -> None:
         """Load executable file of default Stockfish engine."""
         try:

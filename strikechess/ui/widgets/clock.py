@@ -46,29 +46,32 @@ class DigitalClock(QLCDNumber):
         return QSize(100, 50)
 
     def reset(self) -> None:
-        """Set time to values from settings."""
+        """Stop countdown and set time to values from settings."""
+        self._countdown_timer.stop()
         self.time: float = self._settings.value("clock", "time")
         self.increment: float = self._settings.value("clock", "increment")
         self._show_time()
 
     def start_timer(self) -> None:
         """Start tracking elapsed time, then start timer countdown."""
+        if self._countdown_timer.isActive():
+            return
+
         self._elapsed_timer.start()
         self._countdown_timer.start()
 
     def stop_timer(self) -> None:
-        """Stop timer countdown."""
+        """Subtract elapsed time, then stop timer countdown."""
+        if self._countdown_timer.isActive():
+            elapsed_time: float = self._elapsed_timer.elapsed() / 1000.0
+            self.time = max(0.0, self.time - elapsed_time)
+            self._show_time()
+
         self._countdown_timer.stop()
 
     def add_increment(self) -> None:
         """Add increment to time on clock."""
         self.time += self.increment
-        self._show_time()
-
-    def zero_time(self) -> None:
-        """Set remaining time to zero and stop timer countdown."""
-        self.time = 0.0
-        self.stop_timer()
         self._show_time()
 
     @Slot()
