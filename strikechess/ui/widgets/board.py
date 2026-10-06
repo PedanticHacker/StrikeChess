@@ -1,18 +1,18 @@
 from chess import Piece, square, svg
+from PySide6.QtSvg import QSvgRenderer
+from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtGui import QColor, QPainter
+from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import (
+    Qt,
+    Slot,
+    QSize,
+    QRectF,
+    QPointF,
     Property,
     QEasingCurve,
-    QPointF,
-    QRectF,
-    QSize,
-    Qt,
     QVariantAnimation,
-    Slot,
 )
-from PySide6.QtGui import QColor, QPainter
-from PySide6.QtSvg import QSvgRenderer
-from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QSizePolicy
 
 
 AnimationDurationMilliseconds: Final[int] = 350
@@ -75,10 +75,10 @@ class SvgBoard(QSvgWidget):
         self._square_light_lastmove: QColor = QColor()
 
         self._animation: QVariantAnimation = QVariantAnimation(self)
-        self._animation.setEasingCurve(QEasingCurve.Type.OutCubic)
-        self._animation.setDuration(AnimationDurationMilliseconds)
-        self._animation.valueChanged.connect(self.update_animation_point)
         self._animation.finished.connect(self.stop_dragging)
+        self._animation.setDuration(AnimationDurationMilliseconds)
+        self._animation.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self._animation.valueChanged.connect(self.update_animation_point)
 
         size_policy: QSizePolicy = QSizePolicy(Expanding, Expanding)
         size_policy.setHeightForWidth(True)
@@ -136,8 +136,8 @@ class SvgBoard(QSvgWidget):
 
     def set_orientation(self, is_white_at_bottom: bool) -> None:
         """Set board orientation based on `is_white_at_bottom`."""
-        self.is_white_at_bottom = is_white_at_bottom
         self.update()
+        self.is_white_at_bottom = is_white_at_bottom
 
     def start_dragging(self, square: Square, piece: Piece) -> None:
         """Start dragging `piece` from `square`."""
@@ -145,26 +145,26 @@ class SvgBoard(QSvgWidget):
         self.dragged_piece = piece
         self.origin_square = square
 
-        self._update_cursor_at(self.cursor_point)
         self.update()
+        self._update_cursor_at(self.cursor_point)
 
     @Slot(QPointF)
     def update_animation_point(self, point: QPointF) -> None:
         """Update animated piece position based on `point`."""
-        self.animation_point = point
         self.update()
+        self.animation_point = point
 
     @Slot()
     def stop_dragging(self) -> None:
         """Reset dragging-related state."""
         self.is_dragging = False
-        self.is_animating = False
         self.dragged_piece = None
+        self.is_animating = False
         self.origin_square = None
         self.animated_piece = None
 
-        self._update_cursor_at(self.cursor_point)
         self.update()
+        self._update_cursor_at(self.cursor_point)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Drag piece if draggable."""
@@ -210,8 +210,8 @@ class SvgBoard(QSvgWidget):
         board_svg: bytes = self._svg_data()
 
         if board_svg != self._loaded_svg:
-            self._loaded_svg = board_svg
             self.load(board_svg)
+            self._loaded_svg = board_svg
 
         super().paintEvent(event)
 
@@ -230,12 +230,12 @@ class SvgBoard(QSvgWidget):
         """Get color names for SVG rendering."""
         return {
             "coord": self._coord.name(),
-            "inner border": self._inner_border.name(),
             "margin": self._margin.name(),
-            "outer border": self._outer_border.name(),
             "square dark": self._square_dark.name(),
-            "square dark lastmove": self._square_dark_lastmove.name(),
+            "inner border": self._inner_border.name(),
+            "outer border": self._outer_border.name(),
             "square light": self._square_light.name(),
+            "square dark lastmove": self._square_dark_lastmove.name(),
             "square light lastmove": self._square_light_lastmove.name(),
         }
 
@@ -250,8 +250,8 @@ class SvgBoard(QSvgWidget):
             y: float = self.square_center_offset + (self.square_size * flipped_rank)
         else:
             flipped_file: int = 7 - file
-            x = self.square_center_offset + (self.square_size * flipped_file)
             y = self.square_center_offset + (self.square_size * rank)
+            x = self.square_center_offset + (self.square_size * flipped_file)
 
         return QPointF(x, y)
 
@@ -261,8 +261,8 @@ class SvgBoard(QSvgWidget):
             file: float = (cursor_point.x() - self.board_margin) // self.square_size
             rank: float = 7 - (cursor_point.y() - self.board_margin) // self.square_size
         else:
-            file = 7 - (cursor_point.x() - self.board_margin) // self.square_size
             rank = (cursor_point.y() - self.board_margin) // self.square_size
+            file = 7 - (cursor_point.x() - self.board_margin) // self.square_size
 
         file_index: int = max(0, min(7, round(file)))
         rank_index: int = max(0, min(7, round(rank)))
@@ -270,8 +270,8 @@ class SvgBoard(QSvgWidget):
 
     def _is_on_square(self, cursor_point: QPointF) -> bool:
         """Return True if `cursor_point` is on a square."""
-        column: float = (cursor_point.x() - self.board_margin) // self.square_size
         row: float = (cursor_point.y() - self.board_margin) // self.square_size
+        column: float = (cursor_point.x() - self.board_margin) // self.square_size
         return 0 <= column <= 7 and 0 <= row <= 7
 
     def _cursor_point_from(self, event: QMouseEvent) -> QPointF:
@@ -324,8 +324,8 @@ class SvgBoard(QSvgWidget):
         if self.origin_square is not None and self.dragged_piece is not None:
             self._animate_piece(
                 cursor_point=cursor_point,
-                origin_square=self.origin_square,
                 dragged_piece=self.dragged_piece,
+                origin_square=self.origin_square,
             )
 
         self._update_cursor_at(cursor_point)
@@ -338,8 +338,8 @@ class SvgBoard(QSvgWidget):
     ) -> None:
         """Animate sliding `dragged_piece` back to `origin_square`."""
         self.is_animating = True
-        self.animated_piece = dragged_piece
         self.origin_square = origin_square
+        self.animated_piece = dragged_piece
 
         self.animation_point = cursor_point
 
@@ -360,10 +360,10 @@ class SvgBoard(QSvgWidget):
 
         svg_board: str = svg.board(
             board=board_to_render,
-            squares=legal_target_squares,
             check=self._game.check,
             arrows=self._game.arrow,
             colors=self._color_names(),
+            squares=legal_target_squares,
             orientation=self.is_white_at_bottom,
         )
         return svg_board.encode()

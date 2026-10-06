@@ -1,5 +1,5 @@
-from chess import BISHOP, KNIGHT, QUEEN, ROOK, WHITE
 from PySide6.QtCore import QSize
+from chess import BISHOP, KNIGHT, QUEEN, ROOK, WHITE
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QPushButton
 
 from strikechess.utils import create_svg_icon
@@ -31,34 +31,34 @@ class PromotionDialog(QDialog):
 
     def select_queen(self) -> None:
         """Set promotion piece type to queen."""
-        self.piece_type = QUEEN
         self.accept()
+        self.piece_type = QUEEN
 
     def select_rook(self) -> None:
         """Set promotion piece type to rook."""
-        self.piece_type = ROOK
         self.accept()
+        self.piece_type = ROOK
 
     def select_bishop(self) -> None:
         """Set promotion piece type to bishop."""
-        self.piece_type = BISHOP
         self.accept()
+        self.piece_type = BISHOP
 
     def select_knight(self) -> None:
         """Set promotion piece type to knight."""
-        self.piece_type = KNIGHT
         self.accept()
+        self.piece_type = KNIGHT
 
     def _create_buttons(self) -> None:
         """Create buttons based on player's color."""
         if self._player_color == WHITE:
-            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
             self.rook_button: QPushButton = _create_button(create_svg_icon("white-rook"))
+            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
             self.bishop_button: QPushButton = _create_button(create_svg_icon("white-bishop"))
             self.knight_button: QPushButton = _create_button(create_svg_icon("white-knight"))
         else:
-            self.queen_button = _create_button(create_svg_icon("black-queen"))
             self.rook_button = _create_button(create_svg_icon("black-rook"))
+            self.queen_button = _create_button(create_svg_icon("black-queen"))
             self.bishop_button = _create_button(create_svg_icon("black-bishop"))
             self.knight_button = _create_button(create_svg_icon("black-knight"))
 
@@ -74,7 +74,7 @@ class PromotionDialog(QDialog):
 
     def _connect_signals_to_slots(self) -> None:
         """Connect button signals to corresponding slot methods."""
-        self.queen_button.clicked.connect(self.select_queen)
         self.rook_button.clicked.connect(self.select_rook)
+        self.queen_button.clicked.connect(self.select_queen)
         self.bishop_button.clicked.connect(self.select_bishop)
         self.knight_button.clicked.connect(self.select_knight)

@@ -1,6 +1,6 @@
 from chess.engine import Score
-from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
 from PySide6.QtWidgets import QProgressBar
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
 
 
 class EvaluationBar(QProgressBar):
@@ -12,8 +12,8 @@ class EvaluationBar(QProgressBar):
         self._settings: SettingsService = settings
 
         self._animation: QPropertyAnimation = QPropertyAnimation(self, b"value")
-        self._animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
         self._animation.valueChanged.connect(self.update)
+        self._animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
 
         self.setFixedWidth(50)
         self.setRange(0, 1000)
@@ -33,8 +33,8 @@ class EvaluationBar(QProgressBar):
         """Start animating chunk based on `evaluation`."""
         if evaluation.is_mate():
             moves_to_mate: int = evaluation.mate() or 0
-            animation_value: int = 0 if moves_to_mate > 0 else 1000
             evaluation_text: str = f"M{abs(moves_to_mate)}"
+            animation_value: int = 0 if moves_to_mate > 0 else 1000
         else:
             evaluation_score: int = evaluation.score() or 0
             animation_value = 500 - evaluation_score

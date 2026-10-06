@@ -1,9 +1,9 @@
 import re
-from datetime import datetime
 from io import StringIO
+from datetime import datetime
 
-from chess.pgn import Game as PgnGame, read_game
 from PySide6.QtWidgets import QApplication
+from chess.pgn import Game as PgnGame, read_game
 
 
 class PgnService:
@@ -52,8 +52,8 @@ class PgnService:
 
         for move in game.mainline_moves():
             san_move: str = board.san(move)
-            moves.append(san_move)
             board.push(move)
+            moves.append(san_move)
 
         return moves, fen, result
 
@@ -92,9 +92,9 @@ class PgnService:
         is_engine_white: bool,
     ) -> str:
         """Suggest PGN file name based on player names and timestamp."""
-        white: str = self._sanitize(engine_name if is_engine_white else human_name)
-        black: str = self._sanitize(human_name if is_engine_white else engine_name)
         timestamp: str = datetime.now().strftime("%Y.%m.%d %H-%M-%S")
+        black: str = self._sanitize(human_name if is_engine_white else engine_name)
+        white: str = self._sanitize(engine_name if is_engine_white else human_name)
         return f"{white} versus {black} ({timestamp}).pgn"
 
     def _sanitize(self, name: str) -> str:

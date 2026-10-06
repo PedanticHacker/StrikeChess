@@ -2,9 +2,9 @@
 
 
 import sys
+from pathlib import Path
 from functools import partial
 from multiprocessing import freeze_support
-from pathlib import Path
 
 from PySide6.QtCore import QLockFile, QTimer
 from PySide6.QtWidgets import QApplication, QMessageBox
@@ -55,8 +55,8 @@ def _switch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
     splash_screen.finish(main_window)
 
     main_window.showMaximized()
-    main_window.update_clock_timers()
     main_window.request_engine_move()
+    main_window.update_clock_timers()
 
 
 def main() -> None:

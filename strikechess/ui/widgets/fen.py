@@ -14,8 +14,8 @@ class FenEditor(QLineEdit):
         self._game: GameService = game
 
         self.setText(game.fen)
-        self.textEdited.connect(self.validate_fen)
         self.returnPressed.connect(self.apply_fen)
+        self.textEdited.connect(self.validate_fen)
 
     def show_warning(self) -> None:
         """Show red background color to indicate invalid FEN."""

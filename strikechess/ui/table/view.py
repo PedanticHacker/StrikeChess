@@ -1,12 +1,12 @@
+from PySide6.QtWidgets import QAbstractItemView, QHeaderView, QTableView
 from PySide6.QtCore import (
+    Qt,
+    Slot,
+    Signal,
+    QModelIndex,
     QAbstractTableModel,
     QItemSelectionModel,
-    QModelIndex,
-    Qt,
-    Signal,
-    Slot,
 )
-from PySide6.QtWidgets import QAbstractItemView, QHeaderView, QTableView
 
 
 class TableView(QTableView):

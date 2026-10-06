@@ -1,7 +1,7 @@
-import json
 import sys
-from functools import lru_cache
+import json
 from pathlib import Path
+from functools import lru_cache
 
 from PySide6.QtCore import QLibraryInfo, QTranslator
 from PySide6.QtGui import QAction, QColor, QIcon, QPixmap
@@ -57,8 +57,8 @@ def install_translators(language_code: str) -> None:
     qt_translations_directory: str = QLibraryInfo.path(QLibraryInfo.LibraryPath.TranslationsPath)
 
     app: QApplication = QApplication.instance()
-    app_translator: QTranslator = QTranslator(app)
     qt_translator: QTranslator = QTranslator(app)
+    app_translator: QTranslator = QTranslator(app)
 
     if app_translator.load(f"strikechess_{language_code}", str(app_translations_directory)):
         QApplication.installTranslator(app_translator)
@@ -87,8 +87,8 @@ def save_with_file_manager(
     file_path, _ = QFileDialog.getSaveFileName(
         parent=parent,
         caption=caption,
-        dir=str(Path.home() / suggested_name),
         filter=file_filter,
+        dir=str(Path.home() / suggested_name),
     )
     return file_path if file_path else None
 
@@ -114,8 +114,8 @@ def show_file_manager(parent: QWidget | None, caption: str, file_filter: str = "
     file_path, _ = QFileDialog.getOpenFileName(
         parent=parent,
         caption=caption,
-        dir=str(Path.home()),
         filter=file_filter,
+        dir=str(Path.home()),
     )
     return file_path if file_path else None
 

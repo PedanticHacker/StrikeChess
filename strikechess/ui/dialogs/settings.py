@@ -1,19 +1,19 @@
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import (
+    QDialog,
     QCheckBox,
     QComboBox,
-    QDialog,
-    QDialogButtonBox,
     QGroupBox,
-    QHBoxLayout,
     QLineEdit,
-    QRadioButton,
+    QHBoxLayout,
     QVBoxLayout,
+    QRadioButton,
+    QDialogButtonBox,
 )
 
 
-Cancel: Final[QDialogButtonBox.StandardButton] = QDialogButtonBox.StandardButton.Cancel
 Save: Final[QDialogButtonBox.StandardButton] = QDialogButtonBox.StandardButton.Save
+Cancel: Final[QDialogButtonBox.StandardButton] = QDialogButtonBox.StandardButton.Cancel
 
 
 class SettingsDialog(QDialog):
@@ -25,11 +25,11 @@ class SettingsDialog(QDialog):
         self._settings: SettingsService = settings
 
         self._initial_settings: dict[str, bool | float | str] = {
-            "clock_increment": self._settings.value("clock", "increment"),
             "clock_time": self._settings.value("clock", "time"),
             "human_name": self._settings.value("human", "name"),
-            "is_engine_ponder_enabled": self._settings.value("engine", "is_ponder_enabled"),
+            "clock_increment": self._settings.value("clock", "increment"),
             "is_engine_white": self._settings.value("engine", "is_white"),
+            "is_engine_ponder_enabled": self._settings.value("engine", "is_ponder_enabled"),
         }
 
         self._button_box: QDialogButtonBox = QDialogButtonBox(Save | Cancel)
@@ -90,16 +90,16 @@ class SettingsDialog(QDialog):
 
     def _create_groups(self) -> None:
         """Create group boxes for related settings."""
-        self._human_name_group: QGroupBox = QGroupBox(self.tr("Human name"))
         self._engine_group: QGroupBox = QGroupBox(self.tr("Engine"))
+        self._human_name_group: QGroupBox = QGroupBox(self.tr("Human name"))
         self._time_control_group: QGroupBox = QGroupBox(self.tr("Time control"))
 
     def _create_options(self) -> None:
         """Create option widgets to represent settings."""
-        clock_increment: float = self._settings.value("clock", "increment")
-        clock_time: float = self._settings.value("clock", "time")
         human_name: str = self._settings.value("human", "name")
+        clock_time: float = self._settings.value("clock", "time")
         is_engine_white: bool = self._settings.value("engine", "is_white")
+        clock_increment: float = self._settings.value("clock", "increment")
         is_ponder_enabled: bool = self._settings.value("engine", "is_ponder_enabled")
 
         self._human_name_option: QLineEdit = QLineEdit(human_name)
@@ -165,22 +165,22 @@ class SettingsDialog(QDialog):
         self._button_box.accepted.connect(self.accept)
         self._button_box.rejected.connect(self.reject)
 
-        self._clock_increment_option.currentIndexChanged.connect(self.enable_saving)
         self._clock_time_option.currentIndexChanged.connect(self.enable_saving)
+        self._clock_increment_option.currentIndexChanged.connect(self.enable_saving)
 
         self._engine_black_option.toggled.connect(self.enable_saving)
-        self._engine_ponder_option.toggled.connect(self.enable_saving)
         self._engine_white_option.toggled.connect(self.enable_saving)
+        self._engine_ponder_option.toggled.connect(self.enable_saving)
 
         self._human_name_option.textChanged.connect(self.enable_saving)
 
     def _is_edited(self) -> bool:
         """Return True if any setting is edited."""
         current_settings: dict[str, bool | float | str] = {
-            "clock_increment": self._clock_increment_option.currentData(),
             "clock_time": self._clock_time_option.currentData(),
             "human_name": self._human_name_option.text().strip(),
-            "is_engine_ponder_enabled": self._engine_ponder_option.isChecked(),
             "is_engine_white": self._engine_white_option.isChecked(),
+            "clock_increment": self._clock_increment_option.currentData(),
+            "is_engine_ponder_enabled": self._engine_ponder_option.isChecked(),
         }
         return current_settings != self._initial_settings

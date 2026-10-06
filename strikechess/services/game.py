@@ -1,15 +1,15 @@
 from contextlib import suppress
 
+from PySide6.QtCore import QObject, Signal
 from chess import (
-    BB_SQUARES,
+    Move,
     BLACK,
     Board,
-    IllegalMoveError,
-    Move,
-    STARTING_FEN,
     WHITE,
+    BB_SQUARES,
+    STARTING_FEN,
+    IllegalMoveError,
 )
-from PySide6.QtCore import QObject, Signal
 
 
 class GameService(QObject):
@@ -20,8 +20,8 @@ class GameService(QObject):
     def __init__(self, settings: SettingsService) -> None:
         super().__init__()
 
-        self._settings: SettingsService = settings
         self._board: Board = Board()
+        self._settings: SettingsService = settings
 
         self.moves: list[str] = []
         self.positions: list[Board] = []
@@ -262,9 +262,9 @@ class GameService(QObject):
     def _add_ellipsis_as_first_move(self) -> None:
         """Add ellipsis as White's missing move if Black starts."""
         if self.move_index < 0 and not self.is_white_to_move():
+            self.move_index = 0
             self.moves.append("...")
             self.positions.append(self._board.copy())
-            self.move_index = 0
 
 
 def _is_game_over(board: Board) -> bool:

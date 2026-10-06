@@ -9,11 +9,11 @@ from strikechess.utils import root_path
 class SoundEffectName(StrEnum):
     """Sound effect names for game events."""
 
+    Move = "move"
+    Check = "check"
     Capture = "capture"
     Castling = "castling"
-    Check = "check"
     GameOver = "game-over"
-    Move = "move"
     Promotion = "promotion"
 
 

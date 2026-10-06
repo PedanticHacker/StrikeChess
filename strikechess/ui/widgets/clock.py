@@ -1,7 +1,7 @@
 from enum import StrEnum
 
-from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 from PySide6.QtWidgets import QLCDNumber
+from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 
 
 CountdownIntervalMilliseconds: Final[int] = 30
@@ -29,9 +29,9 @@ class DigitalClock(QLCDNumber):
         self.setSegmentStyle(QLCDNumber.SegmentStyle.Flat)
 
         self._countdown_timer: QTimer = QTimer(self)
-        self._countdown_timer.setInterval(CountdownIntervalMilliseconds)
-        self._countdown_timer.setTimerType(Qt.TimerType.PreciseTimer)
         self._countdown_timer.timeout.connect(self.update_time)
+        self._countdown_timer.setTimerType(Qt.TimerType.PreciseTimer)
+        self._countdown_timer.setInterval(CountdownIntervalMilliseconds)
 
         self._elapsed_timer: QElapsedTimer = QElapsedTimer()
 

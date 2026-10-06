@@ -1,15 +1,15 @@
 import os
-import platform
 import stat
+import platform
 import subprocess
-from contextlib import suppress
 from pathlib import Path
+from contextlib import suppress
 
 from chess import Move
-from chess.engine import EngineError, Limit, Score, SimpleEngine
 from cpuinfo import get_cpu_info
-from psutil import cpu_count, virtual_memory
 from PySide6.QtCore import QObject, Signal
+from psutil import cpu_count, virtual_memory
+from chess.engine import EngineError, Limit, Score, SimpleEngine
 
 from strikechess.utils import root_path
 
@@ -49,12 +49,12 @@ class EngineService(QObject):
         new_engine: SimpleEngine | None = None
 
         try:
-            _delete_quarantine_attribute(file_path)
             _make_executable(file_path)
+            _delete_quarantine_attribute(file_path)
 
             new_engine = SimpleEngine.popen_uci(file_path)
-            new_engine.configure(_engine_options(new_engine.options))
             engine_name: str = new_engine.id["name"]
+            new_engine.configure(_engine_options(new_engine.options))
 
         except Exception:
             if new_engine is not None:
@@ -110,13 +110,13 @@ class EngineService(QObject):
         try:
             play_result: PlayResult = engine.play(
                 board=board,
+                ponder=self._settings.value("engine", "is_ponder_enabled"),
                 limit=Limit(
                     black_clock=black_time,
-                    black_inc=black_increment,
                     white_clock=white_time,
+                    black_inc=black_increment,
                     white_inc=white_increment,
                 ),
-                ponder=self._settings.value("engine", "is_ponder_enabled"),
             )
         except EngineError:
             self.is_thinking = False
@@ -152,8 +152,8 @@ class EngineService(QObject):
                         score: Score = info["score"].white()
                         variation: str = board.variation_san(pv)
 
-                        self.best_move_analyzed.emit(best_move)
                         self.score_analyzed.emit(score)
+                        self.best_move_analyzed.emit(best_move)
                         self.variation_analyzed.emit(variation)
         except EngineError:
             self.is_analyzing = False
@@ -209,8 +209,8 @@ def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
     )
 
     options: dict[str, int] = {
-        "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
         "Threads": allowed_cpu_threads,
+        "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
     }
     return {
         option: min(available_options[option].max or value, value)
