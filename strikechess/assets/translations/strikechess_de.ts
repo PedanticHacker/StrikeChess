@@ -274,6 +274,18 @@ Trotzdem ein neues Spiel starten?</translation>
     <translation>Analysiere...</translation>
   </message>
   <message>
+    <source>Enabled</source>
+    <translation>Aktiviert</translation>
+  </message>
+  <message>
+    <source>Disabled</source>
+    <translation>Deaktiviert</translation>
+  </message>
+  <message>
+    <source>Engine ponder</source>
+    <translation>Engine-Vorausberechnung</translation>
+  </message>
+  <message>
     <source>Thinking...</source>
     <translation>Denke nach...</translation>
   </message>

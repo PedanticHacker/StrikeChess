@@ -274,6 +274,18 @@ Avviare una nuova partita comunque?</translation>
     <translation>Analisi in corso...</translation>
   </message>
   <message>
+    <source>Enabled</source>
+    <translation>Attivato</translation>
+  </message>
+  <message>
+    <source>Disabled</source>
+    <translation>Disattivato</translation>
+  </message>
+  <message>
+    <source>Engine ponder</source>
+    <translation>Pensiero in background del motore</translation>
+  </message>
+  <message>
     <source>Thinking...</source>
     <translation>Sto pensando...</translation>
   </message>

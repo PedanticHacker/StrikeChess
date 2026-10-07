@@ -124,6 +124,7 @@ class MainWindow(QMainWindow):
 
         self._opening_label: QLabel = QLabel()
         self._theme_name_label: QLabel = QLabel()
+        self._engine_ponder_label: QLabel = QLabel()
 
         # Timers
         self._scroll_throttle_timer: QTimer = QTimer(self)
@@ -137,6 +138,7 @@ class MainWindow(QMainWindow):
         self._create_menu_bar()
         self._create_tool_bar()
         self._create_status_bar()
+        self._show_engine_ponder()
         self._orient_board_for_human()
         self._connect_signals_to_slots()
         self.apply_theme(self._settings.value("ui", "theme"))
@@ -485,6 +487,9 @@ class MainWindow(QMainWindow):
         """Play engine's `move` or discard it when stale."""
         self._engine.is_thinking = False
 
+        if not self._settings.value("engine", "is_ponder_enabled"):
+            self._engine.stop_pondering()
+
         is_game_over_by_result: bool = self._game.is_over_by_result()
 
         if self._game.fen != self._engine_fen or is_game_over_by_result:
@@ -620,6 +625,10 @@ class MainWindow(QMainWindow):
                 self._settings.value("human", "name") or self.tr("Player")
             )
 
+        if not self._settings.value("engine", "is_ponder_enabled"):
+            self._engine.stop_pondering()
+
+        self._show_engine_ponder()
         self.request_engine_move()
         self._orient_board_for_human()
 
@@ -890,9 +899,10 @@ class MainWindow(QMainWindow):
         help_menu.addAction(self.about_action)
 
     def _create_status_bar(self) -> None:
-        """Create status bar to show opening name and theme name."""
+        """Create status bar for opening, theme, and engine ponder."""
         self.statusBar().addWidget(self._opening_label)
         self.statusBar().addPermanentWidget(self._theme_name_label)
+        self.statusBar().addPermanentWidget(self._engine_ponder_label)
 
     def _create_tool_bar(self) -> None:
         """Create immovable tool bar with visually separated buttons."""
@@ -985,6 +995,12 @@ class MainWindow(QMainWindow):
 
         board: Board = self._game.board_copy()
         QThreadPool.globalInstance().start(partial(self._engine.start_analysis, board))
+
+    def _show_engine_ponder(self) -> None:
+        """Show whether engine ponder is enabled or disabled."""
+        is_ponder_enabled: bool = self._settings.value("engine", "is_ponder_enabled")
+        ponder_state: str = self.tr("Enabled") if is_ponder_enabled else self.tr("Disabled")
+        self._engine_ponder_label.setText(f"{self.tr('Engine ponder')}: {ponder_state}")
 
     def _show_fen(self) -> None:
         """Show FEN in editor."""
