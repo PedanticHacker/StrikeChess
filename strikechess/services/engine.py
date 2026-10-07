@@ -90,8 +90,10 @@ class EngineService(QObject):
 
         self._engine = None
 
-        with suppress(EngineError):
+        try:
             engine.quit()
+        except (EngineError, TimeoutError):
+            engine.close()
 
     def play_move(
         self,
@@ -155,13 +157,12 @@ class EngineService(QObject):
                         self.score_analyzed.emit(score)
                         self.best_move_analyzed.emit(best_move)
                         self.variation_analyzed.emit(variation)
-        except EngineError:
+        except (EngineError, TimeoutError):
             self.is_analyzing = False
 
             if engine is self._engine:
+                engine.close()
                 self.error_occurred.emit()
-        except TimeoutError:
-            self.is_analyzing = False
 
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""
@@ -174,8 +175,10 @@ class EngineService(QObject):
         if engine is None or self.is_thinking or self.is_analyzing:
             return
 
-        with suppress(EngineError):
+        try:
             engine.ping()
+        except (EngineError, TimeoutError):
+            engine.close()
 
     def _load_default_engine(self) -> None:
         """Load executable file of default Stockfish engine."""
