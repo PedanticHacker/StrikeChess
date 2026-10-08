@@ -34,11 +34,6 @@ cd ~/Downloads/StrikeChess-Linux  # Adjust path if needed
 bash install.sh
 ```
 
-If StrikeChess crashes on launch, your system may lack PipeWire's configuration file. On Debian and Ubuntu, install it:
-```bash
-sudo apt install --no-install-recommends pipewire-bin
-```
-
 ### macOS users
 
 Requirements: macOS 14.4+, also when launching StrikeChess from source
