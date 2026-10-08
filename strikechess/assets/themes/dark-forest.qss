@@ -103,8 +103,8 @@ QLineEdit[invalid="true"] {
 QMainWindow {
   background-color: #1f291f;
   border: 1px solid #3d4f3d;
-  qproperty-disabled_icon_color: #788178;
-  qproperty-icon_color: #abb3ab;
+  qproperty-disabled_icon_color: #687268;
+  qproperty-icon_color: #9da69d;
 }
 
 QMenu {
