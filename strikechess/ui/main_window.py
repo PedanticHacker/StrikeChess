@@ -6,8 +6,8 @@ from functools import partial
 
 from chess import BLACK, Move, WHITE
 from chess.engine import EngineError, Score
-from PySide6.QtCore import QThreadPool, QTimer, Slot
-from PySide6.QtGui import QAction, QCloseEvent, QWheelEvent
+from PySide6.QtCore import Property, QThreadPool, QTimer, Slot
+from PySide6.QtGui import QAction, QCloseEvent, QColor, QWheelEvent
 from PySide6.QtWidgets import (
     QMenu,
     QLabel,
@@ -48,6 +48,7 @@ from strikechess.utils import (
     write_pgn_file,
     create_svg_icon,
     show_file_manager,
+    create_tinted_icon,
     create_colored_icon,
     install_translators,
     save_with_file_manager,
@@ -55,6 +56,15 @@ from strikechess.utils import (
 
 
 ScrollThrottleIntervalMilliseconds: Final[int] = 180
+
+
+def _create_icon_color(attribute_name: str) -> Property:
+    """Create QColor property for theme that tints tool bar icons."""
+    return Property(
+        QColor,
+        lambda self: getattr(self, attribute_name),
+        lambda self, color: self._set_icon_color(attribute_name, color),
+    )
 
 
 class ThemeName(StrEnum):
@@ -78,8 +88,14 @@ class ThemeName(StrEnum):
 class MainWindow(QMainWindow):
     """Main app window."""
 
+    icon_color = _create_icon_color("_icon_color")
+    disabled_icon_color = _create_icon_color("_disabled_icon_color")
+
     def __init__(self) -> None:
         super().__init__()
+
+        self._icon_color: QColor = QColor()
+        self._disabled_icon_color: QColor = QColor()
 
         # App settings
         self._settings: SettingsService = SettingsService()
@@ -932,6 +948,10 @@ class MainWindow(QMainWindow):
         tool_bar.addAction(self.show_settings_dialog_action)
         tool_bar.addAction(self.about_action)
 
+        self._tool_bar_icons: dict[QAction, QIcon] = {
+            action: action.icon() for action in tool_bar.actions() if not action.isSeparator()
+        }
+
     def _orient_board_elements(self) -> None:
         """Orient board-related elements based on board orientation."""
         is_white_at_bottom: bool = self._settings.value("ui", "is_white_at_bottom")
@@ -996,6 +1016,11 @@ class MainWindow(QMainWindow):
         board: Board = self._game.board_copy()
         QThreadPool.globalInstance().start(partial(self._engine.start_analysis, board))
 
+    def _set_icon_color(self, attribute_name: str, color: QColor) -> None:
+        """Set `color` at `attribute_name`, then tint tool bar icons."""
+        setattr(self, attribute_name, color)
+        self._tint_tool_bar_icons()
+
     def _show_engine_ponder(self) -> None:
         """Show whether engine ponder is enabled or disabled."""
         is_ponder_enabled: bool = self._settings.value("engine", "is_ponder_enabled")
@@ -1038,6 +1063,11 @@ class MainWindow(QMainWindow):
     def _terminate_engine(self) -> None:
         """Terminate engine process."""
         self._engine.terminate()
+
+    def _tint_tool_bar_icons(self) -> None:
+        """Tint tool bar icons with icon colors of theme."""
+        for action, icon in self._tool_bar_icons.items():
+            action.setIcon(create_tinted_icon(icon, self._icon_color, self._disabled_icon_color))
 
     def _update_actions(self) -> None:
         """Update availability of actions based on game state."""

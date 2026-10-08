@@ -2,6 +2,10 @@ QCheckBox, QGroupBox, QRadioButton {
   color: #1c4b45;
 }
 
+QCheckBox:disabled, QGroupBox:disabled, QRadioButton:disabled {
+  color: #42726c;
+}
+
 QCheckBox::indicator {
   border-radius: 3px;
 }
@@ -22,8 +26,16 @@ QCheckBox::indicator:checked {
   width: 8px;
 }
 
+QCheckBox::indicator:checked:disabled {
+  background-color: #42726c;
+}
+
+QCheckBox::indicator:disabled, QRadioButton::indicator:disabled {
+  border: 1px solid #42726c;
+}
+
 QCheckBox::indicator:unchecked:hover, QRadioButton::indicator:unchecked:hover {
-  background-color: #87bbb5;
+  background-color: #a7dbd5;
 }
 
 QDialog {
@@ -64,6 +76,10 @@ QLineEdit {
   qproperty-alignment: AlignCenter;
 }
 
+QLineEdit:disabled {
+  color: #42726c;
+}
+
 QLineEdit:focus {
   background-color: #97cbc5;
   border: 1px solid #1c4b45;
@@ -83,6 +99,8 @@ QLineEdit[invalid="true"] {
 QMainWindow {
   background-color: #97cbc5;
   border: 1px solid #7ac7bd;
+  qproperty-disabled_icon_color: #42726c;
+  qproperty-icon_color: #1c4b45;
 }
 
 QMenu {
@@ -97,6 +115,10 @@ QMenu::item {
   color: #1c4b45;
   margin: 2px;
   padding: 4px 20px 4px 20px;
+}
+
+QMenu::item:disabled {
+  color: #42726c;
 }
 
 QMenu::item:selected {
@@ -130,8 +152,8 @@ QPushButton {
 }
 
 QPushButton:disabled {
-  background-color: #87bbb5;
-  color: #a7dbd5;
+  background-color: #a7dbd5;
+  color: #42726c;
 }
 
 QPushButton:hover {
@@ -164,6 +186,13 @@ QRadioButton::indicator:checked {
   background-color: qradialgradient(
     cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5,
     stop: 0 #1c4b45, stop: 0.45 #1c4b45, stop: 0.55 transparent, stop: 1 transparent
+  );
+}
+
+QRadioButton::indicator:checked:disabled {
+  background-color: qradialgradient(
+    cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5,
+    stop: 0 #42726c, stop: 0.45 #42726c, stop: 0.55 transparent, stop: 1 transparent
   );
 }
 
