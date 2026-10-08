@@ -1,3 +1,31 @@
+QCheckBox, QGroupBox, QRadioButton {
+  color: #1c4b45;
+}
+
+QCheckBox::indicator {
+  border-radius: 3px;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+  background-color: transparent;
+  border: 1px solid #1c4b45;
+  height: 12px;
+  margin: 3px 0px;
+  width: 12px;
+}
+
+QCheckBox::indicator:checked {
+  background-clip: content;
+  background-color: #1c4b45;
+  height: 8px;
+  padding: 2px;
+  width: 8px;
+}
+
+QCheckBox::indicator:unchecked:hover, QRadioButton::indicator:unchecked:hover {
+  background-color: #87bbb5;
+}
+
 QDialog {
   background-color: #97cbc5;
   border: 1px solid #7ac7bd;
@@ -49,6 +77,7 @@ QLineEdit:hover {
 QLineEdit[invalid="true"] {
   background-color: red;
   border: 1px solid darkred;
+  color: black;
 }
 
 QMainWindow {
@@ -84,17 +113,18 @@ QMenu::separator {
 QMenuBar {
   background-color: #97cbc5;
   border-bottom: 1px solid #7ac7bd;
+  color: #1c4b45;
   font-weight: bold;
 }
 
 QMenuBar::item:selected {
-  background-color: #87bbb5;
+  background-color: #a7dbd5;
 }
 
 QPushButton {
-  background-color: #7ac7bd;
+  background-color: #368177;
   border-radius: 4px;
-  color: #1c4b45;
+  color: #ffffff;
   font-weight: bold;
   padding: 8px 16px;
 }
@@ -105,7 +135,7 @@ QPushButton:disabled {
 }
 
 QPushButton:hover {
-  background-color: #4db3a7;
+  background-color: #2d6a62;
 }
 
 QPushButton:pressed {
@@ -116,7 +146,7 @@ QProgressBar {
   background-color: white;
   border: 1px solid #7ac7bd;
   border-radius: 4px;
-  color: #7ac7bd;
+  color: #368177;
   font-weight: bold;
   text-align: center;
 }
@@ -124,6 +154,17 @@ QProgressBar {
 QProgressBar::chunk {
   background-color: black;
   border-radius: 3px;
+}
+
+QRadioButton::indicator {
+  border-radius: 7px;
+}
+
+QRadioButton::indicator:checked {
+  background-color: qradialgradient(
+    cx: 0.5, cy: 0.5, radius: 0.5, fx: 0.5, fy: 0.5,
+    stop: 0 #1c4b45, stop: 0.45 #1c4b45, stop: 0.55 transparent, stop: 1 transparent
+  );
 }
 
 QStatusBar {
@@ -144,6 +185,7 @@ QTableView {
   color: #1c4b45;
   gridline-color: #7ac7bd;
   selection-background-color: #87bbb5;
+  selection-color: #1c4b45;
 }
 
 QTableView::item:hover {
