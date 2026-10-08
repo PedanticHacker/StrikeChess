@@ -168,7 +168,7 @@ class EngineService(QObject):
         """Stop analyzing current position."""
         self.is_analyzing = False
 
-    def stop_pondering(self) -> None:
+    def stop_ponder(self) -> None:
         """Stop engine from pondering in background."""
         engine: SimpleEngine | None = self._engine
 

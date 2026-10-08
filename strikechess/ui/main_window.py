@@ -240,8 +240,8 @@ class MainWindow(QMainWindow):
 
             self._black_clock.reset()
             self._white_clock.reset()
+            self._engine.stop_ponder()
             self._opening_label.clear()
-            self._engine.stop_pondering()
 
             if result in ("1-0", "0-1", "1/2-1/2") and not self._game.is_over_by_rules():
                 self._game.loaded_result = result
@@ -467,15 +467,15 @@ class MainWindow(QMainWindow):
 
         self._black_clock.reset()
         self._white_clock.reset()
+        self._engine.stop_ponder()
         self._opening_label.clear()
-        self._engine.stop_pondering()
 
         self._update_ui_state()
 
     @Slot()
     def expire_clock_for_black(self) -> None:
         """End game when Black's clock expires."""
-        self._engine.stop_pondering()
+        self._engine.stop_ponder()
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
@@ -489,7 +489,7 @@ class MainWindow(QMainWindow):
     @Slot()
     def expire_clock_for_white(self) -> None:
         """End game when White's clock expires."""
-        self._engine.stop_pondering()
+        self._engine.stop_ponder()
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
@@ -506,7 +506,7 @@ class MainWindow(QMainWindow):
         self._engine.is_thinking = False
 
         if not self._settings.value("engine", "is_ponder_enabled"):
-            self._engine.stop_pondering()
+            self._engine.stop_ponder()
 
         is_game_over_by_result: bool = self._game.is_over_by_result()
 
@@ -518,7 +518,7 @@ class MainWindow(QMainWindow):
 
             self._update_actions()
             self.request_engine_move()
-            self._engine.stop_pondering()
+            self._engine.stop_ponder()
             return
 
         self._play_move(move)
@@ -645,7 +645,7 @@ class MainWindow(QMainWindow):
             )
 
         if not self._settings.value("engine", "is_ponder_enabled"):
-            self._engine.stop_pondering()
+            self._engine.stop_ponder()
 
         self._show_engine_ponder()
         self.request_engine_move()
@@ -1067,7 +1067,7 @@ class MainWindow(QMainWindow):
 
         self._show_fen()
         self.stop_analysis()
-        self._engine.stop_pondering()
+        self._engine.stop_ponder()
 
         self.request_engine_move()
         self._orient_board_for_human()
@@ -1129,7 +1129,7 @@ class MainWindow(QMainWindow):
         self.stop_analysis()
 
         if self._game.is_over_by_result():
-            self._engine.stop_pondering()
+            self._engine.stop_ponder()
             self._black_clock.stop_timer()
             self._white_clock.stop_timer()
             self._board.disable_interaction()
