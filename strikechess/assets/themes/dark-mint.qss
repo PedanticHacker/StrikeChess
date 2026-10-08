@@ -104,7 +104,7 @@ QMainWindow {
   background-color: #1a2e2e;
   border: 1px solid #386b6b;
   qproperty-disabled_icon_color: #6c8383;
-  qproperty-icon_color: #c5e0e0;
+  qproperty-icon_color: #a1bbbb;
 }
 
 QMenu {
