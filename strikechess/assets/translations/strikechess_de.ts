@@ -274,6 +274,10 @@ Trotzdem ein neues Spiel starten?</translation>
     <translation>Analysiere...</translation>
   </message>
   <message>
+    <source>(unavailable)</source>
+    <translation>(nicht verfügbar)</translation>
+  </message>
+  <message>
     <source>Enabled</source>
     <translation>Aktiviert</translation>
   </message>

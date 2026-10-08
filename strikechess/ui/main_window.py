@@ -204,6 +204,7 @@ class MainWindow(QMainWindow):
             self._engine_name_label.setText(self._engine.name)
 
             self._update_actions()
+            self._show_engine_ponder()
             self.request_engine_move()
 
         except EngineError as error:
@@ -426,6 +427,7 @@ class MainWindow(QMainWindow):
         self._notifications_label.clear()
 
         self._update_actions()
+        self._show_engine_ponder()
 
     def update_clock_timers(self) -> None:
         """Start/stop clocks based on current turn."""
@@ -586,6 +588,7 @@ class MainWindow(QMainWindow):
         self._engine_name_label.setText(self.tr("(no engine)"))
 
         self._update_actions()
+        self._show_engine_ponder()
 
         show_warning(
             self,
@@ -1022,9 +1025,18 @@ class MainWindow(QMainWindow):
         self._tint_tool_bar_icons()
 
     def _show_engine_ponder(self) -> None:
-        """Show whether engine ponder is enabled or disabled."""
+        """Show engine ponder state, unavailable without engine."""
+        is_engine_loaded: bool = self._engine.is_loaded()
         is_ponder_enabled: bool = self._settings.value("engine", "is_ponder_enabled")
-        ponder_state: str = self.tr("Enabled") if is_ponder_enabled else self.tr("Disabled")
+
+        if not is_engine_loaded:
+            ponder_state: str = self.tr("(unavailable)")
+        elif is_ponder_enabled:
+            ponder_state = self.tr("Enabled")
+        else:
+            ponder_state = self.tr("Disabled")
+
+        self._engine_ponder_label.setEnabled(is_engine_loaded)
         self._engine_ponder_label.setText(f"{self.tr('Engine ponder')}: {ponder_state}")
 
     def _show_fen(self) -> None:

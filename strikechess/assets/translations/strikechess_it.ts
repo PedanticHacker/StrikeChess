@@ -274,6 +274,10 @@ Avviare una nuova partita comunque?</translation>
     <translation>Analisi in corso...</translation>
   </message>
   <message>
+    <source>(unavailable)</source>
+    <translation>(non disponibile)</translation>
+  </message>
+  <message>
     <source>Enabled</source>
     <translation>Attivato</translation>
   </message>

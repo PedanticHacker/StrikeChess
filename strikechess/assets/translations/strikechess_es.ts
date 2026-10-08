@@ -274,6 +274,10 @@ Start a new game anyway?</source>
     <translation>Analizando...</translation>
   </message>
   <message>
+    <source>(unavailable)</source>
+    <translation>(no disponible)</translation>
+  </message>
+  <message>
     <source>Enabled</source>
     <translation>Activado</translation>
   </message>

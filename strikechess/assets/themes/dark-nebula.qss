@@ -54,6 +54,10 @@ QLabel {
   color: #e2d4f5;
 }
 
+QLabel:disabled {
+  color: #836f98;
+}
+
 #engineAnalysis {
   background-color: #3d2159;
   border: 1px solid #6b35b0;
