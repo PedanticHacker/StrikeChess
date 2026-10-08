@@ -40,7 +40,10 @@ if is_macos:
         icon=icon_path,
         name="StrikeChess.app",
         bundle_identifier="com.pedantichacker.strikechess",
-        info_plist={"NSHumanReadableCopyright": "© 2026 Boštjan Mejak"},
+        info_plist={
+            "LSMinimumSystemVersion": "14.4",
+            "NSHumanReadableCopyright": "© 2026 Boštjan Mejak",
+        },
     )
 else:
     executable = EXE(
