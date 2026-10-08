@@ -198,7 +198,7 @@ def _delete_quarantine_attribute(file_path: str) -> None:
 
 
 def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
-    """Get Hash and Threads options based on OS resources, if engine supports them."""
+    """Get supported Hash and Threads options based on OS resources."""
     bytes_per_megabyte: int = 2**20
     engine_hash_size_percentage: float = 0.25
     maximum_hash_size_in_megabytes: int = 4096

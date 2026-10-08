@@ -453,7 +453,7 @@ class MainWindow(QMainWindow):
 
     @Slot(str)
     def apply_validated_fen(self, fen: str) -> None:
-        """Apply position based on `fen`, prompt if game is in progress."""
+        """Apply position from `fen`, prompt if game is in progress."""
         if self._game.is_in_progress():
             if not ask_question(
                 self,

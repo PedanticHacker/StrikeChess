@@ -57,7 +57,7 @@ class GameService(QObject):
 
     @property
     def last_position(self) -> Board:
-        """Position after last move played, unaffected by viewing history."""
+        """Position after last move, unaffected by viewing history."""
         return self.positions[-1] if self.positions else self._board
 
     @property
@@ -184,7 +184,7 @@ class GameService(QObject):
         self.arrow.clear()
 
     def board_copy(self) -> Board:
-        """Get copy of current position, unaffected by game state updates."""
+        """Get copy of current position, unaffected by game updates."""
         return self._board.copy()
 
     def piece_at(self, square: Square) -> Piece | None:
