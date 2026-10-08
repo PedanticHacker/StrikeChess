@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
 
         QMessageBox.information(
             self,
-            self.tr("Relaunch"),
+            self.tr("Relaunch Required"),
             self.tr("Please relaunch StrikeChess to apply the new language."),
         )
 

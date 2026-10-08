@@ -12,7 +12,7 @@
     <translation>Tema</translation>
   </message>
   <message>
-    <source>Relaunch</source>
+    <source>Relaunch Required</source>
     <translation>Riavvio necessario</translation>
   </message>
   <message>

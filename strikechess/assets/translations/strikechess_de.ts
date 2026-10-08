@@ -12,7 +12,7 @@
     <translation>Design</translation>
   </message>
   <message>
-    <source>Relaunch</source>
+    <source>Relaunch Required</source>
     <translation>Neustart erforderlich</translation>
   </message>
   <message>
