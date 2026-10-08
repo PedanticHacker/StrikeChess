@@ -8,6 +8,142 @@
     <translation>Spieler</translation>
   </message>
   <message>
+    <source>Theme</source>
+    <translation>Design</translation>
+  </message>
+  <message>
+    <source>Relaunch</source>
+    <translation>Neustart erforderlich</translation>
+  </message>
+  <message>
+    <source>Please relaunch StrikeChess to apply the new language.</source>
+    <translation>Bitte starten Sie StrikeChess neu, um die neue Sprache anzuwenden.</translation>
+  </message>
+  <message>
+    <source>UCI engine (*.exe)</source>
+    <translation>UCI-Engine (*.exe)</translation>
+  </message>
+  <message>
+    <source>Load Engine</source>
+    <translation>Engine laden</translation>
+  </message>
+  <message>
+    <source>Engine Error</source>
+    <translation>Engine-Fehler</translation>
+  </message>
+  <message>
+    <source>Load Game</source>
+    <translation>Spiel laden</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Load from PGN anyway?</source>
+    <translation>Das aktuelle Spiel geht verloren.
+Trotzdem aus PGN laden?</translation>
+  </message>
+  <message>
+    <source>PGN file (*.pgn)</source>
+    <translation>PGN-Datei (*.pgn)</translation>
+  </message>
+  <message>
+    <source>Game loaded from PGN.</source>
+    <translation>Spiel aus PGN geladen.</translation>
+  </message>
+  <message>
+    <source>File Error</source>
+    <translation>Dateifehler</translation>
+  </message>
+  <message>
+    <source>Cannot read PGN.
+
+The file may be locked or corrupted.
+Check file permissions and try again.</source>
+    <translation>PGN kann nicht gelesen werden.
+
+Die Datei ist möglicherweise gesperrt oder beschädigt.
+Überprüfen Sie die Dateiberechtigungen und versuchen Sie es erneut.</translation>
+  </message>
+  <message>
+    <source>Load Error</source>
+    <translation>Ladefehler</translation>
+  </message>
+  <message>
+    <source>New Game</source>
+    <translation>Neues Spiel</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Start a new game anyway?</source>
+    <translation>Das aktuelle Spiel geht verloren.
+Trotzdem ein neues Spiel starten?</translation>
+  </message>
+  <message>
+    <source>Thinking...</source>
+    <translation>Denke nach...</translation>
+  </message>
+  <message>
+    <source>Save Game</source>
+    <translation>Spiel speichern</translation>
+  </message>
+  <message>
+    <source>Game saved successfully.</source>
+    <translation>Spiel erfolgreich gespeichert.</translation>
+  </message>
+  <message>
+    <source>Save Error</source>
+    <translation>Speicherfehler</translation>
+  </message>
+  <message>
+    <source>Cannot save game as PGN.
+
+The destination may be read-only or full.
+Try saving to a different location.</source>
+    <translation>Spiel kann nicht als PGN gespeichert werden.
+
+Das Ziel ist möglicherweise schreibgeschützt oder voll.
+Versuchen Sie, an einem anderen Ort zu speichern.</translation>
+  </message>
+  <message>
+    <source>Unload Engine</source>
+    <translation>Engine entladen</translation>
+  </message>
+  <message>
+    <source>Are you sure you want to unload the engine?</source>
+    <translation>Möchten Sie die Engine wirklich entladen?</translation>
+  </message>
+  <message>
+    <source>(no engine)</source>
+    <translation>(keine Engine)</translation>
+  </message>
+  <message>
+    <source>Apply FEN</source>
+    <translation>FEN anwenden</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Apply the FEN anyway?</source>
+    <translation>Das aktuelle Spiel geht verloren.
+Trotzdem die FEN anwenden?</translation>
+  </message>
+  <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Relaunch StrikeChess or load an engine.</source>
+    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
+
+Die Engine ist möglicherweise abgestürzt.
+Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
+  </message>
+  <message>
+    <source>Quit</source>
+    <translation>Beenden</translation>
+  </message>
+  <message>
+    <source>Are you sure you want to quit?</source>
+    <translation>Möchten Sie wirklich beenden?</translation>
+  </message>
+  <message>
     <source>About StrikeChess</source>
     <translation>Über StrikeChess</translation>
   </message>
@@ -184,10 +320,6 @@
     <translation>Allgemein</translation>
   </message>
   <message>
-    <source>Theme</source>
-    <translation>Design</translation>
-  </message>
-  <message>
     <source>Language</source>
     <translation>Sprache</translation>
   </message>
@@ -202,72 +334,6 @@
   <message>
     <source>Tool bar</source>
     <translation>Werkzeugleiste</translation>
-  </message>
-  <message>
-    <source>Relaunch</source>
-    <translation>Neustart erforderlich</translation>
-  </message>
-  <message>
-    <source>Please relaunch StrikeChess to apply the new language.</source>
-    <translation>Bitte starten Sie StrikeChess neu, um die neue Sprache anzuwenden.</translation>
-  </message>
-  <message>
-    <source>UCI engine (*.exe)</source>
-    <translation>UCI-Engine (*.exe)</translation>
-  </message>
-  <message>
-    <source>Load Engine</source>
-    <translation>Engine laden</translation>
-  </message>
-  <message>
-    <source>Engine Error</source>
-    <translation>Engine-Fehler</translation>
-  </message>
-  <message>
-    <source>Load Game</source>
-    <translation>Spiel laden</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Load from PGN anyway?</source>
-    <translation>Das aktuelle Spiel geht verloren.
-Trotzdem aus PGN laden?</translation>
-  </message>
-  <message>
-    <source>PGN file (*.pgn)</source>
-    <translation>PGN-Datei (*.pgn)</translation>
-  </message>
-  <message>
-    <source>Game loaded from PGN.</source>
-    <translation>Spiel aus PGN geladen.</translation>
-  </message>
-  <message>
-    <source>Load Error</source>
-    <translation>Ladefehler</translation>
-  </message>
-  <message>
-    <source>File Error</source>
-    <translation>Dateifehler</translation>
-  </message>
-  <message>
-    <source>Cannot read PGN.
-
-The file may be locked or corrupted.
-Check file permissions and try again.</source>
-    <translation>PGN kann nicht gelesen werden.
-
-Die Datei ist möglicherweise gesperrt oder beschädigt.
-Überprüfen Sie die Dateiberechtigungen und versuchen Sie es erneut.</translation>
-  </message>
-  <message>
-    <source>New Game</source>
-    <translation>Neues Spiel</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Start a new game anyway?</source>
-    <translation>Das aktuelle Spiel geht verloren.
-Trotzdem ein neues Spiel starten?</translation>
   </message>
   <message>
     <source>Analyzing...</source>
@@ -288,72 +354,6 @@ Trotzdem ein neues Spiel starten?</translation>
   <message>
     <source>Engine ponder</source>
     <translation>Engine-Vorausberechnung</translation>
-  </message>
-  <message>
-    <source>Thinking...</source>
-    <translation>Denke nach...</translation>
-  </message>
-  <message>
-    <source>Save Game</source>
-    <translation>Spiel speichern</translation>
-  </message>
-  <message>
-    <source>Game saved successfully.</source>
-    <translation>Spiel erfolgreich gespeichert.</translation>
-  </message>
-  <message>
-    <source>Save Error</source>
-    <translation>Speicherfehler</translation>
-  </message>
-  <message>
-    <source>Cannot save game as PGN.
-
-The destination may be read-only or full.
-Try saving to a different location.</source>
-    <translation>Spiel kann nicht als PGN gespeichert werden.
-
-Das Ziel ist möglicherweise schreibgeschützt oder voll.
-Versuchen Sie, an einem anderen Ort zu speichern.</translation>
-  </message>
-  <message>
-    <source>Unload Engine</source>
-    <translation>Engine entladen</translation>
-  </message>
-  <message>
-    <source>Are you sure you want to unload the engine?</source>
-    <translation>Möchten Sie die Engine wirklich entladen?</translation>
-  </message>
-  <message>
-    <source>(no engine)</source>
-    <translation>(keine Engine)</translation>
-  </message>
-  <message>
-    <source>Apply FEN</source>
-    <translation>FEN anwenden</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Apply the FEN anyway?</source>
-    <translation>Das aktuelle Spiel geht verloren.
-Trotzdem die FEN anwenden?</translation>
-  </message>
-  <message>
-    <source>Cannot communicate with UCI engine.
-
-The engine may have crashed.
-Relaunch StrikeChess or load an engine.</source>
-    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
-
-Die Engine ist möglicherweise abgestürzt.
-Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
-  </message>
-  <message>
-    <source>Quit</source>
-    <translation>Beenden</translation>
-  </message>
-  <message>
-    <source>Are you sure you want to quit?</source>
-    <translation>Möchten Sie wirklich beenden?</translation>
   </message>
 </context>
 <context>
@@ -381,12 +381,12 @@ Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
     <translation>Einstellungen</translation>
   </message>
   <message>
-    <source>Human name</source>
-    <translation>Spielername</translation>
-  </message>
-  <message>
     <source>Engine</source>
     <translation>Engine</translation>
+  </message>
+  <message>
+    <source>Human name</source>
+    <translation>Spielername</translation>
   </message>
   <message>
     <source>Time control</source>
@@ -508,16 +508,16 @@ Stellen Sie sicher, dass die Engine zu Ihrer Plattform und CPU-Architektur passt
 <context>
   <name>GameService</name>
   <message>
+    <source>Draw</source>
+    <translation>Remis</translation>
+  </message>
+  <message>
     <source>White wins on time</source>
     <translation>Weiß gewinnt auf Zeit</translation>
   </message>
   <message>
     <source>Black wins on time</source>
     <translation>Schwarz gewinnt auf Zeit</translation>
-  </message>
-  <message>
-    <source>Draw</source>
-    <translation>Remis</translation>
   </message>
   <message>
     <source>Black wins</source>

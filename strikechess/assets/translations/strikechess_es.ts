@@ -8,6 +8,142 @@
     <translation>Jugador</translation>
   </message>
   <message>
+    <source>Theme</source>
+    <translation>Tema</translation>
+  </message>
+  <message>
+    <source>Relaunch</source>
+    <translation>Reinicio necesario</translation>
+  </message>
+  <message>
+    <source>Please relaunch StrikeChess to apply the new language.</source>
+    <translation>Por favor, reinicie StrikeChess para aplicar el nuevo idioma.</translation>
+  </message>
+  <message>
+    <source>UCI engine (*.exe)</source>
+    <translation>Motor UCI (*.exe)</translation>
+  </message>
+  <message>
+    <source>Load Engine</source>
+    <translation>Cargar motor</translation>
+  </message>
+  <message>
+    <source>Engine Error</source>
+    <translation>Error del motor</translation>
+  </message>
+  <message>
+    <source>Load Game</source>
+    <translation>Cargar partida</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Load from PGN anyway?</source>
+    <translation>Perderá la partida actual.
+¿Cargar desde PGN de todos modos?</translation>
+  </message>
+  <message>
+    <source>PGN file (*.pgn)</source>
+    <translation>Archivo PGN (*.pgn)</translation>
+  </message>
+  <message>
+    <source>Game loaded from PGN.</source>
+    <translation>Partida cargada desde PGN.</translation>
+  </message>
+  <message>
+    <source>File Error</source>
+    <translation>Error de archivo</translation>
+  </message>
+  <message>
+    <source>Cannot read PGN.
+
+The file may be locked or corrupted.
+Check file permissions and try again.</source>
+    <translation>No se puede leer el PGN.
+
+El archivo puede estar bloqueado o dañado.
+Verifique los permisos del archivo e inténtelo de nuevo.</translation>
+  </message>
+  <message>
+    <source>Load Error</source>
+    <translation>Error de carga</translation>
+  </message>
+  <message>
+    <source>New Game</source>
+    <translation>Nueva partida</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Start a new game anyway?</source>
+    <translation>Perderá la partida actual.
+¿Iniciar una nueva partida de todos modos?</translation>
+  </message>
+  <message>
+    <source>Thinking...</source>
+    <translation>Pensando...</translation>
+  </message>
+  <message>
+    <source>Save Game</source>
+    <translation>Guardar partida</translation>
+  </message>
+  <message>
+    <source>Game saved successfully.</source>
+    <translation>Partida guardada correctamente.</translation>
+  </message>
+  <message>
+    <source>Save Error</source>
+    <translation>Error al guardar</translation>
+  </message>
+  <message>
+    <source>Cannot save game as PGN.
+
+The destination may be read-only or full.
+Try saving to a different location.</source>
+    <translation>No se puede guardar la partida como PGN.
+
+El destino puede ser de solo lectura o estar lleno.
+Intente guardar en otra ubicación.</translation>
+  </message>
+  <message>
+    <source>Unload Engine</source>
+    <translation>Descargar motor</translation>
+  </message>
+  <message>
+    <source>Are you sure you want to unload the engine?</source>
+    <translation>¿Está seguro de que desea descargar el motor?</translation>
+  </message>
+  <message>
+    <source>(no engine)</source>
+    <translation>(sin motor)</translation>
+  </message>
+  <message>
+    <source>Apply FEN</source>
+    <translation>Aplicar FEN</translation>
+  </message>
+  <message>
+    <source>You will lose the current game.
+Apply the FEN anyway?</source>
+    <translation>Perderá la partida actual.
+¿Aplicar el FEN de todos modos?</translation>
+  </message>
+  <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Relaunch StrikeChess or load an engine.</source>
+    <translation>No se puede comunicar con el motor UCI.
+
+El motor puede haberse cerrado inesperadamente.
+Reinicie StrikeChess o cargue un motor.</translation>
+  </message>
+  <message>
+    <source>Quit</source>
+    <translation>Salir</translation>
+  </message>
+  <message>
+    <source>Are you sure you want to quit?</source>
+    <translation>¿Está seguro de que desea salir?</translation>
+  </message>
+  <message>
     <source>About StrikeChess</source>
     <translation>Acerca de StrikeChess</translation>
   </message>
@@ -184,10 +320,6 @@
     <translation>General</translation>
   </message>
   <message>
-    <source>Theme</source>
-    <translation>Tema</translation>
-  </message>
-  <message>
     <source>Language</source>
     <translation>Idioma</translation>
   </message>
@@ -202,72 +334,6 @@
   <message>
     <source>Tool bar</source>
     <translation>Barra de herramientas</translation>
-  </message>
-  <message>
-    <source>Relaunch</source>
-    <translation>Reinicio necesario</translation>
-  </message>
-  <message>
-    <source>Please relaunch StrikeChess to apply the new language.</source>
-    <translation>Por favor, reinicie StrikeChess para aplicar el nuevo idioma.</translation>
-  </message>
-  <message>
-    <source>UCI engine (*.exe)</source>
-    <translation>Motor UCI (*.exe)</translation>
-  </message>
-  <message>
-    <source>Load Engine</source>
-    <translation>Cargar motor</translation>
-  </message>
-  <message>
-    <source>Engine Error</source>
-    <translation>Error del motor</translation>
-  </message>
-  <message>
-    <source>Load Game</source>
-    <translation>Cargar partida</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Load from PGN anyway?</source>
-    <translation>Perderá la partida actual.
-¿Cargar desde PGN de todos modos?</translation>
-  </message>
-  <message>
-    <source>PGN file (*.pgn)</source>
-    <translation>Archivo PGN (*.pgn)</translation>
-  </message>
-  <message>
-    <source>Game loaded from PGN.</source>
-    <translation>Partida cargada desde PGN.</translation>
-  </message>
-  <message>
-    <source>Load Error</source>
-    <translation>Error de carga</translation>
-  </message>
-  <message>
-    <source>File Error</source>
-    <translation>Error de archivo</translation>
-  </message>
-  <message>
-    <source>Cannot read PGN.
-
-The file may be locked or corrupted.
-Check file permissions and try again.</source>
-    <translation>No se puede leer el PGN.
-
-El archivo puede estar bloqueado o dañado.
-Verifique los permisos del archivo e inténtelo de nuevo.</translation>
-  </message>
-  <message>
-    <source>New Game</source>
-    <translation>Nueva partida</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Start a new game anyway?</source>
-    <translation>Perderá la partida actual.
-¿Iniciar una nueva partida de todos modos?</translation>
   </message>
   <message>
     <source>Analyzing...</source>
@@ -288,72 +354,6 @@ Start a new game anyway?</source>
   <message>
     <source>Engine ponder</source>
     <translation>Pensar en segundo plano del motor</translation>
-  </message>
-  <message>
-    <source>Thinking...</source>
-    <translation>Pensando...</translation>
-  </message>
-  <message>
-    <source>Save Game</source>
-    <translation>Guardar partida</translation>
-  </message>
-  <message>
-    <source>Game saved successfully.</source>
-    <translation>Partida guardada correctamente.</translation>
-  </message>
-  <message>
-    <source>Save Error</source>
-    <translation>Error al guardar</translation>
-  </message>
-  <message>
-    <source>Cannot save game as PGN.
-
-The destination may be read-only or full.
-Try saving to a different location.</source>
-    <translation>No se puede guardar la partida como PGN.
-
-El destino puede ser de solo lectura o estar lleno.
-Intente guardar en otra ubicación.</translation>
-  </message>
-  <message>
-    <source>Unload Engine</source>
-    <translation>Descargar motor</translation>
-  </message>
-  <message>
-    <source>Are you sure you want to unload the engine?</source>
-    <translation>¿Está seguro de que desea descargar el motor?</translation>
-  </message>
-  <message>
-    <source>(no engine)</source>
-    <translation>(sin motor)</translation>
-  </message>
-  <message>
-    <source>Apply FEN</source>
-    <translation>Aplicar FEN</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Apply the FEN anyway?</source>
-    <translation>Perderá la partida actual.
-¿Aplicar el FEN de todos modos?</translation>
-  </message>
-  <message>
-    <source>Cannot communicate with UCI engine.
-
-The engine may have crashed.
-Relaunch StrikeChess or load an engine.</source>
-    <translation>No se puede comunicar con el motor UCI.
-
-El motor puede haberse cerrado inesperadamente.
-Reinicie StrikeChess o cargue un motor.</translation>
-  </message>
-  <message>
-    <source>Quit</source>
-    <translation>Salir</translation>
-  </message>
-  <message>
-    <source>Are you sure you want to quit?</source>
-    <translation>¿Está seguro de que desea salir?</translation>
   </message>
 </context>
 <context>
@@ -381,12 +381,12 @@ Reinicie StrikeChess o cargue un motor.</translation>
     <translation>Ajustes</translation>
   </message>
   <message>
-    <source>Human name</source>
-    <translation>Nombre del jugador</translation>
-  </message>
-  <message>
     <source>Engine</source>
     <translation>Motor</translation>
+  </message>
+  <message>
+    <source>Human name</source>
+    <translation>Nombre del jugador</translation>
   </message>
   <message>
     <source>Time control</source>
@@ -508,16 +508,16 @@ Asegúrese de que el motor coincida con su plataforma y arquitectura de CPU.</tr
 <context>
   <name>GameService</name>
   <message>
+    <source>Draw</source>
+    <translation>Tablas</translation>
+  </message>
+  <message>
     <source>White wins on time</source>
     <translation>Ganan las blancas por tiempo</translation>
   </message>
   <message>
     <source>Black wins on time</source>
     <translation>Ganan las negras por tiempo</translation>
-  </message>
-  <message>
-    <source>Draw</source>
-    <translation>Tablas</translation>
   </message>
   <message>
     <source>Black wins</source>
