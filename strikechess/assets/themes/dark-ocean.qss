@@ -232,6 +232,21 @@ QToolBar {
   spacing: 4px;
 }
 
+QToolBar QToolButton {
+  border-radius: 4px;
+  padding: 2px;
+}
+
+QToolBar QToolButton:hover {
+  background-color: #385f80;
+}
+
+QToolBar::separator {
+  background-color: #385f80;
+  margin: 6px 3px;
+  width: 1px;
+}
+
 QToolTip {
   background-color: #344d69;
   border: 1px solid #385f80;
