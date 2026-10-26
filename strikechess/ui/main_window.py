@@ -397,6 +397,9 @@ class MainWindow(QMainWindow):
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
+        self._evaluation_bar.show()
+        self._engine_analysis_label.show()
+
         self._request_engine_analysis()
         self._update_actions()
 
@@ -406,6 +409,9 @@ class MainWindow(QMainWindow):
         self._notifications_label.clear()
         self._engine_analysis_label.clear()
         self._evaluation_bar.reset_appearance()
+
+        self._evaluation_bar.hide()
+        self._engine_analysis_label.hide()
 
         self._update_actions()
         self.update_clock_timers()
@@ -449,6 +455,9 @@ class MainWindow(QMainWindow):
     @Slot(Score)
     def animate_evaluation(self, score: Score) -> None:
         """Show position evaluation based on `score`."""
+        if not self._engine.is_analyzing:
+            return
+
         self._evaluation_bar.animate(score)
 
     @Slot(str)
@@ -546,6 +555,9 @@ class MainWindow(QMainWindow):
     @Slot(str)
     def show_engine_variation(self, variation: str) -> None:
         """Show formatted variation based on engine analysis."""
+        if not self._engine.is_analyzing:
+            return
+
         formatted_variation: str = sub(r"(?=(\b\d+\.+))", "\n", variation).strip()
         self._engine_analysis_label.setText(formatted_variation)
 
@@ -864,6 +876,12 @@ class MainWindow(QMainWindow):
 
         self._grid_layout.setColumnStretch(0, 1)
         self._grid_layout.setColumnStretch(6, 1)
+
+        for widget in (self._evaluation_bar, self._engine_analysis_label):
+            size_policy: QSizePolicy = widget.sizePolicy()
+            size_policy.setRetainSizeWhenHidden(True)
+            widget.setSizePolicy(size_policy)
+            widget.hide()
 
         central_widget: QWidget = QWidget()
         central_widget.setLayout(self._grid_layout)

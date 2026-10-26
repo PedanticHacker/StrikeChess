@@ -27,6 +27,7 @@ class EvaluationBar(QProgressBar):
 
     def reset_appearance(self) -> None:
         """Rewind chunk and clear evaluation text."""
+        self._animation.stop()
         self.reset()
 
     def animate(self, evaluation: Score) -> None:
