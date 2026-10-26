@@ -11,7 +11,7 @@ from strikechess import __version__
 
 
 IconSizesInPixels: Final[tuple[int, ...]] = (16, 24, 32)
-IconDevicePixelRatios: Final[tuple[float, ...]] = (1.0, 2.0)
+IconDevicePixelRatios: Final[tuple[float, ...]] = (1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0)
 
 
 def ask_question(parent: QWidget | None, title: str, question: str) -> bool:
