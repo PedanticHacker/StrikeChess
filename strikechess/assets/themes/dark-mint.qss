@@ -238,7 +238,7 @@ QToolBar QToolButton {
 }
 
 QToolBar QToolButton:hover {
-  background-color: #366666;
+  background-color: #326060;
 }
 
 QToolBar::separator {
