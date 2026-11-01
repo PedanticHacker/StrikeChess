@@ -68,6 +68,7 @@ class TableView(QTableView):
         """Select move that exists before current move."""
         if self.current_move == 0 and self.model().index(0, 0).data() == "...":
             return
+
         self._select_model_index(self.previous_model_index)
 
     def select_next_move(self) -> None:

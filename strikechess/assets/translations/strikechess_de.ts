@@ -112,10 +112,6 @@ Versuchen Sie, an einem anderen Ort zu speichern.</translation>
     <translation>Möchten Sie die Engine wirklich entladen?</translation>
   </message>
   <message>
-    <source>(no engine)</source>
-    <translation>(keine Engine)</translation>
-  </message>
-  <message>
     <source>Apply FEN</source>
     <translation>FEN anwenden</translation>
   </message>
@@ -192,7 +188,7 @@ Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
     <translation>Drehen</translation>
   </message>
   <message>
-    <source>Flips board orientation and board-related elements.</source>
+    <source>Flips the board orientation and board-related elements.</source>
     <translation>Dreht die Brettausrichtung und zugehörige Elemente.</translation>
   </message>
   <message>

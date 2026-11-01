@@ -260,6 +260,7 @@ class MainWindow(QMainWindow):
                     "Check file permissions and try again."
                 ),
             )
+
         except ValueError as error:
             show_warning(self, self.tr("Load Error"), str(error))
 
@@ -406,12 +407,16 @@ class MainWindow(QMainWindow):
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""
         self._engine.stop_analysis()
-        self._notifications_label.clear()
         self._engine_analysis_label.clear()
         self._evaluation_bar.reset_appearance()
 
         self._evaluation_bar.hide()
         self._engine_analysis_label.hide()
+
+        if self._game.is_over_by_result():
+            self._notifications_label.setText(self._game.result())
+        else:
+            self._notifications_label.clear()
 
         self._update_actions()
         self.update_clock_timers()
@@ -428,9 +433,7 @@ class MainWindow(QMainWindow):
         self.stop_analysis()
 
         self._engine.unload()
-        self._engine_name_label.setText(self.tr("(no engine)"))
-
-        self._notifications_label.clear()
+        self._engine_name_label.setText(self._engine.name)
 
         self._update_actions()
         self._show_engine_ponder()
@@ -549,6 +552,9 @@ class MainWindow(QMainWindow):
     @Slot(Move)
     def show_best_move_arrow(self, best_move: Move) -> None:
         """Show `best_move` as arrow marker on board."""
+        if not self._engine.is_analyzing:
+            return
+
         self._board.update()
         self._game.set_arrow(best_move)
 
@@ -583,9 +589,6 @@ class MainWindow(QMainWindow):
         self._show_opening()
         self.stop_analysis()
 
-        if self._game.is_over_by_result():
-            self._notifications_label.setText(self._game.result())
-
         self._board.update()
 
         if is_returning_from_history:
@@ -594,10 +597,13 @@ class MainWindow(QMainWindow):
     @Slot()
     def unload_engine_on_error(self) -> None:
         """Unload engine and show warning when engine error occurs."""
+        if not self._engine.is_loaded():
+            return
+
         self.stop_analysis()
 
         self._engine.unload()
-        self._engine_name_label.setText(self.tr("(no engine)"))
+        self._engine_name_label.setText(self._engine.name)
 
         self._update_actions()
         self._show_engine_ponder()
@@ -733,7 +739,7 @@ class MainWindow(QMainWindow):
             shortcut="Ctrl+F",
             name=self.tr("Flip"),
             icon=create_svg_icon("flip"),
-            status_tip=self.tr("Flips board orientation and board-related elements."),
+            status_tip=self.tr("Flips the board orientation and board-related elements."),
         )
         self.german_language_action: QAction = create_action(
             shortcut="",
@@ -1151,7 +1157,6 @@ class MainWindow(QMainWindow):
             self._black_clock.stop_timer()
             self._white_clock.stop_timer()
             self._board.disable_interaction()
-            self._notifications_label.setText(self._game.result())
             return
 
         self.request_engine_move()

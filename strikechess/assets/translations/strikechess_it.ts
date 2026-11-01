@@ -112,10 +112,6 @@ Prova a salvare in un'altra posizione.</translation>
     <translation>Sei sicuro di voler scaricare il motore?</translation>
   </message>
   <message>
-    <source>(no engine)</source>
-    <translation>(nessun motore)</translation>
-  </message>
-  <message>
     <source>Apply FEN</source>
     <translation>Applica FEN</translation>
   </message>
@@ -192,7 +188,7 @@ Riavvia StrikeChess o carica un motore.</translation>
     <translation>Capovolgi</translation>
   </message>
   <message>
-    <source>Flips board orientation and board-related elements.</source>
+    <source>Flips the board orientation and board-related elements.</source>
     <translation>Capovolge l'orientamento della scacchiera e gli elementi correlati.</translation>
   </message>
   <message>

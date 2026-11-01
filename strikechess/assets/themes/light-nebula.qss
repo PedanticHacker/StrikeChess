@@ -147,6 +147,20 @@ QMenuBar::item:selected {
   background-color: #d395ff;
 }
 
+QProgressBar {
+  background-color: white;
+  border: 1px solid #9d4ee6;
+  border-radius: 4px;
+  color: #9c4ce6;
+  font-weight: bold;
+  text-align: center;
+}
+
+QProgressBar::chunk {
+  background-color: black;
+  border-radius: 3px;
+}
+
 QPushButton {
   background-color: #9d4ee6;
   border-radius: 4px;
@@ -166,20 +180,6 @@ QPushButton:hover {
 
 QPushButton:pressed {
   background-color: #3a1066;
-}
-
-QProgressBar {
-  background-color: white;
-  border: 1px solid #9d4ee6;
-  border-radius: 4px;
-  color: #9c4ce6;
-  font-weight: bold;
-  text-align: center;
-}
-
-QProgressBar::chunk {
-  background-color: black;
-  border-radius: 3px;
 }
 
 QRadioButton::indicator {

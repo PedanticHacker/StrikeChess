@@ -4,6 +4,7 @@ import platform
 import subprocess
 from pathlib import Path
 from contextlib import suppress
+from concurrent.futures import CancelledError
 
 from chess import Move
 from cpuinfo import get_cpu_info
@@ -120,7 +121,7 @@ class EngineService(QObject):
                     white_inc=white_increment,
                 ),
             )
-        except EngineError:
+        except (CancelledError, EngineError):
             self.is_thinking = False
 
             if engine is self._engine:
@@ -157,7 +158,7 @@ class EngineService(QObject):
                         self.score_analyzed.emit(score)
                         self.best_move_analyzed.emit(best_move)
                         self.variation_analyzed.emit(variation)
-        except (EngineError, TimeoutError):
+        except (CancelledError, EngineError, TimeoutError):
             self.is_analyzing = False
 
             if engine is self._engine:
@@ -179,6 +180,7 @@ class EngineService(QObject):
             engine.ping()
         except (EngineError, TimeoutError):
             engine.close()
+            self.error_occurred.emit()
 
     def _load_default_engine(self) -> None:
         """Load executable file of default Stockfish engine."""

@@ -112,10 +112,6 @@ Intente guardar en otra ubicación.</translation>
     <translation>¿Está seguro de que desea descargar el motor?</translation>
   </message>
   <message>
-    <source>(no engine)</source>
-    <translation>(sin motor)</translation>
-  </message>
-  <message>
     <source>Apply FEN</source>
     <translation>Aplicar FEN</translation>
   </message>
@@ -192,7 +188,7 @@ Reinicie StrikeChess o cargue un motor.</translation>
     <translation>Girar</translation>
   </message>
   <message>
-    <source>Flips board orientation and board-related elements.</source>
+    <source>Flips the board orientation and board-related elements.</source>
     <translation>Gira la orientación del tablero y los elementos relacionados.</translation>
   </message>
   <message>
