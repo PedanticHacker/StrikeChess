@@ -22,7 +22,7 @@ jobs:
             artifact-name: StrikeChess-Windows
             engine-platform: Windows
             engine-slug: windows
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             artifact-name: StrikeChess-Linux
             engine-platform: Linux
             engine-slug: ubuntu
