@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QMainWindow,
     QMessageBox,
+    QApplication,
 )
 
 from strikechess.ui.sounds import SoundPlayer
@@ -622,7 +623,6 @@ class MainWindow(QMainWindow):
         """Prompt whether to quit app."""
         if ask_question(self, self.tr("Quit"), self.tr("Are you sure you want to quit?")):
             event.accept()
-            self._terminate_engine()
         else:
             event.ignore()
 
@@ -671,6 +671,9 @@ class MainWindow(QMainWindow):
 
     def _connect_signals_to_slots(self) -> None:
         """Connect component signals to corresponding slot methods."""
+
+        # App
+        QApplication.instance().aboutToQuit.connect(self._terminate_engine)
 
         # Clocks
         self._black_clock.expired.connect(self.expire_clock_for_black)

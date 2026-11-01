@@ -28,6 +28,8 @@ Download the latest stable release for your platform from the [Releases](https:/
 
 ### Linux users
 
+Requirements: Ubuntu 24.04+, Debian 13+, or another distribution with glibc 2.38+
+
 Extract the downloaded ZIP file, navigate to the extracted directory in your terminal, and run the `install.sh` script:
 ```bash
 cd ~/Downloads/StrikeChess-Linux  # Adjust path if needed
