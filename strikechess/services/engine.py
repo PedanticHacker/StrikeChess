@@ -126,9 +126,6 @@ class EngineService(QObject):
             )
 
         except CancelledError:
-            if engine is not self._engine:
-                self.is_thinking = False
-
             return
 
         except EngineError:
