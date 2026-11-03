@@ -39,8 +39,6 @@ class SvgBoard(QSvgWidget):
     inner_border = _create_color("_inner_border")
     outer_border = _create_color("_outer_border")
     square_light = _create_color("_square_light")
-    square_dark_lastmove = _create_color("_square_dark_lastmove")
-    square_light_lastmove = _create_color("_square_light_lastmove")
 
     def __init__(
         self,
@@ -71,8 +69,6 @@ class SvgBoard(QSvgWidget):
         self._inner_border: QColor = QColor()
         self._outer_border: QColor = QColor()
         self._square_light: QColor = QColor()
-        self._square_dark_lastmove: QColor = QColor()
-        self._square_light_lastmove: QColor = QColor()
 
         self._animation: QVariantAnimation = QVariantAnimation(self)
         self._animation.finished.connect(self.stop_dragging)
@@ -235,8 +231,6 @@ class SvgBoard(QSvgWidget):
             "inner border": self._inner_border.name(),
             "outer border": self._outer_border.name(),
             "square light": self._square_light.name(),
-            "square dark lastmove": self._square_dark_lastmove.name(),
-            "square light lastmove": self._square_light_lastmove.name(),
         }
 
     def _square_center(self, square: Square) -> QPointF:

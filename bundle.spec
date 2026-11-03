@@ -12,7 +12,7 @@ dependency_analysis = Analysis(
         ("strikechess/assets/openings.json", "assets"),
         ("strikechess/assets/themes", "assets/themes"),
         (f"strikechess/{engine_directory}", engine_directory),
-        ("strikechess/assets/translations", "assets/translations"),
+        ("strikechess/assets/translations/*.qm", "assets/translations"),
     ],
 )
 

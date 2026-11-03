@@ -9,6 +9,7 @@ from concurrent.futures import CancelledError
 from chess import Move
 from cpuinfo import get_cpu_info
 from PySide6.QtCore import QObject, Signal
+from PySide6.QtWidgets import QApplication
 from psutil import cpu_count, virtual_memory
 from chess.engine import EngineError, Limit, Score, SimpleEngine
 
@@ -35,6 +36,8 @@ class EngineService(QObject):
         self.is_analyzing: bool = False
 
         self._load_default_engine()
+
+        QApplication.instance().aboutToQuit.connect(self.terminate)
 
     @property
     def name(self) -> str:
@@ -121,7 +124,14 @@ class EngineService(QObject):
                     white_inc=white_increment,
                 ),
             )
-        except (CancelledError, EngineError):
+
+        except CancelledError:
+            if engine is not self._engine:
+                self.is_thinking = False
+
+            return
+
+        except EngineError:
             self.is_thinking = False
 
             if engine is self._engine:
@@ -158,6 +168,7 @@ class EngineService(QObject):
                         self.score_analyzed.emit(score)
                         self.best_move_analyzed.emit(best_move)
                         self.variation_analyzed.emit(variation)
+
         except (CancelledError, EngineError, TimeoutError):
             self.is_analyzing = False
 

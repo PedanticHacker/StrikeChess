@@ -1,3 +1,5 @@
+from functools import partial
+
 from PySide6.QtCore import QSize
 from chess import BISHOP, KNIGHT, QUEEN, ROOK, WHITE
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QPushButton
@@ -29,25 +31,10 @@ class PromotionDialog(QDialog):
 
         self.setWindowTitle(self.tr("Pawn Promotion"))
 
-    def select_queen(self) -> None:
-        """Set promotion piece type to queen."""
+    def select_piece_type(self, piece_type: PieceType) -> None:
+        """Set promotion piece type to `piece_type`."""
+        self.piece_type = piece_type
         self.accept()
-        self.piece_type = QUEEN
-
-    def select_rook(self) -> None:
-        """Set promotion piece type to rook."""
-        self.accept()
-        self.piece_type = ROOK
-
-    def select_bishop(self) -> None:
-        """Set promotion piece type to bishop."""
-        self.accept()
-        self.piece_type = BISHOP
-
-    def select_knight(self) -> None:
-        """Set promotion piece type to knight."""
-        self.accept()
-        self.piece_type = KNIGHT
 
     def _create_buttons(self) -> None:
         """Create buttons based on player's color."""
@@ -74,7 +61,7 @@ class PromotionDialog(QDialog):
 
     def _connect_signals_to_slots(self) -> None:
         """Connect button signals to corresponding slot methods."""
-        self.rook_button.clicked.connect(self.select_rook)
-        self.queen_button.clicked.connect(self.select_queen)
-        self.bishop_button.clicked.connect(self.select_bishop)
-        self.knight_button.clicked.connect(self.select_knight)
+        self.rook_button.clicked.connect(partial(self.select_piece_type, ROOK))
+        self.queen_button.clicked.connect(partial(self.select_piece_type, QUEEN))
+        self.bishop_button.clicked.connect(partial(self.select_piece_type, BISHOP))
+        self.knight_button.clicked.connect(partial(self.select_piece_type, KNIGHT))

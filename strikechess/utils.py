@@ -107,7 +107,7 @@ def save_with_file_manager(
         filter=file_filter,
         dir=str(Path.home() / suggested_name),
     )
-    return file_path if file_path else None
+    return file_path or None
 
 
 def show_about(parent: QWidget | None) -> None:
@@ -134,7 +134,7 @@ def show_file_manager(parent: QWidget | None, caption: str, file_filter: str = "
         filter=file_filter,
         dir=str(Path.home()),
     )
-    return file_path if file_path else None
+    return file_path or None
 
 
 def show_info(parent: QWidget | None, message: str) -> None:

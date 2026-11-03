@@ -4,7 +4,7 @@ from pathlib import Path
 from platform import system
 from functools import partial
 
-from chess import BLACK, Move, WHITE
+from chess import BLACK, Color, Move, WHITE
 from chess.engine import EngineError, Score
 from PySide6.QtCore import Property, QThreadPool, QTimer, Slot
 from PySide6.QtGui import QAction, QCloseEvent, QColor, QWheelEvent
@@ -18,7 +18,6 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QMainWindow,
     QMessageBox,
-    QApplication,
 )
 
 from strikechess.ui.sounds import SoundPlayer
@@ -60,11 +59,11 @@ ScrollThrottleIntervalMilliseconds: Final[int] = 180
 
 
 def _create_icon_color(attribute_name: str) -> Property:
-    """Create QColor property for theme that tints tool bar icons."""
+    """Create QColor property for tinting tool bar icons."""
     return Property(
         QColor,
         lambda self: getattr(self, attribute_name),
-        lambda self, color: self._set_icon_color(attribute_name, color),
+        lambda self, color: setattr(self, attribute_name, color),
     )
 
 
@@ -167,6 +166,11 @@ class MainWindow(QMainWindow):
         with open(file_path, encoding="utf-8") as qss_file:
             self.setStyleSheet(qss_file.read())
 
+        self.ensurePolished()
+
+        for action, icon in self._tool_bar_icons.items():
+            action.setIcon(create_tinted_icon(icon, self._icon_color, self._disabled_icon_color))
+
         theme_name: ThemeName = ThemeName(file_name)
         self._settings.set_value("ui", "theme", file_name)
         self._theme_name_label.setText(f"{self.tr('Theme')}: {self.tr(theme_name.text)}")
@@ -217,7 +221,10 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("Load Game"),
-                self.tr("You will lose the current game.\n" "Load from PGN anyway?"),
+                self.tr(
+                    "You will lose the current game.\n"
+                    "Load from PGN anyway?"
+                ),
             ):
                 return
 
@@ -271,7 +278,10 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("New Game"),
-                self.tr("You will lose the current game.\n" "Start a new game anyway?"),
+                self.tr(
+                    "You will lose the current game.\n"
+                    "Start a new game anyway?"
+                ),
             ):
                 return
 
@@ -471,7 +481,10 @@ class MainWindow(QMainWindow):
             if not ask_question(
                 self,
                 self.tr("Apply FEN"),
-                self.tr("You will lose the current game.\n" "Apply the FEN anyway?"),
+                self.tr(
+                    "You will lose the current game.\n"
+                    "Apply the FEN anyway?"
+                ),
             ):
                 self._show_fen()
                 return
@@ -485,30 +498,16 @@ class MainWindow(QMainWindow):
 
         self._update_ui_state()
 
-    @Slot()
-    def expire_clock_for_black(self) -> None:
-        """End game when Black's clock expires."""
+    @Slot(Color)
+    def expire_clock_for(self, player_color: Color) -> None:
+        """End game when clock of `player_color` expires."""
         self._engine.stop_ponder()
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
         self._board.disable_interaction()
-        self._game.expire_clock_for(BLACK)
         self._sound_player.play_game_over()
-        self._notifications_label.setText(self._game.result())
-
-        self._update_actions()
-
-    @Slot()
-    def expire_clock_for_white(self) -> None:
-        """End game when White's clock expires."""
-        self._engine.stop_ponder()
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
-
-        self._board.disable_interaction()
-        self._game.expire_clock_for(WHITE)
-        self._sound_player.play_game_over()
+        self._game.expire_clock_for(player_color)
         self._notifications_label.setText(self._game.result())
 
         self._update_actions()
@@ -542,10 +541,11 @@ class MainWindow(QMainWindow):
         if move.promotion is not None:
             promotion_dialog: PromotionDialog = PromotionDialog(self, self._game.turn)
             promotion_dialog.exec()
+            promotion_dialog.deleteLater()
 
             move.promotion = promotion_dialog.piece_type
 
-            if move.promotion is None:
+            if move.promotion is None or self._game.is_over_by_result():
                 return
 
         self._play_move(move)
@@ -672,12 +672,9 @@ class MainWindow(QMainWindow):
     def _connect_signals_to_slots(self) -> None:
         """Connect component signals to corresponding slot methods."""
 
-        # App
-        QApplication.instance().aboutToQuit.connect(self._terminate_engine)
-
         # Clocks
-        self._black_clock.expired.connect(self.expire_clock_for_black)
-        self._white_clock.expired.connect(self.expire_clock_for_white)
+        self._black_clock.expired.connect(partial(self.expire_clock_for, BLACK))
+        self._white_clock.expired.connect(partial(self.expire_clock_for, WHITE))
 
         # Engine
         self._engine.move_played.connect(self.play_engine_move)
@@ -1046,11 +1043,6 @@ class MainWindow(QMainWindow):
         board: Board = self._game.board_copy()
         QThreadPool.globalInstance().start(partial(self._engine.start_analysis, board))
 
-    def _set_icon_color(self, attribute_name: str, color: QColor) -> None:
-        """Set `color` at `attribute_name`, then tint tool bar icons."""
-        setattr(self, attribute_name, color)
-        self._tint_tool_bar_icons()
-
     def _show_engine_ponder(self) -> None:
         """Show engine ponder state, unavailable without engine."""
         is_engine_loaded: bool = self._engine.is_loaded()
@@ -1098,15 +1090,6 @@ class MainWindow(QMainWindow):
 
         self.request_engine_move()
         self._orient_board_for_human()
-
-    def _terminate_engine(self) -> None:
-        """Terminate engine process."""
-        self._engine.terminate()
-
-    def _tint_tool_bar_icons(self) -> None:
-        """Tint tool bar icons with icon colors of theme."""
-        for action, icon in self._tool_bar_icons.items():
-            action.setIcon(create_tinted_icon(icon, self._icon_color, self._disabled_icon_color))
 
     def _update_actions(self) -> None:
         """Update availability of actions based on game state."""

@@ -261,7 +261,5 @@ SvgBoard {
   qproperty-margin: #a5b69c;
   qproperty-outer_border: #27371b;
   qproperty-square_dark: #8b6b47;
-  qproperty-square_dark_lastmove: #755a3c;
   qproperty-square_light: #b8c6a3;
-  qproperty-square_light_lastmove: #85987c;
 }
