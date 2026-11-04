@@ -96,12 +96,12 @@ Trotzdem ein neues Spiel starten?</translation>
   <message>
     <source>Cannot save game as PGN.
 
-The destination may be read-only or full.
-Try saving to a different location.</source>
+The folder may be read-only or the disk may be full.
+Try saving to a different folder.</source>
     <translation>Spiel kann nicht als PGN gespeichert werden.
 
-Das Ziel ist möglicherweise schreibgeschützt oder voll.
-Versuchen Sie, an einem anderen Ort zu speichern.</translation>
+Der Ordner ist möglicherweise schreibgeschützt oder der Datenträger voll.
+Versuchen Sie, in einem anderen Ordner zu speichern.</translation>
   </message>
   <message>
     <source>Unload Engine</source>

@@ -12,9 +12,9 @@ class PgnService:
     def parse_pgn(self, pgn_text: str) -> tuple[list[str], str | None, str]:
         """Parse `pgn_text` into moves, optional FEN, and result."""
         pgn_data: StringIO = StringIO(pgn_text)
-        game: PgnGame | None = read_game(pgn_data)
+        game: PgnGame = read_game(pgn_data) or PgnGame()
 
-        if game is None:
+        if not game.mainline_moves() and "FEN" not in game.headers:
             raise ValueError(
                 QApplication.translate(
                     "PgnService",

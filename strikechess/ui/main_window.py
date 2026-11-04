@@ -341,9 +341,13 @@ class MainWindow(QMainWindow):
 
     def save_as_pgn(self) -> None:
         """Save current game as PGN."""
-        engine_name: str = self._settings.value("engine", "name")
+        engine_name: str = self._engine.name
         is_engine_white: bool = self._settings.value("engine", "is_white")
-        human_name: str = self._settings.value("human", "name") or self.tr("Player")
+        human_name: str = self._settings.value("human", "name") or "Player"
+
+        if not self._engine.is_loaded():
+            engine_name = "Unknown"
+
         suggested_file_name: str = self._pgn.suggest_file_name(
             human_name,
             engine_name,
@@ -381,8 +385,8 @@ class MainWindow(QMainWindow):
                 self.tr("Save Error"),
                 self.tr(
                     "Cannot save game as PGN.\n\n"
-                    "The destination may be read-only or full.\n"
-                    "Try saving to a different location."
+                    "The folder may be read-only or the disk may be full.\n"
+                    "Try saving to a different folder."
                 ),
             )
 
@@ -443,7 +447,7 @@ class MainWindow(QMainWindow):
 
         self.stop_analysis()
 
-        self._engine.unload()
+        self._engine.terminate()
         self._engine_name_label.setText(self._engine.name)
 
         self._update_actions()
@@ -603,7 +607,7 @@ class MainWindow(QMainWindow):
 
         self.stop_analysis()
 
-        self._engine.unload()
+        self._engine.terminate()
         self._engine_name_label.setText(self._engine.name)
 
         self._update_actions()

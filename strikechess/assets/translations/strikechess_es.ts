@@ -96,12 +96,12 @@ Start a new game anyway?</source>
   <message>
     <source>Cannot save game as PGN.
 
-The destination may be read-only or full.
-Try saving to a different location.</source>
+The folder may be read-only or the disk may be full.
+Try saving to a different folder.</source>
     <translation>No se puede guardar la partida como PGN.
 
-El destino puede ser de solo lectura o estar lleno.
-Intente guardar en otra ubicación.</translation>
+La carpeta puede ser de solo lectura o el disco puede estar lleno.
+Intente guardar en otra carpeta.</translation>
   </message>
   <message>
     <source>Unload Engine</source>

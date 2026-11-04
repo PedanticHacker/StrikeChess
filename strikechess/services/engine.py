@@ -57,8 +57,10 @@ class EngineService(QObject):
             _delete_quarantine_attribute(file_path)
 
             new_engine = SimpleEngine.popen_uci(file_path)
-            engine_name: str = new_engine.id["name"]
             new_engine.configure(_engine_options(new_engine.options))
+
+            if "name" not in new_engine.id:
+                raise EngineError
 
         except Exception:
             if new_engine is not None:
@@ -75,13 +77,6 @@ class EngineService(QObject):
 
         self.terminate()
         self._engine = new_engine
-
-        self._settings.set_value("engine", "name", engine_name)
-
-    def unload(self) -> None:
-        """Terminate currently loaded engine."""
-        self.terminate()
-        self._settings.set_value("engine", "name", "(no engine)")
 
     def terminate(self) -> None:
         """Stop analysis and terminate engine."""
@@ -192,10 +187,8 @@ class EngineService(QObject):
 
     def _load_default_engine(self) -> None:
         """Load executable file of default Stockfish engine."""
-        try:
+        with suppress(EngineError):
             self.load_file(_stockfish_executable())
-        except EngineError:
-            self._settings.set_value("engine", "name", "(no engine)")
 
 
 def _delete_quarantine_attribute(file_path: str) -> None:

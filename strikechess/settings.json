@@ -5,8 +5,7 @@
   },
   "engine": {
     "is_white": false,
-    "is_ponder_enabled": false,
-    "name": "(no engine)"
+    "is_ponder_enabled": false
   },
   "human": {
     "name": ""
