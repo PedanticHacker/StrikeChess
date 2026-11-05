@@ -34,12 +34,12 @@ class EvaluationBar(QProgressBar):
         """Start animating chunk based on `evaluation`."""
         if evaluation.is_mate():
             moves_to_mate: int = evaluation.mate() or 0
-            evaluation_text: str = f"M{abs(moves_to_mate)}"
+            evaluation_text: str = f"M{moves_to_mate:+}"
             animation_value: int = 0 if moves_to_mate > 0 else 1000
         else:
             evaluation_score: int = evaluation.score() or 0
-            evaluation_text = f"{evaluation_score / 100:.2f}"
             animation_value = max(0, min(1000, 500 - evaluation_score))
+            evaluation_text = f"{evaluation_score / 100:+.2f}" if evaluation_score else "0.00"
 
         self.setFormat(evaluation_text)
         self._animation.setEndValue(animation_value)

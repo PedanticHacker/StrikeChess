@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QLCDNumber
 from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 
 
+TenthsThresholdSeconds: Final[float] = 10.0
 CountdownIntervalMilliseconds: Final[int] = 30
 CountdownThresholdSeconds: Final[float] = CountdownIntervalMilliseconds / 1000
 
@@ -88,14 +89,19 @@ class DigitalClock(QLCDNumber):
         self._show_time()
 
     def _show_time(self) -> None:
-        """Show time on clock in hh:mm:ss or mm:ss format."""
+        """Show time on clock in hh:mm:ss, mm:ss, or mm:ss.s format."""
         time_as_text: str = self._format_time()
         self.setDigitCount(len(time_as_text))
         self.display(time_as_text)
 
     def _format_time(self) -> str:
-        """Get time on clock in hh:mm:ss or mm:ss format."""
-        time_in_seconds: int = max(0, round(self.time))
+        """Get time on clock in hh:mm:ss, mm:ss, or mm:ss.s format."""
+        time_in_tenths_of_second: int = max(0, int(self.time * 10))
+        time_in_seconds, tenths_of_second = divmod(time_in_tenths_of_second, 10)
         hours, remaining_time = divmod(time_in_seconds, 3600)
         minutes, seconds = divmod(remaining_time, 60)
+
+        if self.time < TenthsThresholdSeconds:
+            return f"{minutes:02}:{seconds:02}.{tenths_of_second}"
+
         return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"

@@ -440,7 +440,7 @@ class MainWindow(QMainWindow):
 
     def update_clock_timers(self) -> None:
         """Start/stop clocks based on current turn."""
-        if not self._game.is_in_progress():
+        if not self._game.move_stack:
             self._black_clock.stop_timer()
             self._white_clock.stop_timer()
             return
@@ -630,6 +630,9 @@ class MainWindow(QMainWindow):
     def _apply_increment(self) -> None:
         """Add increment to player's clock based on current turn."""
         if self._game.player_with_expired_clock is not None:
+            return
+
+        if len(self._game.move_stack) == 1:
             return
 
         if self._game.is_white_to_move():
