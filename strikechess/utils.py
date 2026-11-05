@@ -3,9 +3,9 @@ import json
 from pathlib import Path
 from functools import lru_cache
 
-from PySide6.QtCore import QLibraryInfo, QSize, QTranslator
 from PySide6.QtGui import QAction, QColor, QIcon, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
+from PySide6.QtCore import Property, QLibraryInfo, QSize, QTranslator
 
 from strikechess import __version__
 
@@ -33,6 +33,15 @@ def create_action(
     action.setStatusTip(status_tip)
     action.triggered.connect(handler)
     return action
+
+
+def create_color_property(attribute_name: str) -> Property:
+    """Create QColor property stored in `attribute_name`."""
+    return Property(
+        QColor,
+        lambda self: getattr(self, attribute_name),
+        lambda self, color: setattr(self, attribute_name, color),
+    )
 
 
 def create_colored_icon(color: str) -> QIcon:

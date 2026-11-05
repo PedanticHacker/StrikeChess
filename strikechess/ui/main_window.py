@@ -6,7 +6,7 @@ from functools import partial
 
 from chess import BLACK, Color, Move, WHITE
 from chess.engine import EngineError, Score
-from PySide6.QtCore import Property, QThreadPool, QTimer, Slot
+from PySide6.QtCore import QThreadPool, QTimer, Slot
 from PySide6.QtGui import QAction, QCloseEvent, QColor, QWheelEvent
 from PySide6.QtWidgets import (
     QMenu,
@@ -51,20 +51,12 @@ from strikechess.utils import (
     create_tinted_icon,
     create_colored_icon,
     install_translators,
+    create_color_property,
     save_with_file_manager,
 )
 
 
 ScrollThrottleIntervalMilliseconds: Final[int] = 180
-
-
-def _create_icon_color(attribute_name: str) -> Property:
-    """Create QColor property for tinting tool bar icons."""
-    return Property(
-        QColor,
-        lambda self: getattr(self, attribute_name),
-        lambda self, color: setattr(self, attribute_name, color),
-    )
 
 
 class ThemeName(StrEnum):
@@ -88,8 +80,8 @@ class ThemeName(StrEnum):
 class MainWindow(QMainWindow):
     """Main app window."""
 
-    icon_color = _create_icon_color("_icon_color")
-    disabled_icon_color = _create_icon_color("_disabled_icon_color")
+    icon_color = create_color_property("_icon_color")
+    disabled_icon_color = create_color_property("_disabled_icon_color")
 
     def __init__(self) -> None:
         super().__init__()
@@ -316,13 +308,6 @@ class MainWindow(QMainWindow):
         if self._game.is_engine_to_move() or force:
             self._engine_fen = self._game.fen
 
-            board: Board = self._game.board_copy()
-
-            black_time: float = self._black_clock.time
-            white_time: float = self._white_clock.time
-            black_increment: float = self._black_clock.increment
-            white_increment: float = self._white_clock.increment
-
             self._engine.is_thinking = True
             self._notifications_label.setText(self.tr("Thinking..."))
 
@@ -331,11 +316,11 @@ class MainWindow(QMainWindow):
             QThreadPool.globalInstance().start(
                 partial(
                     self._engine.play_move,
-                    board=board,
-                    black_time=black_time,
-                    white_time=white_time,
-                    black_increment=black_increment,
-                    white_increment=white_increment,
+                    board=self._game.board_copy(),
+                    black_time=self._black_clock.time,
+                    white_time=self._white_clock.time,
+                    black_increment=self._black_clock.increment,
+                    white_increment=self._white_clock.increment,
                 )
             )
 
@@ -1044,8 +1029,9 @@ class MainWindow(QMainWindow):
         self._engine.is_analyzing = True
         self._notifications_label.setText(self.tr("Analyzing..."))
 
-        board: Board = self._game.board_copy()
-        QThreadPool.globalInstance().start(partial(self._engine.start_analysis, board))
+        QThreadPool.globalInstance().start(
+            partial(self._engine.start_analysis, self._game.board_copy())
+        )
 
     def _show_engine_ponder(self) -> None:
         """Show engine ponder state, unavailable without engine."""
@@ -1077,8 +1063,6 @@ class MainWindow(QMainWindow):
 
     def _start_new_game(self) -> None:
         """Reset game and UI states to start new game."""
-        self._game.is_viewing_history = False
-
         self._game.reset()
         self._table_model.reset()
 

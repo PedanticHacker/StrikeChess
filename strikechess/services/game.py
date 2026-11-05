@@ -127,9 +127,6 @@ class GameService(QObject):
 
     def push(self, move: Move) -> None:
         """Update game state due to `move` being played."""
-        if not self._board.is_legal(move):
-            return
-
         self._delete_game_data_after_index()
 
         san_move: str = self._board.san_and_push(move)
@@ -142,9 +139,6 @@ class GameService(QObject):
 
     def find_legal_move(self, origin_square: Square, target_square: Square) -> None:
         """Send legal move from `origin_square` to `target_square`."""
-        if origin_square is None or target_square is None:
-            return
-
         with suppress(IllegalMoveError):
             move: Move = self._board.find_move(origin_square, target_square)
             self.move_played.emit(move)
@@ -252,12 +246,8 @@ class GameService(QObject):
 
     def _delete_game_data_after_index(self) -> None:
         """Delete moves and positions after internal move index."""
-        last_move_index: int = len(self.moves) - 1
-
-        if self.move_index < last_move_index:
-            after_move_index: slice = slice(self.move_index + 1, len(self.moves))
-            del self.moves[after_move_index]
-            del self.positions[after_move_index]
+        del self.moves[self.move_index + 1:]
+        del self.positions[self.move_index + 1:]
 
     def _add_ellipsis_as_first_move(self) -> None:
         """Add ellipsis as White's missing move if Black starts."""

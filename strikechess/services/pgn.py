@@ -24,19 +24,7 @@ class PgnService:
                 )
             )
 
-        if game.errors:
-            raise ValueError(
-                QApplication.translate(
-                    "PgnService",
-                    "Cannot load game.\n\n"
-                    "PGN content might be invalid.\n"
-                    "Check whether your PGN is corrupted or incomplete.",
-                )
-            )
-
-        board: Board = game.board()
-
-        if not board.is_valid():
+        if game.errors or not game.board().is_valid():
             raise ValueError(
                 QApplication.translate(
                     "PgnService",
@@ -47,13 +35,12 @@ class PgnService:
             )
 
         moves: list[str] = []
+        board: Board = game.board()
         fen: str | None = game.headers.get("FEN")
         result: str = game.headers.get("Result", "*")
 
         for move in game.mainline_moves():
-            san_move: str = board.san(move)
-            board.push(move)
-            moves.append(san_move)
+            moves.append(board.san_and_push(move))
 
         return moves, fen, result
 
@@ -76,11 +63,7 @@ class PgnService:
         }
 
         pgn_game: PgnGame = PgnGame(headers)
-
-        board: Board = pgn_game.board()
-        board.set_fen(game.root_fen)
-        pgn_game.setup(board)
-
+        pgn_game.setup(game.root_fen)
         pgn_game.add_line(game.move_stack)
 
         return str(pgn_game)

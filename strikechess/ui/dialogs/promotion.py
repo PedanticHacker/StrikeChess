@@ -1,7 +1,7 @@
 from functools import partial
 
 from PySide6.QtCore import QSize
-from chess import BISHOP, KNIGHT, QUEEN, ROOK, WHITE
+from chess import BISHOP, COLOR_NAMES, KNIGHT, QUEEN, ROOK
 from PySide6.QtWidgets import QDialog, QHBoxLayout, QPushButton
 
 from strikechess.utils import create_svg_icon
@@ -38,16 +38,12 @@ class PromotionDialog(QDialog):
 
     def _create_buttons(self) -> None:
         """Create buttons based on player's color."""
-        if self._player_color == WHITE:
-            self.rook_button: QPushButton = _create_button(create_svg_icon("white-rook"))
-            self.queen_button: QPushButton = _create_button(create_svg_icon("white-queen"))
-            self.bishop_button: QPushButton = _create_button(create_svg_icon("white-bishop"))
-            self.knight_button: QPushButton = _create_button(create_svg_icon("white-knight"))
-        else:
-            self.rook_button = _create_button(create_svg_icon("black-rook"))
-            self.queen_button = _create_button(create_svg_icon("black-queen"))
-            self.bishop_button = _create_button(create_svg_icon("black-bishop"))
-            self.knight_button = _create_button(create_svg_icon("black-knight"))
+        color_name: str = COLOR_NAMES[self._player_color]
+
+        self.rook_button: QPushButton = _create_button(create_svg_icon(f"{color_name}-rook"))
+        self.queen_button: QPushButton = _create_button(create_svg_icon(f"{color_name}-queen"))
+        self.bishop_button: QPushButton = _create_button(create_svg_icon(f"{color_name}-bishop"))
+        self.knight_button: QPushButton = _create_button(create_svg_icon(f"{color_name}-knight"))
 
     def _set_horizontal_layout(self) -> None:
         """Add buttons to horizontal layout."""

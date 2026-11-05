@@ -9,10 +9,11 @@ from PySide6.QtCore import (
     QSize,
     QRectF,
     QPointF,
-    Property,
     QEasingCurve,
     QVariantAnimation,
 )
+
+from strikechess.utils import create_color_property
 
 
 AnimationDurationMilliseconds: Final[int] = 350
@@ -21,24 +22,15 @@ Expanding: Final[QSizePolicy.Policy] = QSizePolicy.Policy.Expanding
 svg.XX = "<circle id='xx' r='4.5' cx='22.5' cy='22.5' stroke='#303030' fill='#e5e5e5'/>"
 
 
-def _create_color(attribute_name: str) -> Property:
-    """Create QColor property for board theme."""
-    return Property(
-        QColor,
-        lambda self: getattr(self, attribute_name),
-        lambda self, color: setattr(self, attribute_name, color),
-    )
-
-
 class SvgBoard(QSvgWidget):
     """Scalable Vector Graphics (SVG) board with drag-and-drop."""
 
-    coord = _create_color("_coord")
-    margin = _create_color("_margin")
-    square_dark = _create_color("_square_dark")
-    inner_border = _create_color("_inner_border")
-    outer_border = _create_color("_outer_border")
-    square_light = _create_color("_square_light")
+    coord = create_color_property("_coord")
+    margin = create_color_property("_margin")
+    square_dark = create_color_property("_square_dark")
+    inner_border = create_color_property("_inner_border")
+    outer_border = create_color_property("_outer_border")
+    square_light = create_color_property("_square_light")
 
     def __init__(
         self,
@@ -112,14 +104,9 @@ class SvgBoard(QSvgWidget):
         return (self.board_size - 2 * self.board_margin) / squares_per_row
 
     @property
-    def half_square_size(self) -> float:
-        """Half of square size."""
-        return self.square_size / 2
-
-    @property
     def square_center_offset(self) -> float:
         """Offset to square center, accounting for board margin."""
-        return self.half_square_size + self.board_margin
+        return self.square_size / 2 + self.board_margin
 
     def enable_interaction(self) -> None:
         """Allow human to play moves."""
@@ -174,7 +161,7 @@ class SvgBoard(QSvgWidget):
         square: Square = self._square(cursor_point)
         piece: Piece | None = self._game.piece_at(square)
 
-        if piece is not None and self._can_drag(piece):
+        if self._can_drag(piece):
             self.start_dragging(square, piece)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
@@ -279,11 +266,7 @@ class SvgBoard(QSvgWidget):
             return False
 
         is_engine_piece: bool = piece.color == self._settings.value("engine", "is_white")
-
-        if self._engine.is_loaded() and is_engine_piece:
-            return False
-
-        return True
+        return not (self._engine.is_loaded() and is_engine_piece)
 
     def _is_legal(self, target_square: Square) -> bool:
         """Return True if dropping piece at `target_square` is legal."""
@@ -299,7 +282,7 @@ class SvgBoard(QSvgWidget):
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
             return
 
-        if piece is not None and self._can_drag(piece):
+        if self._can_drag(piece):
             self.setCursor(Qt.CursorShape.OpenHandCursor)
             return
 

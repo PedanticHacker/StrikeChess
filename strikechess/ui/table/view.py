@@ -48,12 +48,11 @@ class TableView(QTableView):
     @property
     def next_model_index(self) -> QModelIndex:
         """Model index of next move."""
-        all_rows: int = self.model().rowCount()
         next_row: int = (self.current_move + 1) // 2
         next_column: int = (self.current_move + 1) % 2
         next_move: QModelIndex = self.model().index(next_row, next_column)
 
-        if next_row < all_rows and next_move.data() is not None:
+        if next_move.data() is not None:
             return next_move
         return QModelIndex()
 

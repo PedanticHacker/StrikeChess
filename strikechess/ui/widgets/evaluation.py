@@ -38,13 +38,8 @@ class EvaluationBar(QProgressBar):
             animation_value: int = 0 if moves_to_mate > 0 else 1000
         else:
             evaluation_score: int = evaluation.score() or 0
-            animation_value = 500 - evaluation_score
             evaluation_text = f"{evaluation_score / 100:.2f}"
-
-        if animation_value < 0:
-            animation_value = 0
-        elif animation_value > 1000:
-            animation_value = 1000
+            animation_value = max(0, min(1000, 500 - evaluation_score))
 
         self.setFormat(evaluation_text)
         self._animation.setEndValue(animation_value)
