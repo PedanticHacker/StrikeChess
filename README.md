@@ -3,15 +3,15 @@
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)
 ![Python](https://img.shields.io/badge/Python-3.14+-blue)
-![Stockfish](https://img.shields.io/badge/Stockfish-18-blue)
+![Stockfish](https://img.shields.io/badge/Stockfish-19-blue)
 
-A chess app with Stockfish 18, 4 languages, 8 themes, 32 time controls, and 3500 openings.
+A chess app with Stockfish 19, 4 languages, 8 themes, 32 time controls, and 3500 openings.
 
 ![Preview](https://github.com/user-attachments/assets/3c864e33-1d64-4186-a0c4-c82563c4db08)
 
 ## Features
 
-- **Play against or analyze with Stockfish 18** → bundled engine with automatic CPU optimization
+- **Play against or analyze with Stockfish 19** → bundled engine with automatic CPU optimization
 - **Real-time analysis** → evaluation bar visualization, best move arrows, and live principal variation updates
 - **PGN support** → import and export games in standard notation
 - **FEN editor** → paste or type positions directly, with validation in place
@@ -131,4 +131,4 @@ pyinstaller --clean bundle.spec
 
 - **StrikeChess:** MIT License © 2026 Boštjan Mejak → See [LICENSE](LICENSE.txt) file
 - **Stockfish:** GPLv3 © 2004-2026 The Stockfish developers → See [NOTICE](NOTICE.txt) file
-- **Python dependencies:** chess, psutil, py-cpuinfo, PySide6 → See [NOTICE](NOTICE.txt) file
+- **Python dependencies:** chess, psutil, PySide6 → See [NOTICE](NOTICE.txt) file

@@ -7,7 +7,6 @@ from contextlib import suppress
 from concurrent.futures import CancelledError
 
 from chess import Move
-from cpuinfo import get_cpu_info
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
 from psutil import cpu_count, virtual_memory
@@ -238,69 +237,7 @@ def _stockfish_executable() -> str:
     system: str = platform.system()
     extension: str = ".exe" if system == "Windows" else ""
 
-    stockfish_directory: Path = root_path() / "assets" / "engines" / "stockfish-18" / system
-    build_path: Path = stockfish_directory / _stockfish_build() / f"stockfish{extension}"
+    stockfish_directory: Path = root_path() / "assets" / "engines" / "stockfish-19" / system
+    executable_path: Path = stockfish_directory / f"stockfish{extension}"
 
-    return str(build_path)
-
-
-def _stockfish_build() -> str:
-    """Get best Stockfish build for current CPU."""
-    if platform.system() == "Darwin" and platform.machine() == "arm64":
-        return "apple-silicon"
-
-    cpu_info: dict[str, Any] = get_cpu_info()
-    supported_instructions: set[str] | None = _supported_instructions(cpu_info)
-
-    if supported_instructions is None:
-        return "x86-64"
-
-    if platform.system() == "Darwin":
-        builds: dict[str, set[str]] = {
-            "bmi2": {"bmi2"},
-            "avx2": {"avx2"},
-            "sse41-popcnt": {"sse41", "popcnt"},
-        }
-    else:
-        builds = {
-            "avx512icl": {
-                "avx512bitalg", "avx512bw", "avx512cd", "avx512dq", "avx512f",
-                "avx512ifma", "avx512vbmi", "avx512vbmi2", "avx512vl",
-                "avx512vnni", "avx512vpopcntdq", "gfni", "vaes", "vpclmulqdq",
-            },
-            "vnni512": {"avx512bw", "avx512dq", "avx512f", "avx512vl", "avx512vnni"},
-            "avx512": {"avx512bw", "avx512f"},
-            "avxvnni": {"avxvnni"},
-            "bmi2": {"bmi2"},
-            "avx2": {"avx2"},
-            "sse41-popcnt": {"sse41", "popcnt"},
-        }
-
-    if _is_bmi2_slow(cpu_info):
-        supported_instructions.discard("bmi2")
-
-    for build, required_instructions in builds.items():
-        if required_instructions <= supported_instructions:
-            return build
-
-    return "x86-64"
-
-
-def _is_bmi2_slow(cpu_info: dict[str, Any]) -> bool:
-    """Return True if CPU runs BMI2 instructions in slow microcode."""
-    zen_1_and_zen_2_family: int = 23
-
-    if cpu_info.get("vendor_id_raw") != "AuthenticAMD":
-        return False
-
-    return cpu_info.get("family") == zen_1_and_zen_2_family
-
-
-def _supported_instructions(cpu_info: dict[str, Any]) -> set[str] | None:
-    """Get CPU instructions, if any."""
-    instruction_names: list[str] | None = cpu_info.get("flags")
-
-    if instruction_names is None:
-        return None
-
-    return {instruction_name.replace("_", "") for instruction_name in instruction_names}
+    return str(executable_path)

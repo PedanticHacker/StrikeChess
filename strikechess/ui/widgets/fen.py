@@ -2,6 +2,8 @@ from chess import Board
 from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import QLineEdit
 
+from strikechess.utils import is_valid_position
+
 
 class FenEditor(QLineEdit):
     """Editor for Forsyth-Edwards Notation (FEN)."""
@@ -58,7 +60,7 @@ class FenEditor(QLineEdit):
         except (IndexError, ValueError):
             return None
 
-        if not position.is_valid():
+        if not is_valid_position(position):
             return None
 
         return position

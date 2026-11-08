@@ -5,6 +5,8 @@ from datetime import datetime
 from PySide6.QtWidgets import QApplication
 from chess.pgn import Game as PgnGame, read_game
 
+from strikechess.utils import is_valid_position
+
 
 class PgnService:
     """Portable Game Notation (PGN) parsing and exporting."""
@@ -24,7 +26,7 @@ class PgnService:
                 )
             )
 
-        if game.errors or not game.board().is_valid():
+        if game.errors or not is_valid_position(game.board()):
             raise ValueError(
                 QApplication.translate(
                     "PgnService",

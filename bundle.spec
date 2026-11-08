@@ -2,7 +2,7 @@ import platform
 
 system = platform.system()
 is_macos = system == "Darwin"
-engine_directory = f"assets/engines/stockfish-18/{system}"
+engine_directory = f"assets/engines/stockfish-19/{system}"
 
 dependency_analysis = Analysis(
     ["main.py"],

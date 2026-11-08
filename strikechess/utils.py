@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from functools import lru_cache
 
+from chess import BISHOP, COLORS, KNIGHT, PAWN, QUEEN, ROOK
 from PySide6.QtGui import QAction, QColor, QIcon, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
 from PySide6.QtCore import Property, QLibraryInfo, QSize, QTranslator
@@ -10,7 +11,10 @@ from PySide6.QtCore import Property, QLibraryInfo, QSize, QTranslator
 from strikechess import __version__
 
 
+MaximumHalfmoveClock: Final[int] = 32767
+MaximumFullmoveNumber: Final[int] = 100_000
 IconSizesInPixels: Final[tuple[int, ...]] = (16, 24, 32)
+InitialPieceCounts: Final[dict[PieceType, int]] = {KNIGHT: 2, BISHOP: 2, ROOK: 2, QUEEN: 1}
 IconDevicePixelRatios: Final[tuple[float, ...]] = (1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 3.0)
 
 
@@ -93,6 +97,26 @@ def install_translators(language_code: str) -> None:
         QApplication.installTranslator(qt_translator)
 
 
+def is_valid_position(position: Board) -> bool:
+    """Return True if `position` is valid and supported by engines."""
+    if not position.is_valid():
+        return False
+
+    if position.halfmove_clock > MaximumHalfmoveClock:
+        return False
+
+    if position.fullmove_number > MaximumFullmoveNumber:
+        return False
+
+    for color in COLORS:
+        missing_pawns: int = 8 - len(position.pieces(PAWN, color))
+
+        if _promoted_pieces(position, color) > missing_pawns:
+            return False
+
+    return True
+
+
 def read_pgn_file(file_path: str) -> str:
     """Read and return PGN text from `file_path`."""
     with open(file_path, encoding="utf-8") as file:
@@ -169,6 +193,19 @@ def _openings() -> dict[str, str]:
 
     with open(file_path, encoding="utf-8") as file:
         return json.load(file)
+
+
+def _promoted_pieces(position: Board, color: Color) -> int:
+    """Get promoted piece count for `color` in `position`."""
+    promoted_pieces: int = 0
+
+    for piece_type, initial_count in InitialPieceCounts.items():
+        piece_count: int = len(position.pieces(piece_type, color))
+
+        if piece_count > initial_count:
+            promoted_pieces += piece_count - initial_count
+
+    return promoted_pieces
 
 
 def _tinted_pixmap(pixmap: QPixmap, color: QColor) -> QPixmap:

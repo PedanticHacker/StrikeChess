@@ -15,7 +15,7 @@ cp logo.svg "$INSTALLATION_DIRECTORY/"
 cat > "$DESKTOP_DIRECTORY/StrikeChess.desktop" << EOF
 [Desktop Entry]
 Categories=BoardGame;Game;
-Comment=Chess app with Stockfish 18
+Comment=Chess app with Stockfish 19
 Exec=$INSTALLATION_DIRECTORY/StrikeChess
 Icon=$INSTALLATION_DIRECTORY/logo.svg
 Name=StrikeChess
