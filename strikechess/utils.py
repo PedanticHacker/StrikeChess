@@ -99,6 +99,9 @@ def install_translators(language_code: str) -> None:
 
 def is_valid_position(position: Board) -> bool:
     """Return True if `position` is valid and supported by engines."""
+    if position.uci_variant != "chess" or position.chess960:
+        return False
+
     if not position.is_valid():
         return False
 

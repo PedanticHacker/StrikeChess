@@ -34,8 +34,7 @@ class TableModel(QAbstractTableModel):
         parent: QModelIndex | QPersistentModelIndex = QModelIndex(),
     ) -> int:
         """Get calculated row count needed for White/Black moves."""
-        all_moves: int = len(self._moves) + 1
-        return all_moves // 2
+        return (len(self._moves) + 1) // 2
 
     def columnCount(
         self,

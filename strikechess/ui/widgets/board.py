@@ -49,7 +49,6 @@ class SvgBoard(QSvgWidget):
         self.is_animating: bool = False
         self.is_interactive: bool = True
         self.dragged_piece: Piece | None = None
-        self.animated_piece: Piece | None = None
         self.origin_square: Square | None = None
         self.cursor_point: QPointF = QPointF(0.0, 0.0)
         self.animation_point: QPointF = QPointF(0.0, 0.0)
@@ -144,7 +143,6 @@ class SvgBoard(QSvgWidget):
         self.dragged_piece = None
         self.is_animating = False
         self.origin_square = None
-        self.animated_piece = None
 
         self.update()
         self._update_cursor_at(self.cursor_point)
@@ -198,7 +196,7 @@ class SvgBoard(QSvgWidget):
 
         super().paintEvent(event)
 
-        if self.is_dragging and self.dragged_piece is not None and self.origin_square is not None:
+        if self.is_dragging:
             current_piece: Piece | None = self._game.piece_at(self.origin_square)
 
             if current_piece is not None and current_piece.color != self.dragged_piece.color:
@@ -207,7 +205,7 @@ class SvgBoard(QSvgWidget):
                 self._render_piece(self.cursor_point)
 
         if self.is_animating:
-            self._render_piece(self.animation_point, self.animated_piece)
+            self._render_piece(self.animation_point)
 
     def _color_names(self) -> dict[str, str]:
         """Get color names for SVG rendering."""
@@ -296,39 +294,21 @@ class SvgBoard(QSvgWidget):
 
     def _slide_piece_back(self, cursor_point: QPointF) -> None:
         """Slide dragged piece from `cursor_point` back to origin."""
-        self.is_dragging = False
-
-        if self.origin_square is not None and self.dragged_piece is not None:
-            self._animate_piece(
-                cursor_point=cursor_point,
-                dragged_piece=self.dragged_piece,
-                origin_square=self.origin_square,
-            )
-
-        self._update_cursor_at(cursor_point)
-
-    def _animate_piece(
-        self,
-        cursor_point: QPointF,
-        origin_square: Square,
-        dragged_piece: Piece,
-    ) -> None:
-        """Animate sliding `dragged_piece` back to `origin_square`."""
         self.is_animating = True
-        self.origin_square = origin_square
-        self.animated_piece = dragged_piece
-
+        self.is_dragging = False
         self.animation_point = cursor_point
 
         self._animation.setStartValue(cursor_point)
-        self._animation.setEndValue(self._square_center(origin_square))
+        self._animation.setEndValue(self._square_center(self.origin_square))
         self._animation.start()
+
+        self._update_cursor_at(cursor_point)
 
     def _svg_data(self) -> bytes:
         """Convert current board state to SVG data as bytes."""
         board_to_render: Board = self._game.board
 
-        if self.origin_square is not None and (self.is_dragging or self.is_animating):
+        if self.is_dragging or self.is_animating:
             board_to_render = board_to_render.copy()
             board_to_render.set_piece_at(square=self.origin_square, piece=None)
 
@@ -358,15 +338,10 @@ class SvgBoard(QSvgWidget):
         render_area.moveCenter(cursor_point)
         return render_area
 
-    def _render_piece(self, cursor_point: QPointF, piece: Piece | None = None) -> None:
-        """Render either dragged piece or `piece` at `cursor_point`."""
-        piece_to_render: Piece | None = self.dragged_piece or piece
-
-        if piece_to_render is None:
-            return
-
+    def _render_piece(self, cursor_point: QPointF) -> None:
+        """Render dragged piece at `cursor_point`."""
         painter: QPainter = QPainter(self)
-        piece_symbol: str = piece_to_render.symbol()
+        piece_symbol: str = self.dragged_piece.symbol()
         renderer: QSvgRenderer = self._svg_renderer(piece_symbol)
         piece_render_area: QRectF = self._piece_render_area_at(cursor_point)
         renderer.render(painter, piece_render_area)

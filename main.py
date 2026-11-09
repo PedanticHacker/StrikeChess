@@ -4,7 +4,6 @@
 import sys
 from pathlib import Path
 from functools import partial
-from multiprocessing import freeze_support
 
 from PySide6.QtCore import QLockFile, QTimer
 from PySide6.QtWidgets import QApplication, QMessageBox
@@ -83,5 +82,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    freeze_support()
     main()

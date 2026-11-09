@@ -115,11 +115,7 @@ class GameService(QObject):
         """Load `moves` into current game."""
         for san_move in moves:
             move: Move = self._board.parse_san(san_move)
-            new_san_move: str = self._board.san_and_push(move)
-            self.moves.append(new_san_move)
-            self.positions.append(self._board.copy())
-
-        self.move_index = len(self.moves) - 1
+            self.push(move)
 
     def expire_clock_for(self, player_color: Color) -> None:
         """Set `player_color` as player whose clock expired."""
@@ -251,7 +247,7 @@ class GameService(QObject):
 
     def _add_ellipsis_as_first_move(self) -> None:
         """Add ellipsis as White's missing move if Black starts."""
-        if self.move_index < 0 and not self.is_white_to_move():
+        if not self.is_white_to_move():
             self.move_index = 0
             self.moves.append("...")
             self.positions.append(self._board.copy())
