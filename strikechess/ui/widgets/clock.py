@@ -6,7 +6,7 @@ from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 
 TenthsThresholdSeconds: Final[float] = 10.0
 CountdownIntervalMilliseconds: Final[int] = 30
-CountdownThresholdSeconds: Final[float] = CountdownIntervalMilliseconds / 1000
+NanosecondsPerSecond: Final[int] = 1_000_000_000
 
 
 class ClockStyleSheet(StrEnum):
@@ -64,7 +64,7 @@ class DigitalClock(QLCDNumber):
     def stop_timer(self) -> None:
         """Subtract elapsed time, then stop timer countdown."""
         if self._countdown_timer.isActive():
-            elapsed_time: float = self._elapsed_timer.elapsed() / 1000.0
+            elapsed_time: float = self._elapsed_timer.nsecsElapsed() / NanosecondsPerSecond
             self.time = max(0.0, self.time - elapsed_time)
             self._show_time()
 
@@ -78,13 +78,14 @@ class DigitalClock(QLCDNumber):
     @Slot()
     def update_time(self) -> None:
         """Update remaining time and check for timer expiration."""
-        if self.time < CountdownThresholdSeconds:
+        elapsed_time: float = self._elapsed_timer.nsecsElapsed() / NanosecondsPerSecond
+        self.time -= elapsed_time
+        self._elapsed_timer.start()
+
+        if self.time <= 0.0:
             self.time = 0.0
             self._countdown_timer.stop()
             self.expired.emit()
-        else:
-            elapsed_time: float = self._elapsed_timer.restart() / 1000.0
-            self.time -= elapsed_time
 
         self._show_time()
 
