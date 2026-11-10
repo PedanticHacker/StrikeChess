@@ -92,6 +92,11 @@ jobs:
       - name: Build executable
         run: pyinstaller --clean bundle.spec
 
+      - name: Copy license files (Windows/Linux)
+        if: runner.os != 'macOS'
+        shell: bash
+        run: cp GPL-3.0.txt NOTICE.txt dist/
+
       - name: Copy Linux files
         if: runner.os == 'Linux'
         run: |

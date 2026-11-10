@@ -7,6 +7,8 @@ engine_directory = f"assets/engines/stockfish-19/{system}"
 dependency_analysis = Analysis(
     ["main.py"],
     datas=[
+        ("NOTICE.txt", "."),
+        ("GPL-3.0.txt", "."),
         ("strikechess/settings.json", "."),
         ("strikechess/assets/audio", "assets/audio"),
         ("strikechess/assets/openings.json", "assets"),
