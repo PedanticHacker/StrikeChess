@@ -1,12 +1,10 @@
 from chess import Piece, square, svg
 from PySide6.QtSvg import QSvgRenderer
-from PySide6.QtWidgets import QSizePolicy
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import (
     Qt,
     Slot,
-    QSize,
     QRectF,
     QPointF,
     QEasingCurve,
@@ -17,7 +15,6 @@ from strikechess.utils import create_color_property
 
 
 AnimationDurationMilliseconds: Final[int] = 350
-Expanding: Final[QSizePolicy.Policy] = QSizePolicy.Policy.Expanding
 
 svg.XX = "<circle id='xx' r='4.5' cx='22.5' cy='22.5' stroke='#303030' fill='#e5e5e5'/>"
 
@@ -67,23 +64,8 @@ class SvgBoard(QSvgWidget):
         self._animation.setEasingCurve(QEasingCurve.Type.OutCubic)
         self._animation.valueChanged.connect(self.update_animation_point)
 
-        size_policy: QSizePolicy = QSizePolicy(Expanding, Expanding)
-        size_policy.setHeightForWidth(True)
-        self.setSizePolicy(size_policy)
-
+        self.setFixedSize(500, 500)
         self.setMouseTracking(True)
-
-    def sizeHint(self) -> QSize:
-        """Get preferred board size."""
-        return QSize(500, 500)
-
-    def minimumSizeHint(self) -> QSize:
-        """Get minimum board size."""
-        return QSize(400, 400)
-
-    def heightForWidth(self, width: int) -> int:
-        """Get required height based on `width` to keep square shape."""
-        return width
 
     @property
     def board_size(self) -> int:
@@ -93,8 +75,9 @@ class SvgBoard(QSvgWidget):
     @property
     def board_margin(self) -> float:
         """Board margin based on board size."""
-        board_margin_percentage: float = 0.04
-        return self.board_size * board_margin_percentage
+        board_units: int = 390
+        margin_units: int = 15
+        return self.board_size * margin_units / board_units
 
     @property
     def square_size(self) -> float:
@@ -159,7 +142,7 @@ class SvgBoard(QSvgWidget):
         square: Square = self._square(cursor_point)
         piece: Piece | None = self._game.piece_at(square)
 
-        if self._can_drag(piece):
+        if self._is_on_square(cursor_point) and self._can_drag(piece):
             self.start_dragging(square, piece)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
@@ -280,7 +263,7 @@ class SvgBoard(QSvgWidget):
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
             return
 
-        if self._can_drag(piece):
+        if self._is_on_square(cursor_point) and self._can_drag(piece):
             self.setCursor(Qt.CursorShape.OpenHandCursor)
             return
 

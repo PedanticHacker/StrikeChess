@@ -39,6 +39,7 @@ from strikechess.ui.widgets import (
 from strikechess.utils import (
     root_path,
     show_info,
+    elide_name,
     show_about,
     ask_question,
     find_opening,
@@ -119,15 +120,17 @@ class MainWindow(QMainWindow):
         self._engine_analysis_label.setFixedWidth(200)
         self._engine_analysis_label.setObjectName("engineAnalysis")
 
-        self._engine_name_label: QLabel = QLabel(self._engine.name)
+        self._engine_name_label: QLabel = QLabel(elide_name(self._engine.name))
+        self._engine_name_label.setFixedWidth(200)
         self._engine_name_label.setObjectName("engineName")
 
         self._notifications_label: QLabel = QLabel()
         self._notifications_label.setObjectName("notifications")
 
         self._human_name_label: QLabel = QLabel(
-            self._settings.value("human", "name") or self.tr("Player")
+            elide_name(self._settings.value("human", "name") or self.tr("Player"))
         )
+        self._human_name_label.setFixedWidth(200)
         self._human_name_label.setObjectName("humanName")
 
         self._opening_label: QLabel = QLabel()
@@ -200,7 +203,7 @@ class MainWindow(QMainWindow):
             self.stop_analysis()
 
             self._engine.load_file(file_path)
-            self._engine_name_label.setText(self._engine.name)
+            self._engine_name_label.setText(elide_name(self._engine.name))
 
             self._update_actions()
             self._show_engine_ponder()
@@ -435,7 +438,7 @@ class MainWindow(QMainWindow):
         self.stop_analysis()
 
         self._engine.terminate()
-        self._engine_name_label.setText(self._engine.name)
+        self._engine_name_label.setText(elide_name(self._engine.name))
 
         self._update_actions()
         self._show_engine_ponder()
@@ -595,7 +598,7 @@ class MainWindow(QMainWindow):
         self.stop_analysis()
 
         self._engine.terminate()
-        self._engine_name_label.setText(self._engine.name)
+        self._engine_name_label.setText(elide_name(self._engine.name))
 
         self._update_actions()
         self._show_engine_ponder()
@@ -653,7 +656,7 @@ class MainWindow(QMainWindow):
             self._white_clock.reset()
 
             self._human_name_label.setText(
-                self._settings.value("human", "name") or self.tr("Player")
+                elide_name(self._settings.value("human", "name") or self.tr("Player"))
             )
 
         if not self._settings.value("engine", "is_ponder_enabled"):
@@ -1056,7 +1059,7 @@ class MainWindow(QMainWindow):
 
     def _show_fen(self) -> None:
         """Show FEN in editor."""
-        self._fen_editor.clearFocus()
+        self._table_view.setFocus()
         self._fen_editor.hide_warning()
         self._fen_editor.setText(self._game.fen)
 

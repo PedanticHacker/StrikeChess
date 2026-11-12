@@ -67,7 +67,7 @@ open StrikeChess.app
 
 > **macOS/Linux:** Use `python3` and `pip3` instead of `python` and `pip`.
 
-Requirements: Python 3.14+, 2+ GB RAM, 8+ GB storage
+Requirements: Python 3.14+, 2+ GB RAM, 2+ GB storage
 ```bash
 git clone https://github.com/PedanticHacker/StrikeChess.git
 cd StrikeChess

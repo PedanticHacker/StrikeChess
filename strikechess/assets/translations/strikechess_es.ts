@@ -468,7 +468,7 @@ Reinicie StrikeChess o cargue un motor.</translation>
     <translation>Acerca de StrikeChess %1</translation>
   </message>
   <message>
-    <source>Play chess and analyze games across
+    <source>Play chess and analyze games on
 Windows, Linux, and macOS platforms.
 
 Copyright (C) 2026 Boštjan Mejak

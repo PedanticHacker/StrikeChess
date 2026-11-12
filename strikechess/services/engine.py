@@ -30,6 +30,7 @@ class EngineService(QObject):
         self._settings: SettingsService = settings
 
         self._engine: SimpleEngine | None = None
+        self._analysis: SimpleAnalysisResult | None = None
 
         self.is_thinking: bool = False
         self.is_analyzing: bool = False
@@ -145,9 +146,14 @@ class EngineService(QObject):
 
         try:
             with engine.analysis(board) as analysis:
+                self._analysis = analysis
+
                 for info in analysis:
                     if not self.is_analyzing:
                         break
+
+                    if "lowerbound" in info or "upperbound" in info:
+                        continue
 
                     if "pv" in info and "score" in info:
                         pv: list[Move] = info["pv"][:50]
@@ -170,6 +176,10 @@ class EngineService(QObject):
     def stop_analysis(self) -> None:
         """Stop analyzing current position."""
         self.is_analyzing = False
+
+        if self._analysis is not None:
+            with suppress(EngineError):
+                self._analysis.stop()
 
     def stop_ponder(self) -> None:
         """Stop engine from pondering in background."""

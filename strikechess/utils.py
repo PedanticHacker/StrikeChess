@@ -73,6 +73,11 @@ def create_tinted_icon(icon: QIcon, color: QColor, disabled_color: QColor) -> QI
     return tinted_icon
 
 
+def elide_name(name: str) -> str:
+    """Shorten `name` with ellipsis if longer than 25 characters."""
+    return name if len(name) <= 25 else f"{name[:22]}..."
+
+
 def find_opening(fen: str) -> str | None:
     """Get opening name based on `fen`."""
     return _openings().get(fen)
@@ -153,7 +158,7 @@ def show_about(parent: QWidget | None) -> None:
 
     message: str = QApplication.translate(
         "StrikeChess",
-        "Play chess and analyze games across\n"
+        "Play chess and analyze games on\n"
         "Windows, Linux, and macOS platforms.\n\n"
         "Copyright (C) 2026 Boštjan Mejak\n"
         "MIT License",
