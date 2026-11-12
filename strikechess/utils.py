@@ -159,7 +159,7 @@ def show_about(parent: QWidget | None) -> None:
     message: str = QApplication.translate(
         "StrikeChess",
         "Play chess and analyze games on\n"
-        "Windows, Linux, and macOS platforms.\n\n"
+        "Windows, Linux, and macOS.\n\n"
         "Copyright (C) 2026 Boštjan Mejak\n"
         "MIT License",
     )

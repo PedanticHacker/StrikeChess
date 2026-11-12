@@ -469,12 +469,12 @@ Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
   </message>
   <message>
     <source>Play chess and analyze games on
-Windows, Linux, and macOS platforms.
+Windows, Linux, and macOS.
 
 Copyright (C) 2026 Boštjan Mejak
 MIT License</source>
-    <translation>Spielen Sie Schach und analysieren Sie Partien auf
-Windows-, Linux- und macOS-Plattformen.
+    <translation>Spielen Sie Schach und analysieren Sie Partien unter
+Windows, Linux und macOS.
 
 Copyright (C) 2026 Boštjan Mejak
 MIT-Lizenz</translation>
