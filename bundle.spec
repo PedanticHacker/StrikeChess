@@ -44,7 +44,7 @@ if is_macos:
         bundle_identifier="com.pedantichacker.strikechess",
         info_plist={
             "LSMinimumSystemVersion": "14.4",
-            "NSHumanReadableCopyright": "© 2026 Boštjan Mejak",
+            "NSHumanReadableCopyright": "Copyright (C) 2026 Boštjan Mejak",
         },
     )
 else:

@@ -155,7 +155,7 @@ def show_about(parent: QWidget | None) -> None:
         "StrikeChess",
         "Play chess and analyze games across\n"
         "Windows, Linux, and macOS platforms.\n\n"
-        "Copyright © 2026 Boštjan Mejak\n"
+        "Copyright (C) 2026 Boštjan Mejak\n"
         "MIT License",
     )
 

@@ -163,9 +163,11 @@ class MainWindow(QMainWindow):
         for action, icon in self._tool_bar_icons.items():
             action.setIcon(create_tinted_icon(icon, self._icon_color, self._disabled_icon_color))
 
-        theme_name: ThemeName = ThemeName(file_name)
         self._settings.set_value("ui", "theme", file_name)
-        self._theme_name_label.setText(f"{self.tr('Theme')}: {self.tr(theme_name.text)}")
+
+        theme_caption: str = self.tr("Theme")
+        theme_name: str = self.tr(ThemeName(file_name).text)
+        self._theme_name_label.setText(f"{theme_caption}: {theme_name}")
 
     def change_language(self, language_code: str) -> None:
         """Save new language setting and prompt for app relaunch."""
@@ -1048,8 +1050,9 @@ class MainWindow(QMainWindow):
         else:
             ponder_state = self.tr("Disabled")
 
+        ponder_caption: str = self.tr("Engine ponder")
         self._engine_ponder_label.setEnabled(is_engine_loaded)
-        self._engine_ponder_label.setText(f"{self.tr('Engine ponder')}: {ponder_state}")
+        self._engine_ponder_label.setText(f"{ponder_caption}: {ponder_state}")
 
     def _show_fen(self) -> None:
         """Show FEN in editor."""

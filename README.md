@@ -129,6 +129,6 @@ pyinstaller --clean bundle.spec
 
 ## Licenses
 
-- **StrikeChess:** MIT License © 2026 Boštjan Mejak → See [LICENSE](LICENSE.txt) file
-- **Stockfish:** GPLv3 © 2004-2026 The Stockfish developers → See [NOTICE](NOTICE.txt) file
+- **StrikeChess:** MIT License Copyright (C) 2026 Boštjan Mejak → See [LICENSE](LICENSE.txt) file
+- **Stockfish:** GPLv3 Copyright (C) 2004-2026 The Stockfish developers → See [NOTICE](NOTICE.txt) file
 - **Python dependencies:** chess, psutil, PySide6 → See [NOTICE](NOTICE.txt) file
