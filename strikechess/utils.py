@@ -4,9 +4,9 @@ from pathlib import Path
 from functools import lru_cache
 
 from chess import BISHOP, COLORS, KNIGHT, PAWN, QUEEN, ROOK
-from PySide6.QtGui import QAction, QColor, QIcon, QPainter, QPixmap
 from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
-from PySide6.QtCore import Property, QLibraryInfo, QSize, QTranslator
+from PySide6.QtCore import Property, QLibraryInfo, QSize, Qt, QTranslator
+from PySide6.QtGui import QAction, QColor, QFontMetrics, QIcon, QPainter, QPixmap
 
 from strikechess import __version__
 
@@ -74,8 +74,12 @@ def create_tinted_icon(icon: QIcon, color: QColor, disabled_color: QColor) -> QI
 
 
 def elide_name(name: str) -> str:
-    """Shorten `name` with ellipsis if longer than 25 characters."""
-    return name if len(name) <= 25 else f"{name[:22]}..."
+    """Shorten `name` with ellipsis if too wide for name labels."""
+    border_width_in_pixels: int = 1
+    label_width_in_pixels: int = 200
+    font_metrics: QFontMetrics = QFontMetrics(QApplication.font("QLabel"))
+    available_width_in_pixels: int = label_width_in_pixels - 2 * border_width_in_pixels
+    return font_metrics.elidedText(name, Qt.TextElideMode.ElideRight, available_width_in_pixels)
 
 
 def find_opening(fen: str) -> str | None:

@@ -88,11 +88,7 @@ class EngineService(QObject):
         self.stop_analysis()
 
         self._engine = None
-
-        try:
-            engine.quit()
-        except (EngineError, TimeoutError):
-            engine.close()
+        engine.close()
 
     def play_move(
         self,
