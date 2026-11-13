@@ -1,4 +1,4 @@
-from chess import Piece, square, svg
+from chess import square, svg
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtSvgWidgets import QSvgWidget
@@ -308,13 +308,6 @@ class SvgBoard(QSvgWidget):
         )
         return svg_board.encode()
 
-    def _svg_renderer(self, piece_symbol: str) -> QSvgRenderer:
-        """Create SVG renderer for piece based on `piece_symbol`."""
-        svg_piece: str = svg.piece(Piece.from_symbol(piece_symbol))
-        renderer: QSvgRenderer = QSvgRenderer()
-        renderer.load(svg_piece.encode())
-        return renderer
-
     def _piece_render_area_at(self, cursor_point: QPointF) -> QRectF:
         """Get piece render area centered at `cursor_point`."""
         render_area: QRectF = QRectF(0, 0, self.square_size, self.square_size)
@@ -324,8 +317,7 @@ class SvgBoard(QSvgWidget):
     def _render_piece(self, cursor_point: QPointF) -> None:
         """Render dragged piece at `cursor_point`."""
         painter: QPainter = QPainter(self)
-        piece_symbol: str = self.dragged_piece.symbol()
-        renderer: QSvgRenderer = self._svg_renderer(piece_symbol)
         piece_render_area: QRectF = self._piece_render_area_at(cursor_point)
+        renderer: QSvgRenderer = QSvgRenderer(svg.piece(self.dragged_piece).encode())
         renderer.render(painter, piece_render_area)
         painter.end()

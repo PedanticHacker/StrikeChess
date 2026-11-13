@@ -59,12 +59,6 @@ class TableModel(QAbstractTableModel):
 
         return None
 
-    def reset(self) -> None:
-        """Clear stored move data from model."""
-        self.beginResetModel()
-        self._moves.clear()
-        self.endResetModel()
-
     def update_view(self) -> None:
         """Update view to reflect model changes."""
         self.layoutAboutToBeChanged.emit()

@@ -132,6 +132,16 @@ Il motore potrebbe essersi arrestato in modo anomalo.
 Riavvia StrikeChess o carica un motore.</translation>
   </message>
   <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Stockfish has been loaded.</source>
+    <translation>Impossibile comunicare con il motore UCI.
+
+Il motore potrebbe essersi arrestato in modo anomalo.
+Stockfish è stato caricato.</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Esci</translation>
   </message>

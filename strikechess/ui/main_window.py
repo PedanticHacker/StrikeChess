@@ -331,12 +331,9 @@ class MainWindow(QMainWindow):
 
     def save_as_pgn(self) -> None:
         """Save current game as PGN."""
-        engine_name: str = self._engine.name
         is_engine_white: bool = self._settings.value("engine", "is_white")
         human_name: str = self._settings.value("human", "name") or "Player"
-
-        if not self._engine.is_loaded():
-            engine_name = "Unknown"
+        engine_name: str = self._engine.name if self._engine.is_loaded() else "Unknown"
 
         suggested_file_name: str = self._pgn.suggest_file_name(
             human_name,
@@ -435,13 +432,7 @@ class MainWindow(QMainWindow):
         ):
             return
 
-        self.stop_analysis()
-
-        self._engine.terminate()
-        self._engine_name_label.setText(elide_name(self._engine.name))
-
-        self._update_actions()
-        self._show_engine_ponder()
+        self._unload_engine()
 
     def update_clock_timers(self) -> None:
         """Start/stop clocks based on current turn."""
@@ -501,10 +492,49 @@ class MainWindow(QMainWindow):
 
         self._board.disable_interaction()
         self._sound_player.play_game_over()
-        self._game.expire_clock_for(player_color)
+        self._game.player_with_expired_clock = player_color
         self._notifications_label.setText(self._game.result())
 
         self._update_actions()
+
+    @Slot()
+    def load_default_engine_on_error(self) -> None:
+        """Load default engine if possible and show warning on error."""
+        if not self._engine.is_loaded():
+            return
+
+        self._unload_engine()
+
+        self._engine.load_default_engine()
+
+        if not self._engine.is_loaded():
+            show_warning(
+                self,
+                self.tr("Engine Error"),
+                self.tr(
+                    "Cannot communicate with UCI engine.\n\n"
+                    "The engine may have crashed.\n"
+                    "Relaunch StrikeChess or load an engine."
+                ),
+            )
+            return
+
+        self._engine_name_label.setText(elide_name(self._engine.name))
+
+        self._update_actions()
+        self._show_engine_ponder()
+
+        show_warning(
+            self,
+            self.tr("Engine Error"),
+            self.tr(
+                "Cannot communicate with UCI engine.\n\n"
+                "The engine may have crashed.\n"
+                "Stockfish has been loaded."
+            ),
+        )
+
+        self.request_engine_move()
 
     @Slot(Move)
     def play_engine_move(self, move: Move) -> None:
@@ -589,30 +619,6 @@ class MainWindow(QMainWindow):
         if is_returning_from_history:
             self.request_engine_move()
 
-    @Slot()
-    def unload_engine_on_error(self) -> None:
-        """Unload engine and show warning when engine error occurs."""
-        if not self._engine.is_loaded():
-            return
-
-        self.stop_analysis()
-
-        self._engine.terminate()
-        self._engine_name_label.setText(elide_name(self._engine.name))
-
-        self._update_actions()
-        self._show_engine_ponder()
-
-        show_warning(
-            self,
-            self.tr("Engine Error"),
-            self.tr(
-                "Cannot communicate with UCI engine.\n\n"
-                "The engine may have crashed.\n"
-                "Relaunch StrikeChess or load an engine."
-            ),
-        )
-
     def closeEvent(self, event: QCloseEvent) -> None:
         """Prompt whether to quit app."""
         if ask_question(self, self.tr("Quit"), self.tr("Are you sure you want to quit?")):
@@ -676,9 +682,9 @@ class MainWindow(QMainWindow):
         # Engine
         self._engine.move_played.connect(self.play_engine_move)
         self._engine.score_analyzed.connect(self.animate_evaluation)
-        self._engine.error_occurred.connect(self.unload_engine_on_error)
         self._engine.best_move_analyzed.connect(self.show_best_move_arrow)
         self._engine.variation_analyzed.connect(self.show_engine_variation)
+        self._engine.error_occurred.connect(self.load_default_engine_on_error)
 
         # Game
         self._game.move_played.connect(self.play_human_move)
@@ -1073,20 +1079,24 @@ class MainWindow(QMainWindow):
     def _start_new_game(self) -> None:
         """Reset game and UI states to start new game."""
         self._game.reset()
-        self._table_model.reset()
 
         self._black_clock.reset()
         self._white_clock.reset()
-
-        self._opening_label.clear()
-        self._board.enable_interaction()
-
-        self._show_fen()
-        self.stop_analysis()
         self._engine.stop_ponder()
+        self._opening_label.clear()
 
-        self.request_engine_move()
+        self._update_ui_state()
         self._orient_board_for_human()
+
+    def _unload_engine(self) -> None:
+        """Stop analysis, terminate engine, and update UI state."""
+        self.stop_analysis()
+
+        self._engine.terminate()
+        self._engine_name_label.setText(elide_name(self._engine.name))
+
+        self._update_actions()
+        self._show_engine_ponder()
 
     def _update_actions(self) -> None:
         """Update availability of actions based on game state."""

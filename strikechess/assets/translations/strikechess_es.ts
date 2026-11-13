@@ -132,6 +132,16 @@ El motor puede haberse cerrado inesperadamente.
 Reinicie StrikeChess o cargue un motor.</translation>
   </message>
   <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Stockfish has been loaded.</source>
+    <translation>No se puede comunicar con el motor UCI.
+
+El motor puede haberse cerrado inesperadamente.
+Se ha cargado Stockfish.</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Salir</translation>
   </message>

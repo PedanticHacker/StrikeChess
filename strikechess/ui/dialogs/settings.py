@@ -24,14 +24,6 @@ class SettingsDialog(QDialog):
 
         self._settings: SettingsService = settings
 
-        self._initial_settings: dict[str, bool | float | str] = {
-            "clock_time": self._settings.value("clock", "time"),
-            "human_name": self._settings.value("human", "name"),
-            "clock_increment": self._settings.value("clock", "increment"),
-            "is_engine_white": self._settings.value("engine", "is_white"),
-            "is_engine_ponder_enabled": self._settings.value("engine", "is_ponder_enabled"),
-        }
-
         self._button_box: QDialogButtonBox = QDialogButtonBox(Save | Cancel)
         self._button_box.button(Save).setDisabled(True)
 
@@ -39,6 +31,8 @@ class SettingsDialog(QDialog):
         self._create_options()
         self._set_vertical_layout()
         self._connect_signals_to_slots()
+
+        self._initial_settings: dict[str, bool | float | str] = self._current_settings()
 
         self.setWindowTitle(self.tr("Settings"))
 
@@ -174,13 +168,16 @@ class SettingsDialog(QDialog):
 
         self._human_name_option.textChanged.connect(self.enable_saving)
 
-    def _is_edited(self) -> bool:
-        """Return True if any setting is edited."""
-        current_settings: dict[str, bool | float | str] = {
+    def _current_settings(self) -> dict[str, bool | float | str]:
+        """Get current settings from option widgets."""
+        return {
             "clock_time": self._clock_time_option.currentData(),
             "human_name": self._human_name_option.text().strip(),
             "is_engine_white": self._engine_white_option.isChecked(),
             "clock_increment": self._clock_increment_option.currentData(),
             "is_engine_ponder_enabled": self._engine_ponder_option.isChecked(),
         }
-        return current_settings != self._initial_settings
+
+    def _is_edited(self) -> bool:
+        """Return True if any setting is edited."""
+        return self._current_settings() != self._initial_settings

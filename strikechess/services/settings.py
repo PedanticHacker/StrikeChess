@@ -12,8 +12,6 @@ class SettingsService:
         self._user_file_path: Path = self._user_settings_file_path()
         self._default_file_path: Path = self._default_settings_file_path()
 
-        self._ensure_settings_exist()
-
         self._user_settings: dict[str, dict[str, Any]] = self._load_user_settings()
         self._default_settings: dict[str, dict[str, Any]] = self._load(self._default_file_path)
 
@@ -35,12 +33,9 @@ class SettingsService:
 
     def set_value(self, section: str, key: str, value: Any) -> None:
         """Set `value` to `key` for `section` in settings."""
-        if section not in self._user_settings:
-            self._user_settings[section] = {}
-
         try:
             self._user_settings[section][key] = value
-        except TypeError:
+        except (KeyError, TypeError):
             self._user_settings[section] = {key: value}
 
         self._save()
@@ -54,11 +49,6 @@ class SettingsService:
     def _default_settings_file_path(self) -> Path:
         """Get path to default settings.json file."""
         return root_path() / "settings.json"
-
-    def _ensure_settings_exist(self) -> None:
-        """Copy default settings if user's settings don't exist."""
-        if not self._user_file_path.exists():
-            shutil.copy(self._default_file_path, self._user_file_path)
 
     def _load_user_settings(self) -> dict[str, dict[str, Any]]:
         """Load user's settings, restoring defaults if unreadable."""

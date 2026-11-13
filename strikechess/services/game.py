@@ -117,10 +117,6 @@ class GameService(QObject):
             move: Move = self._board.parse_san(san_move)
             self.push(move)
 
-    def expire_clock_for(self, player_color: Color) -> None:
-        """Set `player_color` as player whose clock expired."""
-        self.player_with_expired_clock = player_color
-
     def push(self, move: Move) -> None:
         """Update game state due to `move` being played."""
         self._delete_game_data_after_index()
@@ -139,7 +135,7 @@ class GameService(QObject):
             move: Move = self._board.find_move(origin_square, target_square)
             self.move_played.emit(move)
 
-    def legal_target_squares(self, square: Square | None = None) -> list[Square]:
+    def legal_target_squares(self, square: Square | None) -> list[Square]:
         """Get legal target squares for piece at `square`."""
         if square is None:
             return []

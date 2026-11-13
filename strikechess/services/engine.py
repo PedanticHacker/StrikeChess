@@ -35,7 +35,7 @@ class EngineService(QObject):
         self.is_thinking: bool = False
         self.is_analyzing: bool = False
 
-        self._load_default_engine()
+        self.load_default_engine()
 
         QApplication.instance().aboutToQuit.connect(self.terminate)
 
@@ -47,6 +47,11 @@ class EngineService(QObject):
     def is_loaded(self) -> bool:
         """Return True if engine is loaded."""
         return self._engine is not None
+
+    def load_default_engine(self) -> None:
+        """Load executable file of default Stockfish engine."""
+        with suppress(EngineError):
+            self.load_file(_stockfish_executable())
 
     def load_file(self, file_path: str) -> None:
         """Load UCI-compliant engine from `file_path`."""
@@ -64,8 +69,7 @@ class EngineService(QObject):
 
         except Exception:
             if new_engine is not None:
-                with suppress(Exception):
-                    new_engine.quit()
+                new_engine.close()
 
             raise EngineError(
                 self.tr(
@@ -189,11 +193,6 @@ class EngineService(QObject):
         except (EngineError, TimeoutError):
             engine.close()
             self.error_occurred.emit()
-
-    def _load_default_engine(self) -> None:
-        """Load executable file of default Stockfish engine."""
-        with suppress(EngineError):
-            self.load_file(_stockfish_executable())
 
 
 def _delete_quarantine_attribute(file_path: str) -> None:

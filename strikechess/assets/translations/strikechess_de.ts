@@ -132,6 +132,16 @@ Die Engine ist möglicherweise abgestürzt.
 Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
   </message>
   <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Stockfish has been loaded.</source>
+    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
+
+Die Engine ist möglicherweise abgestürzt.
+Stockfish wurde geladen.</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Beenden</translation>
   </message>
