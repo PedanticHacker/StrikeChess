@@ -9,7 +9,6 @@ from concurrent.futures import CancelledError
 from chess import Move
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication
-from psutil import cpu_count, virtual_memory
 from chess.engine import EngineError, Limit, Score, SimpleEngine
 
 from strikechess.utils import root_path
@@ -205,22 +204,15 @@ def _delete_quarantine_attribute(file_path: str) -> None:
 
 
 def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
-    """Get supported Hash and Threads options based on OS resources."""
-    bytes_per_megabyte: int = 2**20
-    engine_hash_size_percentage: float = 0.25
-    maximum_hash_size_in_megabytes: int = 4096
+    """Get supported Hash and Threads options for engine."""
+    hash_size_in_megabytes: int = 512
 
-    logical_cpu_cores: int | None = cpu_count()
-    allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores // 2)
-
-    available_ram_in_megabytes: int = virtual_memory().available // bytes_per_megabyte
-    allowed_hash_size_in_megabytes: int = max(
-        16, int(available_ram_in_megabytes * engine_hash_size_percentage)
-    )
+    logical_cpu_cores: int | None = os.cpu_count()
+    allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores - 1)
 
     options: dict[str, int] = {
         "Threads": allowed_cpu_threads,
-        "Hash": min(allowed_hash_size_in_megabytes, maximum_hash_size_in_megabytes),
+        "Hash": hash_size_in_megabytes,
     }
     return {
         option: min(available_options[option].max or value, value)
