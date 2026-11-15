@@ -26,9 +26,15 @@ A chess app with Stockfish 19, 4 languages, 8 themes, 32 time controls, and 3500
 
 Download the latest stable release for your platform from the [Releases](https://github.com/PedanticHacker/StrikeChess/releases) page.
 
+### Windows users
+
+Requirements: Windows 10+
+
+Extract the downloaded ZIP file and launch `StrikeChess.exe` from the extracted `StrikeChess-Windows` folder.
+
 ### Linux users
 
-Requirements: Ubuntu 24.04+, Debian 13+, or another distribution with glibc 2.38+
+Requirements: Arch Linux, CachyOS, Debian 13+, Fedora 39+, Linux Mint 22+, Ubuntu 24.04+, or another distribution with glibc 2.38+, on an Intel or AMD processor
 
 Extract the downloaded ZIP file, navigate to the extracted folder in your terminal, and run the `install.sh` script:
 ```bash
