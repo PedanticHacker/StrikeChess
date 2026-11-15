@@ -100,12 +100,12 @@ pyinstaller --clean bundle.spec
 | Action | Shortcut |
 |--------|----------|
 | About StrikeChess | `F1` |
+| Settings | `F2` |
 | Flip | `Ctrl+F` |
 | Load from PGN | `Ctrl+O` |
+| Save as PGN | `Ctrl+S` |
 | New game | `Ctrl+N` |
 | Quit | `Ctrl+Q` |
-| Save as PGN | `Ctrl+S` |
-| Settings | `F2` |
 
 **Analysis**
 
@@ -119,8 +119,8 @@ pyinstaller --clean bundle.spec
 | Action | Shortcut |
 |--------|----------|
 | Load engine | `Ctrl+L` |
-| Play move now | `Ctrl+P` |
 | Unload engine | `Ctrl+U` |
+| Play move now | `Ctrl+P` |
 
 **Themes**
 
