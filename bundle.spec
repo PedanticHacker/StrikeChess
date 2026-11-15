@@ -1,8 +1,8 @@
 import platform
 
 system = platform.system()
-is_macos = system == "Darwin"
 engine_directory = f"assets/engines/stockfish-19/{system}"
+engine_files = Tree(f"strikechess/{engine_directory}", prefix=engine_directory)
 
 dependency_analysis = Analysis(
     ["main.py"],
@@ -13,7 +13,6 @@ dependency_analysis = Analysis(
         ("strikechess/assets/audio", "assets/audio"),
         ("strikechess/assets/openings.json", "assets"),
         ("strikechess/assets/themes", "assets/themes"),
-        (f"strikechess/{engine_directory}", engine_directory),
         ("strikechess/assets/translations/*.qm", "assets/translations"),
     ],
 )
@@ -23,7 +22,7 @@ bytecode_archive = PYZ(dependency_analysis.pure, dependency_analysis.zipped_data
 extension = {"Darwin": "icns", "Windows": "ico"}.get(system)
 icon_path = f"strikechess/assets/icons/logo.{extension}" if extension else None
 
-if is_macos:
+if system == "Darwin":
     executable = EXE(
         bytecode_archive,
         dependency_analysis.scripts,
@@ -39,6 +38,7 @@ if is_macos:
         dependency_analysis.binaries,
         dependency_analysis.zipfiles,
         dependency_analysis.datas,
+        engine_files,
         version="1.0",
         icon=icon_path,
         name="StrikeChess.app",
@@ -55,6 +55,7 @@ else:
         dependency_analysis.binaries,
         dependency_analysis.zipfiles,
         dependency_analysis.datas,
+        engine_files,
         console=False,
         icon=icon_path,
         name="StrikeChess",
