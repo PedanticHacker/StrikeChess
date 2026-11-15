@@ -4,25 +4,30 @@ StrikeChess incorporates the following third-party software components:
 
 ================================================================================
 
-Stockfish
+PySide6
 
-Version: 19
-Source code: https://github.com/official-stockfish/Stockfish
+Source code: https://code.qt.io/cgit/pyside/pyside-setup.git
 
-Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
+Copyright (C) The Qt Company Ltd. and other contributors.
+Contact: https://www.qt.io/licensing/
 
-Stockfish is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+This file is part of Qt for Python.
 
-Stockfish is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Commercial License Usage
+Licensees holding valid commercial Qt licenses may use this file in
+accordance with the commercial license agreement provided with the
+Software or, alternatively, in accordance with the terms contained in
+a written agreement between you and The Qt Company. For licensing terms
+and conditions see https://www.qt.io/terms-conditions. For further
+information use the contact form at https://www.qt.io/contact-us.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+GNU Lesser General Public License Usage
+Alternatively, this file may be used under the terms of the GNU Lesser
+General Public License version 3 as published by the Free Software
+Foundation and appearing in the file LICENSE.LGPL3 included in the
+packaging of this file. Please review the following information to
+ensure the GNU Lesser General Public License version 3 requirements
+will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
 
 ================================================================================
 
@@ -48,27 +53,22 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 ================================================================================
 
-PySide6
+Stockfish
 
-Source code: https://code.qt.io/cgit/pyside/pyside-setup.git
+Version: 19
+Source code: https://github.com/official-stockfish/Stockfish
 
-Copyright (C) The Qt Company Ltd. and other contributors.
-Contact: https://www.qt.io/licensing/
+Copyright (C) 2004-2026 The Stockfish developers (see AUTHORS file)
 
-This file is part of Qt for Python.
+Stockfish is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Commercial License Usage
-Licensees holding valid commercial Qt licenses may use this file in
-accordance with the commercial license agreement provided with the
-Software or, alternatively, in accordance with the terms contained in
-a written agreement between you and The Qt Company. For licensing terms
-and conditions see https://www.qt.io/terms-conditions. For further
-information use the contact form at https://www.qt.io/contact-us.
+Stockfish is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-GNU Lesser General Public License Usage
-Alternatively, this file may be used under the terms of the GNU Lesser
-General Public License version 3 as published by the Free Software
-Foundation and appearing in the file LICENSE.LGPL3 included in the
-packaging of this file. Please review the following information to
-ensure the GNU Lesser General Public License version 3 requirements
-will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

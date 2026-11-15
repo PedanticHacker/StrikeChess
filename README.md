@@ -38,9 +38,7 @@ bash install.sh
 
 ### macOS users
 
-Requirements: macOS 14.4+, also when launching StrikeChess from source
-
-> **Intel Mac:** The download is built for Apple Silicon only. Launch StrikeChess from source instead, as described in the Development section.
+Requirements: macOS 14.4+ on a Mac with Apple Silicon or an Intel-based Mac, also when launching StrikeChess from source
 
 StrikeChess isn't signed with an Apple Developer certificate, so macOS blocks it when downloaded through a browser. Download it in your terminal instead, which avoids the quarantine attribute entirely:
 ```bash
@@ -74,6 +72,8 @@ cd StrikeChess
 pip install -r requirements.txt
 python main.py
 ```
+
+> **macOS:** The standalone build supports both CPU architectures, Apple Silicon and Intel, so it needs Python from [python.org](https://www.python.org/downloads/macos/), which is built for both. Python from Homebrew or pyenv is built only for your Mac's own CPU architecture.
 
 Standalone build:
 ```bash

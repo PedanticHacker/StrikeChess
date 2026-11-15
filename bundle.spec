@@ -31,6 +31,7 @@ if is_macos:
         icon=icon_path,
         name="StrikeChess",
         exclude_binaries=True,
+        target_arch="universal2",
     )
 
     app = BUNDLE(
