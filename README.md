@@ -1,6 +1,6 @@
 # ⚡ StrikeChess
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)
 ![Python](https://img.shields.io/badge/Python-3.14+-blue)
 ![Stockfish](https://img.shields.io/badge/Stockfish-19-blue)
@@ -12,15 +12,16 @@ A chess app with Stockfish 19, 4 languages, 8 themes, 32 time controls, and 3500
 ## Features
 
 - **Play against or analyze with Stockfish 19** → bundled engine with automatic CPU optimization
-- **Real-time analysis** → evaluation bar visualization, best move arrows, and live principal variation updates
-- **PGN support** → import and export games in standard notation
-- **FEN editor** → paste or type positions directly, with validation in place
+- **Real-time analysis** → evaluation bar, best move arrows, and principal variation
+- **PGN support** → load and save games
+- **FEN editor** → type a FEN or double-click to paste one, then press `Enter`
 - **Move history** → navigate with arrow keys, mouse wheel, or click
 - **Drag-and-drop** → smooth piece movement with slide-back animation
-- **Sound effects** → distinct audio output for moves, captures, checks, castling, promotion, and game over
+- **Sound effects** → distinct sounds for moves, captures, checks, castling, promotion, and game over
 - **4 languages** → German, English, Spanish, and Italian
-- **8 themes** → 4 dark and 4 light theme variants
+- **8 themes** → 4 dark and 4 light
 - **32 time controls** → 8 time settings × 4 increment options
+- **3500 openings** → opening name shown as you play
 
 ## Installation
 
@@ -30,7 +31,7 @@ Download the latest stable release for your platform from the [Releases](https:/
 
 Requirements: Windows 10+
 
-Extract the downloaded ZIP file and launch `StrikeChess.exe` from the extracted `StrikeChess-Windows` folder.
+Extract the downloaded ZIP file and launch `StrikeChess.exe` from the extracted `StrikeChess-Windows` folder. If you see "Windows protected your PC", select **More info**, then **Run anyway**.
 
 ### Linux users
 
@@ -42,11 +43,13 @@ cd ~/Downloads/StrikeChess-Linux  # Adjust path if needed
 bash install.sh
 ```
 
+Then launch StrikeChess from your app menu, and keep the extracted folder for uninstallation.
+
 ### macOS users
 
-Requirements: macOS 14.4+ on a Mac with Apple Silicon or an Intel-based Mac, also when launching StrikeChess from source
+Requirements: macOS 14.4+
 
-StrikeChess isn't signed with an Apple Developer certificate, so macOS blocks it when downloaded through a browser. Download it in your terminal instead, which avoids the quarantine attribute entirely:
+StrikeChess isn't signed with an Apple Developer certificate, so macOS blocks it when downloaded through a browser. Download it in your terminal instead, which avoids the quarantine attribute:
 ```bash
 cd ~/Downloads
 curl -LO https://github.com/PedanticHacker/StrikeChess/releases/latest/download/StrikeChess-macOS.zip
@@ -64,14 +67,15 @@ open StrikeChess.app
 
 ## Uninstallation
 
+- **Windows:** Delete the extracted `StrikeChess-Windows` folder. To also delete personal settings, delete the `.StrikeChess` folder from your home folder.
 - **Linux:** Run the `uninstall.sh` script from the extracted `StrikeChess-Linux` folder.
-- **Windows/macOS:** Delete the extracted `StrikeChess-Windows` folder or `StrikeChess.app`. To also delete personal settings of StrikeChess, delete the `.StrikeChess` folder from your home folder.
+- **macOS:** Delete `StrikeChess.app`. To also delete personal settings, run `rm -r ~/.StrikeChess` in your terminal.
 
 ## Development
 
-> **macOS/Linux:** Use `python3` and `pip3` instead of `python` and `pip`.
+> **Linux/macOS:** Use `python3` and `pip3` instead of `python` and `pip`.
 
-Requirements: Python 3.14+, 2+ GB RAM, 2+ GB storage
+Requirements: Python 3.14+, 2+ GB RAM, 2+ GB storage, and macOS 14.4+ on a Mac
 ```bash
 git clone https://github.com/PedanticHacker/StrikeChess.git
 cd StrikeChess
@@ -87,7 +91,7 @@ pip install pyinstaller
 pyinstaller --clean bundle.spec
 ```
 
-## Keyboard Shortcuts
+## Keyboard shortcuts
 
 > **macOS:** `Ctrl` → `Command ⌘`, `Alt` → `Option ⌥`
 
@@ -95,15 +99,13 @@ pyinstaller --clean bundle.spec
 
 | Action | Shortcut |
 |--------|----------|
-| Start new game | `Ctrl+N` |
-| Open settings | `F2` |
-| Flip board | `Ctrl+F` |
-| Navigate moves | `←`/`→` or scroll up/down |
-| Load PGN | `Ctrl+O` |
-| Save PGN | `Ctrl+S` |
-| Set custom position | Double-click FEN editor to paste from clipboard and press `Enter` |
 | About StrikeChess | `F1` |
+| Flip | `Ctrl+F` |
+| Load from PGN | `Ctrl+O` |
+| New game | `Ctrl+N` |
 | Quit | `Ctrl+Q` |
+| Save as PGN | `Ctrl+S` |
+| Settings | `F2` |
 
 **Analysis**
 
@@ -116,22 +118,22 @@ pyinstaller --clean bundle.spec
 
 | Action | Shortcut |
 |--------|----------|
-| Force engine move | `Ctrl+P` |
-| Load custom engine | `Ctrl+L` |
+| Load engine | `Ctrl+L` |
+| Play move now | `Ctrl+P` |
 | Unload engine | `Ctrl+U` |
 
 **Themes**
 
-| Shortcut | Theme |
-|----------|-------|
-| `Alt+1` | Dark Forest |
-| `Alt+2` | Dark Mint |
-| `Alt+3` | Dark Nebula |
-| `Alt+4` | Dark Ocean |
-| `Alt+5` | Light Forest |
-| `Alt+6` | Light Mint |
-| `Alt+7` | Light Nebula |
-| `Alt+8` | Light Ocean |
+| Theme | Shortcut |
+|-------|----------|
+| Dark Forest | `Alt+1` |
+| Dark Mint | `Alt+2` |
+| Dark Nebula | `Alt+3` |
+| Dark Ocean | `Alt+4` |
+| Light Forest | `Alt+5` |
+| Light Mint | `Alt+6` |
+| Light Nebula | `Alt+7` |
+| Light Ocean | `Alt+8` |
 
 ## Licenses
 
