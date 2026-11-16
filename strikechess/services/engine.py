@@ -205,17 +205,15 @@ def _delete_quarantine_attribute(file_path: str) -> None:
 
 def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
     """Get supported Hash and Threads options for engine."""
-    hash_size_in_megabytes: int = 512
-
-    logical_cpu_cores: int | None = os.cpu_count()
-    allowed_cpu_threads: int = 1 if logical_cpu_cores is None else max(1, logical_cpu_cores - 1)
+    hash_in_megabytes: int = 512
+    assigned_threads: int = max(1, os.cpu_count() - 1)
 
     options: dict[str, int] = {
-        "Threads": allowed_cpu_threads,
-        "Hash": hash_size_in_megabytes,
+        "Threads": assigned_threads,
+        "Hash": hash_in_megabytes,
     }
     return {
-        option: min(available_options[option].max or value, value)
+        option: min(value, available_options[option].max)
         for option, value in options.items()
         if option in available_options
     }

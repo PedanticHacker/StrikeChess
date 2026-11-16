@@ -57,7 +57,7 @@ from strikechess.utils import (
 )
 
 
-ScrollThrottleIntervalMilliseconds: Final[int] = 180
+ScrollThrottleIntervalInMilliseconds: Final[int] = 180
 
 
 class ThemeName(StrEnum):
@@ -140,7 +140,7 @@ class MainWindow(QMainWindow):
         # Timers
         self._scroll_throttle_timer: QTimer = QTimer(self)
         self._scroll_throttle_timer.setSingleShot(True)
-        self._scroll_throttle_timer.setInterval(ScrollThrottleIntervalMilliseconds)
+        self._scroll_throttle_timer.setInterval(ScrollThrottleIntervalInMilliseconds)
 
         # UI setup
         self._create_layout()

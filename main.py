@@ -14,7 +14,7 @@ from strikechess.ui import MainWindow, SplashScreen
 from strikechess.utils import create_svg_icon, install_translators, root_path
 
 
-SplashScreenDurationMilliseconds: Final[int] = 3000
+SplashScreenDurationInMilliseconds: Final[int] = 3000
 
 
 def _create_app() -> QApplication:
@@ -74,7 +74,7 @@ def main() -> None:
     main_window: MainWindow = MainWindow()
 
     QTimer.singleShot(
-        SplashScreenDurationMilliseconds,
+        SplashScreenDurationInMilliseconds,
         partial(_switch, splash_screen, main_window),
     )
 

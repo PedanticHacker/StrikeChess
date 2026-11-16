@@ -4,8 +4,8 @@ from PySide6.QtWidgets import QLCDNumber
 from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 
 
-TenthsThresholdSeconds: Final[float] = 10.0
-CountdownIntervalMilliseconds: Final[int] = 30
+TenthsThresholdInSeconds: Final[float] = 10.0
+CountdownIntervalInMilliseconds: Final[int] = 30
 NanosecondsPerSecond: Final[int] = 1_000_000_000
 
 
@@ -30,9 +30,9 @@ class DigitalClock(QLCDNumber):
         self.setSegmentStyle(QLCDNumber.SegmentStyle.Flat)
 
         self._countdown_timer: QTimer = QTimer(self)
-        self._countdown_timer.timeout.connect(self.update_time)
         self._countdown_timer.setTimerType(Qt.TimerType.PreciseTimer)
-        self._countdown_timer.setInterval(CountdownIntervalMilliseconds)
+        self._countdown_timer.setInterval(CountdownIntervalInMilliseconds)
+        self._countdown_timer.timeout.connect(self.update_time)
 
         self._elapsed_timer: QElapsedTimer = QElapsedTimer()
 
@@ -102,7 +102,7 @@ class DigitalClock(QLCDNumber):
         hours, remaining_time = divmod(time_in_seconds, 3600)
         minutes, seconds = divmod(remaining_time, 60)
 
-        if self.time < TenthsThresholdSeconds:
+        if self.time < TenthsThresholdInSeconds:
             return f"{minutes:02}:{seconds:02}.{tenths_of_second}"
 
         return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"

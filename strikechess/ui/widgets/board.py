@@ -14,7 +14,7 @@ from PySide6.QtCore import (
 from strikechess.utils import create_color_property
 
 
-AnimationDurationMilliseconds: Final[int] = 350
+AnimationDurationInMilliseconds: Final[int] = 350
 
 svg.XX = "<circle id='xx' r='4.5' cx='22.5' cy='22.5' stroke='#303030' fill='#e5e5e5'/>"
 
@@ -59,9 +59,9 @@ class SvgBoard(QSvgWidget):
         self._square_light: QColor = QColor()
 
         self._animation: QVariantAnimation = QVariantAnimation(self)
-        self._animation.finished.connect(self.stop_dragging)
-        self._animation.setDuration(AnimationDurationMilliseconds)
         self._animation.setEasingCurve(QEasingCurve.Type.OutCubic)
+        self._animation.setDuration(AnimationDurationInMilliseconds)
+        self._animation.finished.connect(self.stop_dragging)
         self._animation.valueChanged.connect(self.update_animation_point)
 
         self.setFixedSize(500, 500)

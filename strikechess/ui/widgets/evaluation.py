@@ -12,8 +12,8 @@ class EvaluationBar(QProgressBar):
         self._settings: SettingsService = settings
 
         self._animation: QPropertyAnimation = QPropertyAnimation(self, b"value")
-        self._animation.valueChanged.connect(self.update)
         self._animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
+        self._animation.valueChanged.connect(self.update)
 
         self.setFixedWidth(50)
         self.setRange(0, 1000)
