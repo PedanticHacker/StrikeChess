@@ -143,7 +143,7 @@ def root_path() -> Path:
 
 
 def save_with_file_manager(
-    parent: QWidget | None, caption: str, file_filter: str, suggested_name: str = ""
+    parent: QWidget | None, caption: str, file_filter: str, suggested_name: str
 ) -> str | None:
     """Show file manager to save file and return selected path."""
     file_path, _ = QFileDialog.getSaveFileName(
@@ -171,7 +171,7 @@ def show_about(parent: QWidget | None) -> None:
     QMessageBox.about(parent, title, message)
 
 
-def show_file_manager(parent: QWidget | None, caption: str, file_filter: str = "") -> str | None:
+def show_file_manager(parent: QWidget | None, caption: str, file_filter: str) -> str | None:
     """Show file manager to open file and return selected path."""
     file_path, _ = QFileDialog.getOpenFileName(
         parent=parent,

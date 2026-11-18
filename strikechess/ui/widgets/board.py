@@ -25,8 +25,6 @@ class SvgBoard(QSvgWidget):
     coord = create_color_property("_coord")
     margin = create_color_property("_margin")
     square_dark = create_color_property("_square_dark")
-    inner_border = create_color_property("_inner_border")
-    outer_border = create_color_property("_outer_border")
     square_light = create_color_property("_square_light")
 
     def __init__(
@@ -54,8 +52,6 @@ class SvgBoard(QSvgWidget):
         self._coord: QColor = QColor()
         self._margin: QColor = QColor()
         self._square_dark: QColor = QColor()
-        self._inner_border: QColor = QColor()
-        self._outer_border: QColor = QColor()
         self._square_light: QColor = QColor()
 
         self._animation: QVariantAnimation = QVariantAnimation(self)
@@ -196,8 +192,6 @@ class SvgBoard(QSvgWidget):
             "coord": self._coord.name(),
             "margin": self._margin.name(),
             "square dark": self._square_dark.name(),
-            "inner border": self._inner_border.name(),
-            "outer border": self._outer_border.name(),
             "square light": self._square_light.name(),
         }
 

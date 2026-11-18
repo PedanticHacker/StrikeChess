@@ -32,7 +32,7 @@ class SettingsDialog(QDialog):
         self._set_vertical_layout()
         self._connect_signals_to_slots()
 
-        self._initial_settings: dict[str, bool | float | str] = self._current_settings()
+        self._initial_settings: dict[tuple[str, str], Any] = self._current_settings()
 
         self.setWindowTitle(self.tr("Settings"))
 
@@ -56,31 +56,8 @@ class SettingsDialog(QDialog):
     @Slot()
     def save_settings(self) -> None:
         """Save edited settings to storage."""
-        self._settings.set_value(
-            "human",
-            "name",
-            self._human_name_option.text().strip(),
-        )
-        self._settings.set_value(
-            "engine",
-            "is_white",
-            self._engine_white_option.isChecked(),
-        )
-        self._settings.set_value(
-            "engine",
-            "is_ponder_enabled",
-            self._engine_ponder_option.isChecked(),
-        )
-        self._settings.set_value(
-            "clock",
-            "time",
-            self._clock_time_option.currentData(),
-        )
-        self._settings.set_value(
-            "clock",
-            "increment",
-            self._clock_increment_option.currentData(),
-        )
+        for (section, key), value in self._current_settings().items():
+            self._settings.set_value(section, key, value)
 
     def _create_groups(self) -> None:
         """Create group boxes for related settings."""
@@ -168,14 +145,14 @@ class SettingsDialog(QDialog):
 
         self._human_name_option.textChanged.connect(self.enable_saving)
 
-    def _current_settings(self) -> dict[str, bool | float | str]:
+    def _current_settings(self) -> dict[tuple[str, str], Any]:
         """Get current settings from option widgets."""
         return {
-            "clock_time": self._clock_time_option.currentData(),
-            "human_name": self._human_name_option.text().strip(),
-            "is_engine_white": self._engine_white_option.isChecked(),
-            "clock_increment": self._clock_increment_option.currentData(),
-            "is_engine_ponder_enabled": self._engine_ponder_option.isChecked(),
+            ("clock", "time"): self._clock_time_option.currentData(),
+            ("human", "name"): self._human_name_option.text().strip(),
+            ("engine", "is_white"): self._engine_white_option.isChecked(),
+            ("clock", "increment"): self._clock_increment_option.currentData(),
+            ("engine", "is_ponder_enabled"): self._engine_ponder_option.isChecked(),
         }
 
     def _is_edited(self) -> bool:

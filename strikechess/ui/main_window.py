@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self._settings: SettingsService = SettingsService()
 
         # Language
-        self._apply_language()
+        install_translators(self._settings.value("ui", "language"))
 
         # Core services
         self._pgn: PgnService = PgnService()
@@ -243,15 +243,10 @@ class MainWindow(QMainWindow):
 
             self._game.load_moves(moves)
 
-            self._black_clock.reset()
-            self._white_clock.reset()
-            self._engine.stop_ponder()
-            self._opening_label.clear()
-
             if result in ("1-0", "0-1", "1/2-1/2") and not self._game.is_over_by_rules():
                 self._game.loaded_result = result
 
-            self._update_ui_state()
+            self._reset_ui_state()
 
             show_info(self, self.tr("Game loaded from PGN."))
 
@@ -282,7 +277,9 @@ class MainWindow(QMainWindow):
             ):
                 return
 
-        self._start_new_game()
+        self._game.reset()
+        self._reset_ui_state()
+        self._orient_board_for_human()
 
     def play_move_now(self) -> None:
         """Force engine to play move on current turn."""
@@ -475,13 +472,7 @@ class MainWindow(QMainWindow):
                 return
 
         self._game.fen = fen
-
-        self._black_clock.reset()
-        self._white_clock.reset()
-        self._engine.stop_ponder()
-        self._opening_label.clear()
-
-        self._update_ui_state()
+        self._reset_ui_state()
 
     @Slot(Color)
     def expire_clock_for(self, player_color: Color) -> None:
@@ -640,9 +631,6 @@ class MainWindow(QMainWindow):
 
     def _apply_increment(self) -> None:
         """Add increment to player's clock based on current turn."""
-        if self._game.player_with_expired_clock is not None:
-            return
-
         if len(self._game.move_stack) == 1:
             return
 
@@ -650,10 +638,6 @@ class MainWindow(QMainWindow):
             self._black_clock.add_increment()
         else:
             self._white_clock.add_increment()
-
-    def _apply_language(self) -> None:
-        """Apply language from settings on app launch."""
-        install_translators(self._settings.value("ui", "language"))
 
     def _apply_saved_settings(self) -> None:
         """Act on edited settings being saved."""
@@ -868,14 +852,10 @@ class MainWindow(QMainWindow):
         """Create grid layout with fixed widget positions."""
         self._grid_layout: QGridLayout = QGridLayout()
 
-        self._grid_layout.addWidget(self._black_clock, 1, 1)
         self._grid_layout.addWidget(self._board, 1, 2, 4, 1)
         self._grid_layout.addWidget(self._table_view, 1, 3, 4, 1)
         self._grid_layout.addWidget(self._evaluation_bar, 1, 4, 4, 1)
         self._grid_layout.addWidget(self._engine_analysis_label, 1, 5, 4, 1)
-        self._grid_layout.addWidget(self._engine_name_label, 2, 1)
-        self._grid_layout.addWidget(self._white_clock, 4, 1)
-        self._grid_layout.addWidget(self._human_name_label, 5, 1)
         self._grid_layout.addWidget(self._fen_editor, 5, 2)
         self._grid_layout.addWidget(self._notifications_label, 5, 3)
 
@@ -1047,6 +1027,15 @@ class MainWindow(QMainWindow):
             partial(self._engine.start_analysis, self._game.board_copy())
         )
 
+    def _reset_ui_state(self) -> None:
+        """Reset UI to default state for current game."""
+        self._black_clock.reset()
+        self._white_clock.reset()
+        self._engine.stop_ponder()
+        self._opening_label.clear()
+
+        self._update_ui_state()
+
     def _show_engine_ponder(self) -> None:
         """Show engine ponder state, unavailable without engine."""
         is_engine_loaded: bool = self._engine.is_loaded()
@@ -1075,18 +1064,6 @@ class MainWindow(QMainWindow):
 
         if opening_name is not None:
             self._opening_label.setText(opening_name)
-
-    def _start_new_game(self) -> None:
-        """Reset game and UI states to start new game."""
-        self._game.reset()
-
-        self._black_clock.reset()
-        self._white_clock.reset()
-        self._engine.stop_ponder()
-        self._opening_label.clear()
-
-        self._update_ui_state()
-        self._orient_board_for_human()
 
     def _unload_engine(self) -> None:
         """Stop analysis, terminate engine, and update UI state."""

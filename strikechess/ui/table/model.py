@@ -54,8 +54,7 @@ class TableModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Horizontal:
                 return [self.tr("White"), self.tr("Black")][section]
 
-            if orientation == Qt.Orientation.Vertical:
-                return section + 1
+            return section + 1
 
         return None
 

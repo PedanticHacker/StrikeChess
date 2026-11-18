@@ -3,7 +3,6 @@ from contextlib import suppress
 from PySide6.QtCore import QObject, Signal
 from chess import (
     Move,
-    BLACK,
     Board,
     WHITE,
     BB_SQUARES,
@@ -83,9 +82,9 @@ class GameService(QObject):
             if self.last_position.has_insufficient_material(opponent):
                 return "1/2-1/2" if format_type == "pgn" else self.tr("Draw")
 
-        if self.player_with_expired_clock == BLACK:
-            return "1-0" if format_type == "pgn" else self.tr("White wins on time")
-        elif self.player_with_expired_clock == WHITE:
+            if opponent == WHITE:
+                return "1-0" if format_type == "pgn" else self.tr("White wins on time")
+
             return "0-1" if format_type == "pgn" else self.tr("Black wins on time")
 
         pgn_result: str = "*"

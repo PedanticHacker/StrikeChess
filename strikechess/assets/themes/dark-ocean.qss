@@ -257,9 +257,7 @@ QToolTip {
 
 SvgBoard {
   qproperty-coord: #c5d9e8;
-  qproperty-inner_border: #385f80;
   qproperty-margin: #344d69;
-  qproperty-outer_border: #385f80;
   qproperty-square_dark: #2d4766;
   qproperty-square_light: #9ab8d9;
 }
