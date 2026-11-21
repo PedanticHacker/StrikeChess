@@ -1,7 +1,7 @@
 from functools import partial
 
-from chess import Color, Move
 from PySide6.QtGui import QColor
+from chess import BLACK, Color, Move, WHITE
 from PySide6.QtCore import QThreadPool, QTimer, Slot
 from PySide6.QtWidgets import QDialog, QGridLayout, QLabel, QMainWindow, QWidget
 
@@ -62,8 +62,9 @@ class MainWindow(QMainWindow):
         self._table_model: TableModel = TableModel(self._game.moves)
         self._table_view: TableView = TableView(self._table_model)
         self._evaluation_bar: EvaluationBar = EvaluationBar(self._settings)
-        self._chess_clock: ChessClock = ChessClock(self._game, self._settings)
         self._board: SvgBoard = SvgBoard(self._game, self._engine, self._settings)
+        self._black_clock: ChessClock = ChessClock(BLACK, self._game, self._settings)
+        self._white_clock: ChessClock = ChessClock(WHITE, self._game, self._settings)
 
         # Labels
         self._engine_analysis_label: QLabel = QLabel()
@@ -117,6 +118,7 @@ class MainWindow(QMainWindow):
 
         self._game.reset()
         self.reset_ui_state()
+
         self._board_orientation.orient_board_for_human()
 
     def play_move_now(self) -> None:
@@ -157,10 +159,10 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(qss_file.read())
 
         self.ensurePolished()
-
-        self._settings.set_value("ui", "theme", file_name)
         self._tool_bar.tint_icons(self._icon_color, self._disabled_icon_color)
         self._status_bar.show_theme_name(self._theme_menu.theme_name(file_name))
+
+        self._settings.set_value("ui", "theme", file_name)
 
     @Slot(str)
     def apply_validated_fen(self, fen: str) -> None:
@@ -183,13 +185,17 @@ class MainWindow(QMainWindow):
     @Slot(Color)
     def expire_clock_for(self, player_color: Color) -> None:
         """End game when clock of `player_color` expires."""
-        self._engine.stop_ponder()
-        self._chess_clock.stop_timers()
+        self._black_clock.stop_timer()
+        self._white_clock.stop_timer()
 
-        self._board.disable_interaction()
-        self._sound_player.play_game_over()
         self._game.player_with_expired_clock = player_color
         self._notifications_label.setText(self._game.result())
+
+        self._engine.stop_ponder()
+
+        self._board.disable_interaction()
+
+        self._sound_player.play_game_over()
 
         self.update_actions()
 
@@ -210,6 +216,7 @@ class MainWindow(QMainWindow):
                 self._notifications_label.clear()
 
             self.update_actions()
+
             self.request_engine_move()
             self._engine.stop_ponder()
             return
@@ -258,19 +265,22 @@ class MainWindow(QMainWindow):
                 partial(
                     self._engine.play_move,
                     board=self._game.board_copy(),
-                    black_time=self._chess_clock.black.time,
-                    white_time=self._chess_clock.white.time,
-                    black_increment=self._chess_clock.black.increment,
-                    white_increment=self._chess_clock.white.increment,
+                    black_time=self._black_clock.time,
+                    white_time=self._white_clock.time,
+                    black_increment=self._black_clock.increment,
+                    white_increment=self._white_clock.increment,
                 )
             )
 
     @Slot()
     def reset_ui_state(self) -> None:
         """Reset UI to default state for current game."""
-        self._board.clear_arrow()
-        self._chess_clock.reset()
+        self._black_clock.reset()
+        self._white_clock.reset()
+
         self._engine.stop_ponder()
+
+        self._board.clear_arrow()
         self._status_bar.clear_opening()
 
         self._update_ui_state()
@@ -295,10 +305,12 @@ class MainWindow(QMainWindow):
             self._game.update_state(move_index)
 
         if not is_last_move:
-            self._chess_clock.stop_timers()
+            self._black_clock.stop_timer()
+            self._white_clock.stop_timer()
+
+        self._engine_analysis.stop()
 
         self._show_fen()
-        self._engine_analysis.stop()
         self._status_bar.show_opening()
 
         self._board.set_last_move_arrow()
@@ -366,7 +378,8 @@ class MainWindow(QMainWindow):
     def _apply_saved_settings(self) -> None:
         """Act on edited settings being saved."""
         if not self._game.is_in_progress():
-            self._chess_clock.reset()
+            self._black_clock.reset()
+            self._white_clock.reset()
 
             self._human_name_label.setText(
                 elide_name(self._settings.value("human", "name") or self.tr("Player"))
@@ -376,6 +389,7 @@ class MainWindow(QMainWindow):
             self._engine.stop_ponder()
 
         self.request_engine_move()
+
         self._status_bar.show_engine_ponder()
         self._board_orientation.orient_board_for_human()
 
@@ -383,7 +397,8 @@ class MainWindow(QMainWindow):
         """Connect component signals to corresponding slot methods."""
 
         # Clocks
-        self._chess_clock.expired.connect(self.expire_clock_for)
+        self._black_clock.expired.connect(self.expire_clock_for)
+        self._white_clock.expired.connect(self.expire_clock_for)
 
         # Engine
         self._engine.move_played.connect(self.play_engine_move)
@@ -498,7 +513,8 @@ class MainWindow(QMainWindow):
             self._game,
             self._engine,
             self._board,
-            self._chess_clock,
+            self._black_clock,
+            self._white_clock,
             self._evaluation_bar,
             self._notifications_label,
             self._engine_analysis_label,
@@ -508,7 +524,8 @@ class MainWindow(QMainWindow):
         self._board_orientation: BoardOrientation = BoardOrientation(
             self._grid_layout,
             self._board,
-            self._chess_clock,
+            self._black_clock,
+            self._white_clock,
             self._evaluation_bar,
             self._human_name_label,
             self._engine_name_label,
@@ -566,7 +583,8 @@ class MainWindow(QMainWindow):
         self._sound_player.play(move)
 
         self._game.push(move)
-        self._chess_clock.add_increment()
+        self._black_clock.add_increment()
+        self._white_clock.add_increment()
 
         self._engine.is_thinking = False
 
@@ -588,13 +606,17 @@ class MainWindow(QMainWindow):
         self._table_model.update_view()
         self._table_view.select_last_move()
 
-        self._show_fen()
         self._engine_analysis.stop()
+
+        self._show_fen()
         self._status_bar.show_opening()
 
         if self._game.is_over_by_result():
+            self._black_clock.stop_timer()
+            self._white_clock.stop_timer()
+
             self._engine.stop_ponder()
-            self._chess_clock.stop_timers()
+
             self._board.disable_interaction()
             return
 

@@ -5,7 +5,8 @@ class BoardOrientation:
         self,
         grid_layout: QGridLayout,
         board: SvgBoard,
-        chess_clock: ChessClock,
+        black_clock: ChessClock,
+        white_clock: ChessClock,
         evaluation_bar: EvaluationBar,
         human_name_label: QLabel,
         engine_name_label: QLabel,
@@ -13,7 +14,8 @@ class BoardOrientation:
     ) -> None:
         self._board: SvgBoard = board
         self._settings: SettingsService = settings
-        self._chess_clock: ChessClock = chess_clock
+        self._black_clock: ChessClock = black_clock
+        self._white_clock: ChessClock = white_clock
         self._grid_layout: QGridLayout = grid_layout
         self._human_name_label: QLabel = human_name_label
         self._engine_name_label: QLabel = engine_name_label
@@ -43,15 +45,15 @@ class BoardOrientation:
 
     def _place_clocks(self, is_white_at_bottom: bool) -> None:
         """Place clock widgets based on `is_white_at_bottom`."""
-        self._grid_layout.removeWidget(self._chess_clock.black)
-        self._grid_layout.removeWidget(self._chess_clock.white)
+        self._grid_layout.removeWidget(self._black_clock)
+        self._grid_layout.removeWidget(self._white_clock)
 
         if is_white_at_bottom:
-            self._grid_layout.addWidget(self._chess_clock.black, 1, 1)
-            self._grid_layout.addWidget(self._chess_clock.white, 4, 1)
+            self._grid_layout.addWidget(self._black_clock, 1, 1)
+            self._grid_layout.addWidget(self._white_clock, 4, 1)
         else:
-            self._grid_layout.addWidget(self._chess_clock.black, 4, 1)
-            self._grid_layout.addWidget(self._chess_clock.white, 1, 1)
+            self._grid_layout.addWidget(self._black_clock, 4, 1)
+            self._grid_layout.addWidget(self._white_clock, 1, 1)
 
     def _place_player_names(self, is_white_at_bottom: bool) -> None:
         """Place player name labels based on `is_white_at_bottom`."""

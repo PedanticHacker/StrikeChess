@@ -1,13 +1,12 @@
 from .fen import FenEditor
 from .board import SvgBoard
 from .evaluation import EvaluationBar
-from .clock import ChessClock, ClockStyleSheet, DigitalClock
+from .clock import ChessClock, ClockStyleSheet
 
 __all__: list[str] = [
     "SvgBoard",
     "FenEditor",
     "ChessClock",
-    "DigitalClock",
     "EvaluationBar",
     "ClockStyleSheet",
 ]

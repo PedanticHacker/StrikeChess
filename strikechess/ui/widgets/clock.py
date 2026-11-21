@@ -1,9 +1,8 @@
 from enum import StrEnum
-from functools import partial
 
-from chess import BLACK, Color, WHITE
+from chess import Color, WHITE
 from PySide6.QtWidgets import QLCDNumber
-from PySide6.QtCore import QElapsedTimer, QObject, QSize, Qt, QTimer, Signal, Slot
+from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
 
 
 TenthsThresholdInSeconds: Final[float] = 10.0
@@ -18,17 +17,21 @@ class ClockStyleSheet(StrEnum):
     White = "color: black; background-color: white;"
 
 
-class DigitalClock(QLCDNumber):
-    """Player's clock with countdown and elapsed timers."""
+class ChessClock(QLCDNumber):
+    """Player's clock, counting down while player is on turn."""
 
-    expired: ClassVar[Signal] = Signal()
+    expired: ClassVar[Signal] = Signal(Color)
 
-    def __init__(self, style_sheet: ClockStyleSheet, settings: SettingsService) -> None:
+    def __init__(self, player_color: Color, game: GameService, settings: SettingsService) -> None:
         super().__init__()
 
+        self._game: GameService = game
+        self._player_color: Color = player_color
         self._settings: SettingsService = settings
 
-        self.setStyleSheet(style_sheet)
+        self.setStyleSheet(
+            ClockStyleSheet.White if player_color == WHITE else ClockStyleSheet.Black
+        )
         self.setSegmentStyle(QLCDNumber.SegmentStyle.Flat)
 
         self._countdown_timer: QTimer = QTimer(self)
@@ -51,9 +54,24 @@ class DigitalClock(QLCDNumber):
     def reset(self) -> None:
         """Stop countdown and set time to values from settings."""
         self._countdown_timer.stop()
+
         self.time: float = self._settings.value("clock", "time")
         self.increment: float = self._settings.value("clock", "increment")
         self._show_time()
+
+    def update_countdown(self) -> None:
+        """Start/stop countdown based on current turn."""
+        if not self._game.move_stack:
+            self.stop_timer()
+            return
+
+        if self._game.is_over_by_result() or self._game.is_viewing_history:
+            return
+
+        if self._game.turn == self._player_color:
+            self.start_timer()
+        else:
+            self.stop_timer()
 
     def start_timer(self) -> None:
         """Start tracking elapsed time, then start timer countdown."""
@@ -73,7 +91,10 @@ class DigitalClock(QLCDNumber):
         self._countdown_timer.stop()
 
     def add_increment(self) -> None:
-        """Add increment to time on clock."""
+        """Add increment to time on clock if player just moved."""
+        if len(self._game.move_stack) == 1 or self._game.turn == self._player_color:
+            return
+
         self.time += self.increment
         self._show_time()
 
@@ -87,7 +108,7 @@ class DigitalClock(QLCDNumber):
         if self.time <= 0.0:
             self.time = 0.0
             self._countdown_timer.stop()
-            self.expired.emit()
+            self.expired.emit(self._player_color)
 
         self._show_time()
 
@@ -108,56 +129,3 @@ class DigitalClock(QLCDNumber):
             return f"{minutes:02}:{seconds:02}.{tenths_of_second}"
 
         return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"
-
-
-class ChessClock(QObject):
-    """Clocks of both players, counting down for player on turn."""
-
-    expired: ClassVar[Signal] = Signal(Color)
-
-    def __init__(self, game: GameService, settings: SettingsService) -> None:
-        super().__init__()
-
-        self._game: GameService = game
-
-        self.black: DigitalClock = DigitalClock(ClockStyleSheet.Black, settings)
-        self.black.expired.connect(partial(self.expired.emit, BLACK))
-
-        self.white: DigitalClock = DigitalClock(ClockStyleSheet.White, settings)
-        self.white.expired.connect(partial(self.expired.emit, WHITE))
-
-    def reset(self) -> None:
-        """Stop countdowns and set times to values from settings."""
-        self.black.reset()
-        self.white.reset()
-
-    def update_timers(self) -> None:
-        """Start/stop clocks based on current turn."""
-        if not self._game.move_stack:
-            self.stop_timers()
-            return
-
-        if self._game.is_over_by_result() or self._game.is_viewing_history:
-            return
-
-        if self._game.is_white_to_move():
-            self.black.stop_timer()
-            self.white.start_timer()
-        else:
-            self.white.stop_timer()
-            self.black.start_timer()
-
-    def stop_timers(self) -> None:
-        """Stop countdowns of both clocks."""
-        self.black.stop_timer()
-        self.white.stop_timer()
-
-    def add_increment(self) -> None:
-        """Add increment to clock of player who just moved."""
-        if len(self._game.move_stack) == 1:
-            return
-
-        if self._game.is_white_to_move():
-            self.black.add_increment()
-        else:
-            self.white.add_increment()
