@@ -52,7 +52,6 @@ def _show_duplicate_launch_warning() -> None:
 def _switch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
     """Switch from splash screen to main window."""
     splash_screen.finish(main_window)
-
     main_window.showMaximized()
 
 
