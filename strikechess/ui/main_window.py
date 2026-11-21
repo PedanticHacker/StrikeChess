@@ -1,81 +1,33 @@
-from re import sub
-from enum import StrEnum
-from pathlib import Path
-from platform import system
 from functools import partial
 
-from chess import BLACK, Color, Move, WHITE
-from chess.engine import EngineError, Score
+from chess import Color, Move
+from PySide6.QtGui import QColor
 from PySide6.QtCore import QThreadPool, QTimer, Slot
-from PySide6.QtGui import QAction, QCloseEvent, QColor, QWheelEvent
-from PySide6.QtWidgets import (
-    QMenu,
-    QLabel,
-    QDialog,
-    QWidget,
-    QMenuBar,
-    QToolBar,
-    QGridLayout,
-    QMainWindow,
-    QMessageBox,
-)
+from PySide6.QtWidgets import QDialog, QGridLayout, QLabel, QMainWindow, QWidget
 
+from strikechess.ui.pgn_files import PgnFiles
 from strikechess.ui.sounds import SoundPlayer
 from strikechess.ui.table import TableModel, TableView
+from strikechess.ui.menus import LanguageMenu, ThemeMenu
+from strikechess.ui.bars import MenuBar, StatusBar, ToolBar
+from strikechess.ui.board_orientation import BoardOrientation
+from strikechess.ui.engine import EngineAnalysis, EngineLoader
 from strikechess.ui.dialogs import PromotionDialog, SettingsDialog
-from strikechess.services import (
-    PgnService,
-    GameService,
-    EngineService,
-    SettingsService,
-)
-from strikechess.ui.widgets import (
-    SvgBoard,
-    FenEditor,
-    DigitalClock,
-    EvaluationBar,
-    ClockStyleSheet,
-)
+from strikechess.services import EngineService, GameService, SettingsService
+from strikechess.ui.widgets import BoardContainer, ChessClock, EvaluationBar, FenEditor, SvgBoard
 from strikechess.utils import (
     root_path,
-    show_info,
     elide_name,
     show_about,
     ask_question,
-    find_opening,
-    show_warning,
     create_action,
-    read_pgn_file,
-    write_pgn_file,
     create_svg_icon,
-    show_file_manager,
-    create_tinted_icon,
-    create_colored_icon,
     install_translators,
     create_color_property,
-    save_with_file_manager,
 )
 
 
 ScrollThrottleIntervalInMilliseconds: Final[int] = 180
-
-
-class ThemeName(StrEnum):
-    """Available dark and light themes."""
-
-    DarkMint = "dark-mint"
-    DarkOcean = "dark-ocean"
-    LightMint = "light-mint"
-    DarkForest = "dark-forest"
-    DarkNebula = "dark-nebula"
-    LightOcean = "light-ocean"
-    LightForest = "light-forest"
-    LightNebula = "light-nebula"
-
-    @property
-    def text(self) -> str:
-        """Theme name in title-cased format."""
-        return self.value.replace("-", " ").title()
 
 
 class MainWindow(QMainWindow):
@@ -97,7 +49,6 @@ class MainWindow(QMainWindow):
         install_translators(self._settings.value("ui", "language"))
 
         # Core services
-        self._pgn: PgnService = PgnService()
         self._game: GameService = GameService(self._settings)
         self._engine: EngineService = EngineService(self._settings)
 
@@ -111,9 +62,8 @@ class MainWindow(QMainWindow):
         self._table_model: TableModel = TableModel(self._game.moves)
         self._table_view: TableView = TableView(self._table_model)
         self._evaluation_bar: EvaluationBar = EvaluationBar(self._settings)
+        self._chess_clock: ChessClock = ChessClock(self._game, self._settings)
         self._board: SvgBoard = SvgBoard(self._game, self._engine, self._settings)
-        self._black_clock: DigitalClock = DigitalClock(ClockStyleSheet.Black, self._settings)
-        self._white_clock: DigitalClock = DigitalClock(ClockStyleSheet.White, self._settings)
 
         # Labels
         self._engine_analysis_label: QLabel = QLabel()
@@ -133,10 +83,6 @@ class MainWindow(QMainWindow):
         self._human_name_label.setFixedWidth(200)
         self._human_name_label.setObjectName("humanName")
 
-        self._opening_label: QLabel = QLabel()
-        self._theme_name_label: QLabel = QLabel()
-        self._engine_ponder_label: QLabel = QLabel()
-
         # Timers
         self._scroll_throttle_timer: QTimer = QTimer(self)
         self._scroll_throttle_timer.setSingleShot(True)
@@ -144,125 +90,17 @@ class MainWindow(QMainWindow):
 
         # UI setup
         self._create_layout()
+        self._create_handlers()
+
         self._create_actions()
-        self._update_actions()
         self._create_menu_bar()
         self._create_tool_bar()
         self._create_status_bar()
-        self._show_engine_ponder()
-        self._orient_board_for_human()
         self._connect_signals_to_slots()
+
+        self.update_actions()
+        self._board_orientation.orient_board_for_human()
         self.apply_theme(self._settings.value("ui", "theme"))
-
-    def apply_theme(self, file_name: str) -> None:
-        """Apply QSS theme based on `file_name` and show theme name."""
-        file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
-
-        with open(file_path, encoding="utf-8") as qss_file:
-            self.setStyleSheet(qss_file.read())
-
-        self.ensurePolished()
-
-        for action, icon in self._tool_bar_icons.items():
-            action.setIcon(create_tinted_icon(icon, self._icon_color, self._disabled_icon_color))
-
-        self._settings.set_value("ui", "theme", file_name)
-
-        theme_caption: str = self.tr("Theme")
-        theme_name: str = self.tr(ThemeName(file_name).text)
-        self._theme_name_label.setText(f"{theme_caption}: {theme_name}")
-
-    def change_language(self, language_code: str) -> None:
-        """Save new language setting and prompt for app relaunch."""
-        if language_code == self._settings.value("ui", "language"):
-            return
-
-        self._settings.set_value("ui", "language", language_code)
-
-        QMessageBox.information(
-            self,
-            self.tr("Relaunch Required"),
-            self.tr("Please relaunch StrikeChess to apply the new language."),
-        )
-
-    def flip(self) -> None:
-        """Flip board orientation and board-related elements."""
-        is_white_at_bottom: bool = not self._settings.value("ui", "is_white_at_bottom")
-        self._settings.set_value("ui", "is_white_at_bottom", is_white_at_bottom)
-        self._orient_board_elements()
-
-    def load_engine(self) -> None:
-        """Show file manager to select and load engine."""
-        engine_filter: str = self.tr("UCI engine (*.exe)") if system() == "Windows" else ""
-        file_path: str | None = show_file_manager(self, self.tr("Load Engine"), engine_filter)
-
-        if file_path is None:
-            return
-
-        try:
-            self.stop_analysis()
-
-            self._engine.load_file(file_path)
-            self._engine_name_label.setText(elide_name(self._engine.name))
-
-            self._update_actions()
-            self._show_engine_ponder()
-            self.request_engine_move()
-
-        except EngineError as error:
-            show_warning(self, self.tr("Engine Error"), str(error))
-
-    def load_from_pgn(self) -> None:
-        """Load game from PGN, prompt if game is in progress."""
-        if self._game.is_in_progress():
-            if not ask_question(
-                self,
-                self.tr("Load Game"),
-                self.tr(
-                    "You will lose the current game.\n"
-                    "Load from PGN anyway?"
-                ),
-            ):
-                return
-
-        file_path: str | None = show_file_manager(
-            self, self.tr("Load Game"), self.tr("PGN file (*.pgn)")
-        )
-
-        if file_path is None:
-            return
-
-        try:
-            pgn_text: str = read_pgn_file(file_path)
-            moves, fen, result = self._pgn.parse_pgn(pgn_text)
-
-            self._game.reset()
-
-            if fen is not None:
-                self._game.fen = fen
-
-            self._game.load_moves(moves)
-
-            if result in ("1-0", "0-1", "1/2-1/2") and not self._game.is_over_by_rules():
-                self._game.loaded_result = result
-
-            self._reset_ui_state()
-
-            show_info(self, self.tr("Game loaded from PGN."))
-
-        except (OSError, UnicodeDecodeError):
-            show_warning(
-                self,
-                self.tr("File Error"),
-                self.tr(
-                    "Cannot read PGN.\n\n"
-                    "The file may be locked or corrupted.\n"
-                    "Check file permissions and try again."
-                ),
-            )
-
-        except ValueError as error:
-            show_warning(self, self.tr("Load Error"), str(error))
 
     def offer_new_game(self) -> None:
         """Start new game, prompt if game is in progress."""
@@ -278,101 +116,19 @@ class MainWindow(QMainWindow):
                 return
 
         self._game.reset()
-        self._reset_ui_state()
-        self._orient_board_for_human()
+        self.reset_ui_state()
+        self._board_orientation.orient_board_for_human()
 
     def play_move_now(self) -> None:
         """Force engine to play move on current turn."""
-        self._board.update()
-        self._game.clear_arrow()
+        self._board.clear_arrow()
 
-        self.stop_analysis()
+        self._engine_analysis.stop()
         self.request_engine_move(force=True)
 
     def quit(self) -> None:
         """Quit app by closing main window."""
         self.close()
-
-    def request_engine_move(self, force: bool = False) -> None:
-        """Request engine to play move if loaded, on turn, or forced."""
-        if not self._engine.is_loaded():
-            return
-
-        if self._engine.is_thinking:
-            return
-
-        if self._game.is_over_by_result():
-            return
-
-        if self._game.is_viewing_history and not force:
-            return
-
-        if self._game.is_engine_to_move() or force:
-            self._engine_fen = self._game.fen
-
-            self._engine.is_thinking = True
-            self._notifications_label.setText(self.tr("Thinking..."))
-
-            self._update_actions()
-
-            QThreadPool.globalInstance().start(
-                partial(
-                    self._engine.play_move,
-                    board=self._game.board_copy(),
-                    black_time=self._black_clock.time,
-                    white_time=self._white_clock.time,
-                    black_increment=self._black_clock.increment,
-                    white_increment=self._white_clock.increment,
-                )
-            )
-
-    def save_as_pgn(self) -> None:
-        """Save current game as PGN."""
-        is_engine_white: bool = self._settings.value("engine", "is_white")
-        human_name: str = self._settings.value("human", "name") or "Player"
-        engine_name: str = self._engine.name if self._engine.is_loaded() else "Unknown"
-
-        suggested_file_name: str = self._pgn.suggest_file_name(
-            human_name,
-            engine_name,
-            is_engine_white,
-        )
-
-        file_path: str | None = save_with_file_manager(
-            self,
-            self.tr("Save Game"),
-            self.tr("PGN file (*.pgn)"),
-            suggested_file_name,
-        )
-
-        if file_path is None:
-            return
-
-        try:
-            pgn_text: str = self._pgn.export_to_pgn(
-                self._game,
-                human_name,
-                engine_name,
-                is_engine_white,
-            )
-
-            write_pgn_file(file_path, pgn_text)
-
-            show_info(self, self.tr("Game saved successfully."))
-
-        except ValueError as error:
-            show_warning(self, self.tr("Save Error"), str(error))
-
-        except OSError:
-            show_warning(
-                self,
-                self.tr("Save Error"),
-                self.tr(
-                    "Cannot save game as PGN.\n\n"
-                    "The folder may be read-only or the disk may be full.\n"
-                    "Try saving to a different folder."
-                ),
-            )
 
     def show_about(self) -> None:
         """Show About dialog."""
@@ -392,69 +148,19 @@ class MainWindow(QMainWindow):
         if settings_dialog.exec() == QDialog.DialogCode.Accepted:
             self._apply_saved_settings()
 
-    def start_analysis(self) -> None:
-        """Start analyzing current position."""
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
+    @Slot(str)
+    def apply_theme(self, file_name: str) -> None:
+        """Apply QSS theme based on `file_name` and show theme name."""
+        file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
 
-        self._evaluation_bar.show()
-        self._engine_analysis_label.show()
+        with open(file_path, encoding="utf-8") as qss_file:
+            self.setStyleSheet(qss_file.read())
 
-        self._request_engine_analysis()
-        self._update_actions()
+        self.ensurePolished()
 
-    def stop_analysis(self) -> None:
-        """Stop analyzing current position."""
-        self._engine.stop_analysis()
-        self._engine_analysis_label.clear()
-        self._evaluation_bar.reset_appearance()
-
-        self._evaluation_bar.hide()
-        self._engine_analysis_label.hide()
-
-        if self._game.is_over_by_result():
-            self._notifications_label.setText(self._game.result())
-        else:
-            self._notifications_label.clear()
-
-        self._update_actions()
-        self.update_clock_timers()
-
-    def unload_engine(self) -> None:
-        """Prompt whether to unload currently loaded engine."""
-        if not ask_question(
-            self,
-            self.tr("Unload Engine"),
-            self.tr("Are you sure you want to unload the engine?"),
-        ):
-            return
-
-        self._unload_engine()
-
-    def update_clock_timers(self) -> None:
-        """Start/stop clocks based on current turn."""
-        if not self._game.move_stack:
-            self._black_clock.stop_timer()
-            self._white_clock.stop_timer()
-            return
-
-        if self._game.is_over_by_result() or self._game.is_viewing_history:
-            return
-
-        if self._game.is_white_to_move():
-            self._black_clock.stop_timer()
-            self._white_clock.start_timer()
-        else:
-            self._white_clock.stop_timer()
-            self._black_clock.start_timer()
-
-    @Slot(Score)
-    def animate_evaluation(self, score: Score) -> None:
-        """Show position evaluation based on `score`."""
-        if not self._engine.is_analyzing:
-            return
-
-        self._evaluation_bar.animate(score)
+        self._settings.set_value("ui", "theme", file_name)
+        self._tool_bar.tint_icons(self._icon_color, self._disabled_icon_color)
+        self._status_bar.show_theme_name(self._theme_menu.theme_name(file_name))
 
     @Slot(str)
     def apply_validated_fen(self, fen: str) -> None:
@@ -472,60 +178,20 @@ class MainWindow(QMainWindow):
                 return
 
         self._game.fen = fen
-        self._reset_ui_state()
+        self.reset_ui_state()
 
     @Slot(Color)
     def expire_clock_for(self, player_color: Color) -> None:
         """End game when clock of `player_color` expires."""
         self._engine.stop_ponder()
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
+        self._chess_clock.stop_timers()
 
         self._board.disable_interaction()
         self._sound_player.play_game_over()
         self._game.player_with_expired_clock = player_color
         self._notifications_label.setText(self._game.result())
 
-        self._update_actions()
-
-    @Slot()
-    def load_default_engine_on_error(self) -> None:
-        """Load default engine if possible and show warning on error."""
-        if not self._engine.is_loaded():
-            return
-
-        self._unload_engine()
-
-        self._engine.load_default_engine()
-
-        if not self._engine.is_loaded():
-            show_warning(
-                self,
-                self.tr("Engine Error"),
-                self.tr(
-                    "Cannot communicate with UCI engine.\n\n"
-                    "The engine may have crashed.\n"
-                    "Relaunch StrikeChess or load an engine."
-                ),
-            )
-            return
-
-        self._engine_name_label.setText(elide_name(self._engine.name))
-
-        self._update_actions()
-        self._show_engine_ponder()
-
-        show_warning(
-            self,
-            self.tr("Engine Error"),
-            self.tr(
-                "Cannot communicate with UCI engine.\n\n"
-                "The engine may have crashed.\n"
-                "Stockfish has been loaded."
-            ),
-        )
-
-        self.request_engine_move()
+        self.update_actions()
 
     @Slot(Move)
     def play_engine_move(self, move: Move) -> None:
@@ -543,7 +209,7 @@ class MainWindow(QMainWindow):
             else:
                 self._notifications_label.clear()
 
-            self._update_actions()
+            self.update_actions()
             self.request_engine_move()
             self._engine.stop_ponder()
             return
@@ -565,23 +231,54 @@ class MainWindow(QMainWindow):
 
         self._play_move(move)
 
-    @Slot(Move)
-    def show_best_move_arrow(self, best_move: Move) -> None:
-        """Show `best_move` as arrow marker on board."""
-        if not self._engine.is_analyzing:
+    @Slot()
+    def request_engine_move(self, force: bool = False) -> None:
+        """Request engine to play move if loaded, on turn, or forced."""
+        if not self._engine.is_loaded():
             return
 
-        self._board.update()
-        self._game.set_arrow(best_move)
-
-    @Slot(str)
-    def show_engine_variation(self, variation: str) -> None:
-        """Show formatted variation based on engine analysis."""
-        if not self._engine.is_analyzing:
+        if self._engine.is_thinking:
             return
 
-        formatted_variation: str = sub(r"(?=(\b\d+\.+))", "\n", variation).strip()
-        self._engine_analysis_label.setText(formatted_variation)
+        if self._game.is_over_by_result():
+            return
+
+        if self._game.is_viewing_history and not force:
+            return
+
+        if self._game.is_engine_to_move() or force:
+            self._engine_fen = self._game.fen
+
+            self._engine.is_thinking = True
+            self._notifications_label.setText(self.tr("Thinking..."))
+
+            self.update_actions()
+
+            QThreadPool.globalInstance().start(
+                partial(
+                    self._engine.play_move,
+                    board=self._game.board_copy(),
+                    black_time=self._chess_clock.black.time,
+                    white_time=self._chess_clock.white.time,
+                    black_increment=self._chess_clock.black.increment,
+                    white_increment=self._chess_clock.white.increment,
+                )
+            )
+
+    @Slot()
+    def reset_ui_state(self) -> None:
+        """Reset UI to default state for current game."""
+        self._board.clear_arrow()
+        self._chess_clock.reset()
+        self._engine.stop_ponder()
+        self._status_bar.clear_opening()
+
+        self._update_ui_state()
+
+    @Slot()
+    def show_engine_name(self) -> None:
+        """Show name of engine, shortened to fit its label."""
+        self._engine_name_label.setText(elide_name(self._engine.name))
 
     @Slot(int)
     def show_historical_move(self, move_index: int) -> None:
@@ -592,490 +289,25 @@ class MainWindow(QMainWindow):
         self._game.is_viewing_history = not is_last_move
 
         if move_index < 0:
-            self._opening_label.clear()
             self._game.set_root_position()
+            self._status_bar.clear_opening()
         else:
             self._game.update_state(move_index)
 
         if not is_last_move:
-            self._black_clock.stop_timer()
-            self._white_clock.stop_timer()
+            self._chess_clock.stop_timers()
 
         self._show_fen()
-        self._show_opening()
-        self.stop_analysis()
+        self._engine_analysis.stop()
+        self._status_bar.show_opening()
 
-        self._board.update()
+        self._board.set_last_move_arrow()
 
         if is_returning_from_history:
             self.request_engine_move()
 
-    def closeEvent(self, event: QCloseEvent) -> None:
-        """Prompt whether to quit app."""
-        if ask_question(self, self.tr("Quit"), self.tr("Are you sure you want to quit?")):
-            event.accept()
-        else:
-            event.ignore()
-
-    def wheelEvent(self, event: QWheelEvent) -> None:
-        """Select previous or next move on wheel scroll."""
-        if not self._scroll_throttle_timer.isActive():
-            scroll_step: int = event.angleDelta().y()
-
-            if scroll_step > 0:
-                self._table_view.select_previous_move()
-            elif scroll_step < 0:
-                self._table_view.select_next_move()
-
-            self._scroll_throttle_timer.start()
-
-    def _apply_increment(self) -> None:
-        """Add increment to player's clock based on current turn."""
-        if len(self._game.move_stack) == 1:
-            return
-
-        if self._game.is_white_to_move():
-            self._black_clock.add_increment()
-        else:
-            self._white_clock.add_increment()
-
-    def _apply_saved_settings(self) -> None:
-        """Act on edited settings being saved."""
-        if not self._game.is_in_progress():
-            self._black_clock.reset()
-            self._white_clock.reset()
-
-            self._human_name_label.setText(
-                elide_name(self._settings.value("human", "name") or self.tr("Player"))
-            )
-
-        if not self._settings.value("engine", "is_ponder_enabled"):
-            self._engine.stop_ponder()
-
-        self._show_engine_ponder()
-        self.request_engine_move()
-        self._orient_board_for_human()
-
-    def _connect_signals_to_slots(self) -> None:
-        """Connect component signals to corresponding slot methods."""
-
-        # Clocks
-        self._black_clock.expired.connect(partial(self.expire_clock_for, BLACK))
-        self._white_clock.expired.connect(partial(self.expire_clock_for, WHITE))
-
-        # Engine
-        self._engine.move_played.connect(self.play_engine_move)
-        self._engine.score_analyzed.connect(self.animate_evaluation)
-        self._engine.best_move_analyzed.connect(self.show_best_move_arrow)
-        self._engine.variation_analyzed.connect(self.show_engine_variation)
-        self._engine.error_occurred.connect(self.load_default_engine_on_error)
-
-        # Game
-        self._game.move_played.connect(self.play_human_move)
-
-        # Widgets
-        self._fen_editor.fen_validated.connect(self.apply_validated_fen)
-        self._table_view.move_selected.connect(self.show_historical_move)
-
-    def _create_actions(self) -> None:
-        """Create menu item and tool bar button actions."""
-        self.about_action: QAction = create_action(
-            shortcut="F1",
-            handler=self.show_about,
-            icon=create_svg_icon("about"),
-            name=self.tr("About StrikeChess"),
-            status_tip=self.tr("Shows the About dialog."),
-        )
-        self.dark_forest_theme_action: QAction = create_action(
-            shortcut="Alt+1",
-            name=self.tr("Dark Forest"),
-            icon=create_colored_icon("#1f291f"),
-            status_tip=self.tr("Applies the Dark Forest theme."),
-            handler=partial(self.apply_theme, ThemeName.DarkForest),
-        )
-        self.dark_mint_theme_action: QAction = create_action(
-            shortcut="Alt+2",
-            name=self.tr("Dark Mint"),
-            icon=create_colored_icon("#1a2e2e"),
-            status_tip=self.tr("Applies the Dark Mint theme."),
-            handler=partial(self.apply_theme, ThemeName.DarkMint),
-        )
-        self.dark_nebula_theme_action: QAction = create_action(
-            shortcut="Alt+3",
-            name=self.tr("Dark Nebula"),
-            icon=create_colored_icon("#351d4d"),
-            status_tip=self.tr("Applies the Dark Nebula theme."),
-            handler=partial(self.apply_theme, ThemeName.DarkNebula),
-        )
-        self.dark_ocean_theme_action: QAction = create_action(
-            shortcut="Alt+4",
-            name=self.tr("Dark Ocean"),
-            icon=create_colored_icon("#2e455e"),
-            status_tip=self.tr("Applies the Dark Ocean theme."),
-            handler=partial(self.apply_theme, ThemeName.DarkOcean),
-        )
-        self.english_language_action: QAction = create_action(
-            shortcut="",
-            name="English",
-            icon=create_svg_icon("american-flag"),
-            handler=partial(self.change_language, "en"),
-            status_tip=self.tr("Applies the American English language."),
-        )
-        self.flip_action: QAction = create_action(
-            handler=self.flip,
-            shortcut="Ctrl+F",
-            name=self.tr("Flip"),
-            icon=create_svg_icon("flip"),
-            status_tip=self.tr("Flips the board orientation and board-related elements."),
-        )
-        self.german_language_action: QAction = create_action(
-            shortcut="",
-            name="Deutsch",
-            icon=create_svg_icon("german-flag"),
-            handler=partial(self.change_language, "de"),
-            status_tip=self.tr("Applies the German language."),
-        )
-        self.italian_language_action: QAction = create_action(
-            shortcut="",
-            name="Italiano",
-            icon=create_svg_icon("italian-flag"),
-            handler=partial(self.change_language, "it"),
-            status_tip=self.tr("Applies the Italian language."),
-        )
-        self.light_forest_theme_action: QAction = create_action(
-            shortcut="Alt+5",
-            name=self.tr("Light Forest"),
-            icon=create_colored_icon("#95a88c"),
-            status_tip=self.tr("Applies the Light Forest theme."),
-            handler=partial(self.apply_theme, ThemeName.LightForest),
-        )
-        self.light_mint_theme_action: QAction = create_action(
-            shortcut="Alt+6",
-            name=self.tr("Light Mint"),
-            icon=create_colored_icon("#97cbc5"),
-            status_tip=self.tr("Applies the Light Mint theme."),
-            handler=partial(self.apply_theme, ThemeName.LightMint),
-        )
-        self.light_nebula_theme_action: QAction = create_action(
-            shortcut="Alt+7",
-            name=self.tr("Light Nebula"),
-            icon=create_colored_icon("#c385f7"),
-            status_tip=self.tr("Applies the Light Nebula theme."),
-            handler=partial(self.apply_theme, ThemeName.LightNebula),
-        )
-        self.light_ocean_theme_action: QAction = create_action(
-            shortcut="Alt+8",
-            name=self.tr("Light Ocean"),
-            icon=create_colored_icon("#87a6c3"),
-            status_tip=self.tr("Applies the Light Ocean theme."),
-            handler=partial(self.apply_theme, ThemeName.LightOcean),
-        )
-        self.load_engine_action: QAction = create_action(
-            shortcut="Ctrl+L",
-            handler=self.load_engine,
-            name=self.tr("Load engine..."),
-            icon=create_svg_icon("load-engine"),
-            status_tip=self.tr("Shows the file manager to select and load an engine."),
-        )
-        self.load_from_pgn_action: QAction = create_action(
-            shortcut="Ctrl+O",
-            handler=self.load_from_pgn,
-            name=self.tr("Load from PGN..."),
-            icon=create_svg_icon("load-from-pgn"),
-            status_tip=self.tr("Loads a game from PGN, prompts if a game is in progress."),
-        )
-        self.new_game_action: QAction = create_action(
-            shortcut="Ctrl+N",
-            name=self.tr("New game"),
-            handler=self.offer_new_game,
-            icon=create_svg_icon("new-game"),
-            status_tip=self.tr("Starts a new game, prompts if a game is in progress."),
-        )
-        self.play_move_now_action: QAction = create_action(
-            shortcut="Ctrl+P",
-            handler=self.play_move_now,
-            name=self.tr("Play move now"),
-            icon=create_svg_icon("play-move-now"),
-            status_tip=self.tr("Forces the engine to play a move on the current turn."),
-        )
-        self.quit_action: QAction = create_action(
-            handler=self.quit,
-            shortcut="Ctrl+Q",
-            name=self.tr("Quit"),
-            icon=create_svg_icon("quit"),
-            status_tip=self.tr("Quits the app by closing the main window."),
-        )
-        self.save_as_pgn_action: QAction = create_action(
-            shortcut="Ctrl+S",
-            handler=self.save_as_pgn,
-            name=self.tr("Save as PGN..."),
-            icon=create_svg_icon("save-as-pgn"),
-            status_tip=self.tr("Saves the current game as PGN."),
-        )
-        self.show_settings_dialog_action: QAction = create_action(
-            shortcut="F2",
-            name=self.tr("Settings..."),
-            icon=create_svg_icon("settings"),
-            handler=self.show_settings_dialog,
-            status_tip=self.tr("Shows a dialog to edit the settings."),
-        )
-        self.spanish_language_action: QAction = create_action(
-            shortcut="",
-            name="Español",
-            icon=create_svg_icon("spanish-flag"),
-            handler=partial(self.change_language, "es"),
-            status_tip=self.tr("Applies the Spanish language."),
-        )
-        self.start_analysis_action: QAction = create_action(
-            shortcut="F3",
-            handler=self.start_analysis,
-            name=self.tr("Start analysis"),
-            icon=create_svg_icon("start-analysis"),
-            status_tip=self.tr("Starts analyzing the current position."),
-        )
-        self.stop_analysis_action: QAction = create_action(
-            shortcut="F4",
-            handler=self.stop_analysis,
-            name=self.tr("Stop analysis"),
-            icon=create_svg_icon("stop-analysis"),
-            status_tip=self.tr("Stops analyzing the current position."),
-        )
-        self.unload_engine_action: QAction = create_action(
-            shortcut="Ctrl+U",
-            handler=self.unload_engine,
-            name=self.tr("Unload engine"),
-            icon=create_svg_icon("unload-engine"),
-            status_tip=self.tr("Prompts whether to unload the currently loaded engine."),
-        )
-
-    def _create_layout(self) -> None:
-        """Create grid layout with fixed widget positions."""
-        self._grid_layout: QGridLayout = QGridLayout()
-
-        self._grid_layout.addWidget(self._board, 1, 2, 4, 1)
-        self._grid_layout.addWidget(self._table_view, 1, 3, 4, 1)
-        self._grid_layout.addWidget(self._evaluation_bar, 1, 4, 4, 1)
-        self._grid_layout.addWidget(self._engine_analysis_label, 1, 5, 4, 1)
-        self._grid_layout.addWidget(self._fen_editor, 5, 2)
-        self._grid_layout.addWidget(self._notifications_label, 5, 3)
-
-        self._grid_layout.setRowStretch(0, 1)
-        self._grid_layout.setRowStretch(3, 1)
-        self._grid_layout.setRowStretch(6, 1)
-
-        self._grid_layout.setColumnStretch(0, 1)
-        self._grid_layout.setColumnStretch(6, 1)
-
-        for widget in (self._evaluation_bar, self._engine_analysis_label):
-            size_policy: QSizePolicy = widget.sizePolicy()
-            size_policy.setRetainSizeWhenHidden(True)
-            widget.setSizePolicy(size_policy)
-            widget.hide()
-
-        central_widget: QWidget = QWidget()
-        central_widget.setLayout(self._grid_layout)
-        self.setCentralWidget(central_widget)
-
-    def _create_menu_bar(self) -> None:
-        """Create menu bar with actions in separate menus."""
-        menu_bar: QMenuBar = self.menuBar()
-
-        general_menu: QMenu = menu_bar.addMenu(self.tr("General"))
-        theme_menu: QMenu = menu_bar.addMenu(self.tr("Theme"))
-        language_menu: QMenu = menu_bar.addMenu(self.tr("Language"))
-        edit_menu: QMenu = menu_bar.addMenu(self.tr("Edit"))
-        help_menu: QMenu = menu_bar.addMenu(self.tr("Help"))
-
-        general_menu.addAction(self.load_from_pgn_action)
-        general_menu.addAction(self.save_as_pgn_action)
-        general_menu.addSeparator()
-        general_menu.addAction(self.load_engine_action)
-        general_menu.addAction(self.unload_engine_action)
-        general_menu.addSeparator()
-        general_menu.addAction(self.quit_action)
-
-        theme_menu.addAction(self.dark_forest_theme_action)
-        theme_menu.addAction(self.dark_mint_theme_action)
-        theme_menu.addAction(self.dark_nebula_theme_action)
-        theme_menu.addAction(self.dark_ocean_theme_action)
-        theme_menu.addAction(self.light_forest_theme_action)
-        theme_menu.addAction(self.light_mint_theme_action)
-        theme_menu.addAction(self.light_nebula_theme_action)
-        theme_menu.addAction(self.light_ocean_theme_action)
-
-        language_actions: dict[str, QAction] = {
-            "de": self.german_language_action,
-            "en": self.english_language_action,
-            "es": self.spanish_language_action,
-            "it": self.italian_language_action,
-        }
-        language_code: str = self._settings.value("ui", "language")
-
-        if language_code not in language_actions:
-            language_code = "en"
-
-        language_menu.addAction(language_actions.pop(language_code))
-        language_menu.addSeparator()
-
-        for language_action in language_actions.values():
-            language_menu.addAction(language_action)
-
-        edit_menu.addAction(self.show_settings_dialog_action)
-
-        help_menu.addAction(self.about_action)
-
-    def _create_status_bar(self) -> None:
-        """Create status bar for opening, theme, and engine ponder."""
-        self.statusBar().addWidget(self._opening_label)
-        self.statusBar().addPermanentWidget(self._theme_name_label)
-        self.statusBar().addPermanentWidget(self._engine_ponder_label)
-
-    def _create_tool_bar(self) -> None:
-        """Create immovable tool bar with visually separated buttons."""
-        tool_bar: QToolBar = self.addToolBar(self.tr("Tool bar"))
-        tool_bar.setMovable(False)
-
-        tool_bar.addAction(self.quit_action)
-        tool_bar.addSeparator()
-
-        tool_bar.addAction(self.new_game_action)
-        tool_bar.addAction(self.load_from_pgn_action)
-        tool_bar.addAction(self.save_as_pgn_action)
-        tool_bar.addSeparator()
-
-        tool_bar.addAction(self.flip_action)
-        tool_bar.addAction(self.play_move_now_action)
-        tool_bar.addSeparator()
-
-        tool_bar.addAction(self.start_analysis_action)
-        tool_bar.addAction(self.stop_analysis_action)
-        tool_bar.addSeparator()
-
-        tool_bar.addAction(self.load_engine_action)
-        tool_bar.addAction(self.unload_engine_action)
-        tool_bar.addSeparator()
-
-        tool_bar.addAction(self.show_settings_dialog_action)
-        tool_bar.addAction(self.about_action)
-
-        self._tool_bar_icons: dict[QAction, QIcon] = {
-            action: action.icon() for action in tool_bar.actions() if not action.isSeparator()
-        }
-
-    def _orient_board_elements(self) -> None:
-        """Orient board-related elements based on board orientation."""
-        is_white_at_bottom: bool = self._settings.value("ui", "is_white_at_bottom")
-
-        self._board.set_orientation(is_white_at_bottom)
-        self._evaluation_bar.invert_fill(is_white_at_bottom)
-
-        self._position_clocks(is_white_at_bottom)
-        self._position_player_names(is_white_at_bottom)
-
-    def _orient_board_for_human(self) -> None:
-        """Place human at bottom if playing against engine."""
-        is_engine_white: bool = self._settings.value("engine", "is_white")
-        self._settings.set_value("ui", "is_white_at_bottom", not is_engine_white)
-        self._orient_board_elements()
-
-    def _play_move(self, move: Move) -> None:
-        """Play `move` and update UI state."""
-        if not self._game.is_legal(move):
-            return
-
-        self._sound_player.play(move)
-
-        self._game.push(move)
-        self._apply_increment()
-
-        self._engine.is_thinking = False
-
-        self._update_ui_state()
-
-    def _position_clocks(self, is_white_at_bottom: bool) -> None:
-        """Position clock widgets based on `is_white_at_bottom`."""
-        self._grid_layout.removeWidget(self._black_clock)
-        self._grid_layout.removeWidget(self._white_clock)
-
-        if is_white_at_bottom:
-            self._grid_layout.addWidget(self._black_clock, 1, 1)
-            self._grid_layout.addWidget(self._white_clock, 4, 1)
-        else:
-            self._grid_layout.addWidget(self._black_clock, 4, 1)
-            self._grid_layout.addWidget(self._white_clock, 1, 1)
-
-    def _position_player_names(self, is_white_at_bottom: bool) -> None:
-        """Position player name labels based on `is_white_at_bottom`."""
-        self._grid_layout.removeWidget(self._human_name_label)
-        self._grid_layout.removeWidget(self._engine_name_label)
-
-        is_engine_white: bool = self._settings.value("engine", "is_white")
-
-        if is_white_at_bottom == is_engine_white:
-            self._grid_layout.addWidget(self._human_name_label, 2, 1)
-            self._grid_layout.addWidget(self._engine_name_label, 5, 1)
-        else:
-            self._grid_layout.addWidget(self._human_name_label, 5, 1)
-            self._grid_layout.addWidget(self._engine_name_label, 2, 1)
-
-    def _request_engine_analysis(self) -> None:
-        """Request engine to analyze current position."""
-        self._engine.is_analyzing = True
-        self._notifications_label.setText(self.tr("Analyzing..."))
-
-        QThreadPool.globalInstance().start(
-            partial(self._engine.start_analysis, self._game.board_copy())
-        )
-
-    def _reset_ui_state(self) -> None:
-        """Reset UI to default state for current game."""
-        self._black_clock.reset()
-        self._white_clock.reset()
-        self._engine.stop_ponder()
-        self._opening_label.clear()
-
-        self._update_ui_state()
-
-    def _show_engine_ponder(self) -> None:
-        """Show engine ponder state, unavailable without engine."""
-        is_engine_loaded: bool = self._engine.is_loaded()
-        is_ponder_enabled: bool = self._settings.value("engine", "is_ponder_enabled")
-
-        if not is_engine_loaded:
-            ponder_state: str = self.tr("(unavailable)")
-        elif is_ponder_enabled:
-            ponder_state = self.tr("Enabled")
-        else:
-            ponder_state = self.tr("Disabled")
-
-        ponder_caption: str = self.tr("Engine ponder")
-        self._engine_ponder_label.setEnabled(is_engine_loaded)
-        self._engine_ponder_label.setText(f"{ponder_caption}: {ponder_state}")
-
-    def _show_fen(self) -> None:
-        """Show FEN in editor."""
-        self._table_view.setFocus()
-        self._fen_editor.hide_warning()
-        self._fen_editor.setText(self._game.fen)
-
-    def _show_opening(self) -> None:
-        """Show name of current opening."""
-        opening_name: str | None = find_opening(self._game.fen)
-
-        if opening_name is not None:
-            self._opening_label.setText(opening_name)
-
-    def _unload_engine(self) -> None:
-        """Stop analysis, terminate engine, and update UI state."""
-        self.stop_analysis()
-
-        self._engine.terminate()
-        self._engine_name_label.setText(elide_name(self._engine.name))
-
-        self._update_actions()
-        self._show_engine_ponder()
-
-    def _update_actions(self) -> None:
+    @Slot()
+    def update_actions(self) -> None:
         """Update availability of actions based on game state."""
         is_engine_thinking: bool = self._engine.is_thinking
         is_engine_analyzing: bool = self._engine.is_analyzing
@@ -1108,6 +340,245 @@ class MainWindow(QMainWindow):
         self.unload_engine_action.setDisabled(is_engine_not_loaded)
         self.play_move_now_action.setDisabled(should_disable_play_move_now)
 
+    def closeEvent(self, event: QCloseEvent) -> None:
+        """Prompt whether to quit app."""
+        if ask_question(self, self.tr("Quit"), self.tr("Are you sure you want to quit?")):
+            event.accept()
+        else:
+            event.ignore()
+
+    def showEvent(self, event: QShowEvent) -> None:
+        """Request engine move when main window is shown."""
+        self.request_engine_move()
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        """Select previous or next move on wheel scroll."""
+        if not self._scroll_throttle_timer.isActive():
+            scroll_step: int = event.angleDelta().y()
+
+            if scroll_step > 0:
+                self._table_view.select_previous_move()
+            elif scroll_step < 0:
+                self._table_view.select_next_move()
+
+            self._scroll_throttle_timer.start()
+
+    def _apply_saved_settings(self) -> None:
+        """Act on edited settings being saved."""
+        if not self._game.is_in_progress():
+            self._chess_clock.reset()
+
+            self._human_name_label.setText(
+                elide_name(self._settings.value("human", "name") or self.tr("Player"))
+            )
+
+        if not self._settings.value("engine", "is_ponder_enabled"):
+            self._engine.stop_ponder()
+
+        self.request_engine_move()
+        self._status_bar.show_engine_ponder()
+        self._board_orientation.orient_board_for_human()
+
+    def _connect_signals_to_slots(self) -> None:
+        """Connect component signals to corresponding slot methods."""
+
+        # Clocks
+        self._chess_clock.expired.connect(self.expire_clock_for)
+
+        # Engine
+        self._engine.move_played.connect(self.play_engine_move)
+        self._engine_analysis.started.connect(self.update_actions)
+        self._engine_analysis.stopped.connect(self.update_actions)
+        self._engine_loader.engine_changed.connect(self.update_actions)
+        self._engine_loader.engine_changed.connect(self.show_engine_name)
+        self._engine_loader.engine_loaded.connect(self.request_engine_move)
+        self._engine_loader.engine_changed.connect(self._status_bar.show_engine_ponder)
+
+        # Game
+        self._game.move_played.connect(self.play_human_move)
+        self._pgn_files.game_loaded.connect(self.reset_ui_state)
+
+        # Widgets
+        self._theme_menu.theme_selected.connect(self.apply_theme)
+        self._fen_editor.fen_validated.connect(self.apply_validated_fen)
+        self._table_view.move_selected.connect(self.show_historical_move)
+
+    def _create_actions(self) -> None:
+        """Create menu item and tool bar button actions."""
+        self.about_action: QAction = create_action(
+            shortcut="F1",
+            handler=self.show_about,
+            icon=create_svg_icon("about"),
+            name=self.tr("About StrikeChess"),
+            status_tip=self.tr("Shows the About dialog."),
+        )
+        self.flip_action: QAction = create_action(
+            shortcut="Ctrl+F",
+            name=self.tr("Flip"),
+            icon=create_svg_icon("flip"),
+            handler=self._board_orientation.flip,
+            status_tip=self.tr("Flips the board orientation and board-related elements."),
+        )
+        self.load_engine_action: QAction = create_action(
+            shortcut="Ctrl+L",
+            name=self.tr("Load engine..."),
+            icon=create_svg_icon("load-engine"),
+            handler=self._engine_loader.load_engine,
+            status_tip=self.tr("Shows the file manager to select and load an engine."),
+        )
+        self.load_from_pgn_action: QAction = create_action(
+            shortcut="Ctrl+O",
+            name=self.tr("Load from PGN..."),
+            handler=self._pgn_files.load_from_pgn,
+            icon=create_svg_icon("load-from-pgn"),
+            status_tip=self.tr("Loads a game from PGN, prompts if a game is in progress."),
+        )
+        self.new_game_action: QAction = create_action(
+            shortcut="Ctrl+N",
+            name=self.tr("New game"),
+            handler=self.offer_new_game,
+            icon=create_svg_icon("new-game"),
+            status_tip=self.tr("Starts a new game, prompts if a game is in progress."),
+        )
+        self.play_move_now_action: QAction = create_action(
+            shortcut="Ctrl+P",
+            handler=self.play_move_now,
+            name=self.tr("Play move now"),
+            icon=create_svg_icon("play-move-now"),
+            status_tip=self.tr("Forces the engine to play a move on the current turn."),
+        )
+        self.quit_action: QAction = create_action(
+            handler=self.quit,
+            shortcut="Ctrl+Q",
+            name=self.tr("Quit"),
+            icon=create_svg_icon("quit"),
+            status_tip=self.tr("Quits the app by closing the main window."),
+        )
+        self.save_as_pgn_action: QAction = create_action(
+            shortcut="Ctrl+S",
+            name=self.tr("Save as PGN..."),
+            handler=self._pgn_files.save_as_pgn,
+            icon=create_svg_icon("save-as-pgn"),
+            status_tip=self.tr("Saves the current game as PGN."),
+        )
+        self.show_settings_dialog_action: QAction = create_action(
+            shortcut="F2",
+            name=self.tr("Settings..."),
+            icon=create_svg_icon("settings"),
+            handler=self.show_settings_dialog,
+            status_tip=self.tr("Shows a dialog to edit the settings."),
+        )
+        self.start_analysis_action: QAction = create_action(
+            shortcut="F3",
+            name=self.tr("Start analysis"),
+            handler=self._engine_analysis.start,
+            icon=create_svg_icon("start-analysis"),
+            status_tip=self.tr("Starts analyzing the current position."),
+        )
+        self.stop_analysis_action: QAction = create_action(
+            shortcut="F4",
+            name=self.tr("Stop analysis"),
+            handler=self._engine_analysis.stop,
+            icon=create_svg_icon("stop-analysis"),
+            status_tip=self.tr("Stops analyzing the current position."),
+        )
+        self.unload_engine_action: QAction = create_action(
+            shortcut="Ctrl+U",
+            name=self.tr("Unload engine"),
+            icon=create_svg_icon("unload-engine"),
+            handler=self._engine_loader.unload_engine,
+            status_tip=self.tr("Prompts whether to unload the currently loaded engine."),
+        )
+
+    def _create_handlers(self) -> None:
+        """Create PGN file, engine, and board orientation handlers."""
+        self._pgn_files: PgnFiles = PgnFiles(self, self._game, self._engine, self._settings)
+
+        self._engine_analysis: EngineAnalysis = EngineAnalysis(
+            self._game,
+            self._engine,
+            self._board,
+            self._chess_clock,
+            self._evaluation_bar,
+            self._notifications_label,
+            self._engine_analysis_label,
+        )
+        self._engine_loader: EngineLoader = EngineLoader(self, self._engine, self._engine_analysis)
+
+        self._board_orientation: BoardOrientation = BoardOrientation(
+            self._grid_layout,
+            self._board,
+            self._chess_clock,
+            self._evaluation_bar,
+            self._human_name_label,
+            self._engine_name_label,
+            self._settings,
+        )
+
+    def _create_layout(self) -> None:
+        """Create grid layout with fixed widget placement."""
+        self._grid_layout: QGridLayout = QGridLayout()
+        board_container: BoardContainer = BoardContainer(self._board)
+
+        self._grid_layout.addWidget(board_container, 1, 2, 4, 1)
+        self._grid_layout.addWidget(self._table_view, 1, 3, 4, 1)
+        self._grid_layout.addWidget(self._evaluation_bar, 1, 4, 4, 1)
+        self._grid_layout.addWidget(self._engine_analysis_label, 1, 5, 4, 1)
+        self._grid_layout.addWidget(self._fen_editor, 5, 2)
+        self._grid_layout.addWidget(self._notifications_label, 5, 3)
+
+        self._grid_layout.setRowStretch(3, 1)
+
+        self._grid_layout.setColumnStretch(0, 1)
+        self._grid_layout.setColumnStretch(6, 1)
+
+        for widget in (self._evaluation_bar, self._engine_analysis_label):
+            size_policy: QSizePolicy = widget.sizePolicy()
+            size_policy.setRetainSizeWhenHidden(True)
+            widget.setSizePolicy(size_policy)
+            widget.hide()
+
+        central_widget: QWidget = QWidget()
+        central_widget.setLayout(self._grid_layout)
+        self.setCentralWidget(central_widget)
+
+    def _create_menu_bar(self) -> None:
+        """Create menu bar with actions in separate menus."""
+        self._theme_menu: ThemeMenu = ThemeMenu(self)
+        language_menu: LanguageMenu = LanguageMenu(self, self._settings)
+
+        self.setMenuBar(MenuBar(self, self._theme_menu, language_menu))
+
+    def _create_status_bar(self) -> None:
+        """Create status bar for opening, theme, and engine ponder."""
+        self._status_bar: StatusBar = StatusBar(self._game, self._engine, self._settings)
+        self.setStatusBar(self._status_bar)
+
+    def _create_tool_bar(self) -> None:
+        """Create immovable tool bar with visually separated buttons."""
+        self._tool_bar: ToolBar = ToolBar(self)
+        self.addToolBar(self._tool_bar)
+
+    def _play_move(self, move: Move) -> None:
+        """Play `move` and update UI state."""
+        if not self._game.is_legal(move):
+            return
+
+        self._sound_player.play(move)
+
+        self._game.push(move)
+        self._chess_clock.add_increment()
+
+        self._engine.is_thinking = False
+
+        self._update_ui_state()
+
+    def _show_fen(self) -> None:
+        """Show FEN in editor."""
+        self._table_view.setFocus()
+        self._fen_editor.hide_warning()
+        self._fen_editor.setText(self._game.fen)
+
     def _update_ui_state(self) -> None:
         """Update UI to reflect current game state."""
         self._game.is_viewing_history = False
@@ -1119,13 +590,12 @@ class MainWindow(QMainWindow):
         self._table_view.select_last_move()
 
         self._show_fen()
-        self._show_opening()
-        self.stop_analysis()
+        self._engine_analysis.stop()
+        self._status_bar.show_opening()
 
         if self._game.is_over_by_result():
             self._engine.stop_ponder()
-            self._black_clock.stop_timer()
-            self._white_clock.stop_timer()
+            self._chess_clock.stop_timers()
             self._board.disable_interaction()
             return
 

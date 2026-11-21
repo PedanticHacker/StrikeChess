@@ -93,7 +93,7 @@ pyinstaller --clean bundle.spec
 
 ## Keyboard shortcuts
 
-> **macOS:** `Ctrl` → `Command ⌘`, `Alt` → `Option ⌥`
+> **macOS:** `Ctrl` → `Command ⌘`, `Alt` → `Option ⌥`, `F1`–`F4` → `Fn+F1`–`Fn+F4`
 
 **General**
 

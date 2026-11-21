@@ -17,26 +17,25 @@ dependency_analysis = Analysis(
     ],
 )
 
-bytecode_archive = PYZ(dependency_analysis.pure, dependency_analysis.zipped_data)
+bytecode_archive = PYZ(dependency_analysis.pure)
 
 extension = {"Darwin": "icns", "Windows": "ico"}.get(system)
 icon_path = f"strikechess/assets/icons/logo.{extension}" if extension else None
 
-if system == "Darwin":
-    executable = EXE(
-        bytecode_archive,
-        dependency_analysis.scripts,
-        console=False,
-        icon=icon_path,
-        name="StrikeChess",
-        exclude_binaries=True,
-        target_arch="universal2",
-    )
+executable = EXE(
+    bytecode_archive,
+    dependency_analysis.scripts,
+    console=False,
+    icon=icon_path,
+    name="StrikeChess",
+    exclude_binaries=True,
+    target_arch="universal2",
+)
 
+if system == "Darwin":
     app = BUNDLE(
         executable,
         dependency_analysis.binaries,
-        dependency_analysis.zipfiles,
         dependency_analysis.datas,
         engine_files,
         version="1.0",
@@ -49,14 +48,10 @@ if system == "Darwin":
         },
     )
 else:
-    executable = EXE(
-        bytecode_archive,
-        dependency_analysis.scripts,
+    app = COLLECT(
+        executable,
         dependency_analysis.binaries,
-        dependency_analysis.zipfiles,
         dependency_analysis.datas,
         engine_files,
-        console=False,
-        icon=icon_path,
         name="StrikeChess",
     )

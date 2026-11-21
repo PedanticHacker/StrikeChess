@@ -54,8 +54,6 @@ def _switch(splash_screen: SplashScreen, main_window: MainWindow) -> None:
     splash_screen.finish(main_window)
 
     main_window.showMaximized()
-    main_window.request_engine_move()
-    main_window.update_clock_timers()
 
 
 def main() -> None:

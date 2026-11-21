@@ -1,7 +1,9 @@
 from enum import StrEnum
+from functools import partial
 
+from chess import BLACK, Color, WHITE
 from PySide6.QtWidgets import QLCDNumber
-from PySide6.QtCore import QElapsedTimer, QSize, Qt, QTimer, Signal, Slot
+from PySide6.QtCore import QElapsedTimer, QObject, QSize, Qt, QTimer, Signal, Slot
 
 
 TenthsThresholdInSeconds: Final[float] = 10.0
@@ -106,3 +108,56 @@ class DigitalClock(QLCDNumber):
             return f"{minutes:02}:{seconds:02}.{tenths_of_second}"
 
         return f"{hours:02}:{minutes:02}:{seconds:02}" if hours else f"{minutes:02}:{seconds:02}"
+
+
+class ChessClock(QObject):
+    """Clocks of both players, counting down for player on turn."""
+
+    expired: ClassVar[Signal] = Signal(Color)
+
+    def __init__(self, game: GameService, settings: SettingsService) -> None:
+        super().__init__()
+
+        self._game: GameService = game
+
+        self.black: DigitalClock = DigitalClock(ClockStyleSheet.Black, settings)
+        self.black.expired.connect(partial(self.expired.emit, BLACK))
+
+        self.white: DigitalClock = DigitalClock(ClockStyleSheet.White, settings)
+        self.white.expired.connect(partial(self.expired.emit, WHITE))
+
+    def reset(self) -> None:
+        """Stop countdowns and set times to values from settings."""
+        self.black.reset()
+        self.white.reset()
+
+    def update_timers(self) -> None:
+        """Start/stop clocks based on current turn."""
+        if not self._game.move_stack:
+            self.stop_timers()
+            return
+
+        if self._game.is_over_by_result() or self._game.is_viewing_history:
+            return
+
+        if self._game.is_white_to_move():
+            self.black.stop_timer()
+            self.white.start_timer()
+        else:
+            self.white.stop_timer()
+            self.black.start_timer()
+
+    def stop_timers(self) -> None:
+        """Stop countdowns of both clocks."""
+        self.black.stop_timer()
+        self.white.stop_timer()
+
+    def add_increment(self) -> None:
+        """Add increment to clock of player who just moved."""
+        if len(self._game.move_stack) == 1:
+            return
+
+        if self._game.is_white_to_move():
+            self.black.add_increment()
+        else:
+            self.white.add_increment()

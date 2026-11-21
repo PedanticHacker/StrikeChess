@@ -24,7 +24,6 @@ class GameService(QObject):
 
         self.moves: list[str] = []
         self.positions: list[Board] = []
-        self.arrow: list[tuple[Square, Square]] = []
 
         self.move_index: int = -1
         self.is_viewing_history: bool = False
@@ -144,29 +143,14 @@ class GameService(QObject):
         return [move.to_square for move in moves]
 
     def set_root_position(self) -> None:
-        """Reset pieces to initial position and clear arrow marker."""
+        """Reset pieces to initial position."""
         self.move_index = -1
         self._board = self._board.root()
-
-        self.clear_arrow()
 
     def update_state(self, move_index: int) -> None:
         """Update game state by `move_index`."""
         self.move_index = move_index
         self._board = self.positions[move_index].copy()
-
-        if self.moves[move_index] == "...":
-            self.clear_arrow()
-        else:
-            self.set_arrow(self._board.move_stack[-1])
-
-    def set_arrow(self, move: Move) -> None:
-        """Set arrow marker for `move`."""
-        self.arrow = [(move.from_square, move.to_square)]
-
-    def clear_arrow(self) -> None:
-        """Clear current arrow marker from board."""
-        self.arrow.clear()
 
     def board_copy(self) -> Board:
         """Get copy of current position, unaffected by game updates."""
@@ -232,7 +216,6 @@ class GameService(QObject):
         self.moves.clear()
         self.positions.clear()
 
-        self.clear_arrow()
         self._add_ellipsis_as_first_move()
 
     def _delete_game_data_after_index(self) -> None:

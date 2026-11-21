@@ -6,11 +6,12 @@ cd "$(dirname "$0")"
 DESKTOP_DIRECTORY="$HOME/.local/share/applications"
 INSTALLATION_DIRECTORY="$HOME/.local/share/StrikeChess"
 
+rm -rf "$INSTALLATION_DIRECTORY"
+
 mkdir -p "$DESKTOP_DIRECTORY"
 mkdir -p "$INSTALLATION_DIRECTORY"
 
-cp StrikeChess "$INSTALLATION_DIRECTORY/"
-cp logo.svg "$INSTALLATION_DIRECTORY/"
+cp -r StrikeChess _internal logo.svg "$INSTALLATION_DIRECTORY/"
 
 cat > "$DESKTOP_DIRECTORY/StrikeChess.desktop" << EOF
 [Desktop Entry]

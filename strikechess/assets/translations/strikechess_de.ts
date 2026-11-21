@@ -8,66 +8,6 @@
     <translation>Spieler</translation>
   </message>
   <message>
-    <source>Theme</source>
-    <translation>Design</translation>
-  </message>
-  <message>
-    <source>Relaunch Required</source>
-    <translation>Neustart erforderlich</translation>
-  </message>
-  <message>
-    <source>Please relaunch StrikeChess to apply the new language.</source>
-    <translation>Bitte starten Sie StrikeChess neu, um die neue Sprache anzuwenden.</translation>
-  </message>
-  <message>
-    <source>UCI engine (*.exe)</source>
-    <translation>UCI-Engine (*.exe)</translation>
-  </message>
-  <message>
-    <source>Load Engine</source>
-    <translation>Engine laden</translation>
-  </message>
-  <message>
-    <source>Engine Error</source>
-    <translation>Engine-Fehler</translation>
-  </message>
-  <message>
-    <source>Load Game</source>
-    <translation>Spiel laden</translation>
-  </message>
-  <message>
-    <source>You will lose the current game.
-Load from PGN anyway?</source>
-    <translation>Das aktuelle Spiel geht verloren.
-Trotzdem aus PGN laden?</translation>
-  </message>
-  <message>
-    <source>PGN file (*.pgn)</source>
-    <translation>PGN-Datei (*.pgn)</translation>
-  </message>
-  <message>
-    <source>Game loaded from PGN.</source>
-    <translation>Spiel aus PGN geladen.</translation>
-  </message>
-  <message>
-    <source>File Error</source>
-    <translation>Dateifehler</translation>
-  </message>
-  <message>
-    <source>Cannot read PGN.
-
-The file may be locked or corrupted.
-Check file permissions and try again.</source>
-    <translation>PGN kann nicht gelesen werden.
-
-Die Datei ist möglicherweise gesperrt oder beschädigt.
-Überprüfen Sie die Dateiberechtigungen und versuchen Sie es erneut.</translation>
-  </message>
-  <message>
-    <source>Load Error</source>
-    <translation>Ladefehler</translation>
-  </message>
-  <message>
     <source>New Game</source>
     <translation>Neues Spiel</translation>
   </message>
@@ -76,40 +16,6 @@ Die Datei ist möglicherweise gesperrt oder beschädigt.
 Start a new game anyway?</source>
     <translation>Das aktuelle Spiel geht verloren.
 Trotzdem ein neues Spiel starten?</translation>
-  </message>
-  <message>
-    <source>Thinking...</source>
-    <translation>Denke nach...</translation>
-  </message>
-  <message>
-    <source>Save Game</source>
-    <translation>Spiel speichern</translation>
-  </message>
-  <message>
-    <source>Game saved successfully.</source>
-    <translation>Spiel erfolgreich gespeichert.</translation>
-  </message>
-  <message>
-    <source>Save Error</source>
-    <translation>Speicherfehler</translation>
-  </message>
-  <message>
-    <source>Cannot save game as PGN.
-
-The folder may be read-only or the disk may be full.
-Try saving to a different folder.</source>
-    <translation>Spiel kann nicht als PGN gespeichert werden.
-
-Der Ordner ist möglicherweise schreibgeschützt oder der Datenträger voll.
-Versuchen Sie, in einem anderen Ordner zu speichern.</translation>
-  </message>
-  <message>
-    <source>Unload Engine</source>
-    <translation>Engine entladen</translation>
-  </message>
-  <message>
-    <source>Are you sure you want to unload the engine?</source>
-    <translation>Möchten Sie die Engine wirklich entladen?</translation>
   </message>
   <message>
     <source>Apply FEN</source>
@@ -122,24 +28,8 @@ Apply the FEN anyway?</source>
 Trotzdem die FEN anwenden?</translation>
   </message>
   <message>
-    <source>Cannot communicate with UCI engine.
-
-The engine may have crashed.
-Relaunch StrikeChess or load an engine.</source>
-    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
-
-Die Engine ist möglicherweise abgestürzt.
-Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
-  </message>
-  <message>
-    <source>Cannot communicate with UCI engine.
-
-The engine may have crashed.
-Stockfish has been loaded.</source>
-    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
-
-Die Engine ist möglicherweise abgestürzt.
-Stockfish wurde geladen.</translation>
+    <source>Thinking...</source>
+    <translation>Denke nach...</translation>
   </message>
   <message>
     <source>Quit</source>
@@ -158,88 +48,12 @@ Stockfish wurde geladen.</translation>
     <translation>Zeigt den Info-Dialog an.</translation>
   </message>
   <message>
-    <source>Dark Forest</source>
-    <translation>Dunkler Wald</translation>
-  </message>
-  <message>
-    <source>Applies the Dark Forest theme.</source>
-    <translation>Wendet das Design „Dunkler Wald" an.</translation>
-  </message>
-  <message>
-    <source>Dark Mint</source>
-    <translation>Dunkle Minze</translation>
-  </message>
-  <message>
-    <source>Applies the Dark Mint theme.</source>
-    <translation>Wendet das Design „Dunkle Minze" an.</translation>
-  </message>
-  <message>
-    <source>Dark Nebula</source>
-    <translation>Dunkler Nebel</translation>
-  </message>
-  <message>
-    <source>Applies the Dark Nebula theme.</source>
-    <translation>Wendet das Design „Dunkler Nebel" an.</translation>
-  </message>
-  <message>
-    <source>Dark Ocean</source>
-    <translation>Dunkler Ozean</translation>
-  </message>
-  <message>
-    <source>Applies the Dark Ocean theme.</source>
-    <translation>Wendet das Design „Dunkler Ozean" an.</translation>
-  </message>
-  <message>
-    <source>Applies the American English language.</source>
-    <translation>Wendet die amerikanisch-englische Sprache an.</translation>
-  </message>
-  <message>
     <source>Flip</source>
     <translation>Drehen</translation>
   </message>
   <message>
     <source>Flips the board orientation and board-related elements.</source>
     <translation>Dreht die Brettausrichtung und zugehörige Elemente.</translation>
-  </message>
-  <message>
-    <source>Applies the German language.</source>
-    <translation>Wendet die deutsche Sprache an.</translation>
-  </message>
-  <message>
-    <source>Applies the Italian language.</source>
-    <translation>Wendet die italienische Sprache an.</translation>
-  </message>
-  <message>
-    <source>Light Forest</source>
-    <translation>Heller Wald</translation>
-  </message>
-  <message>
-    <source>Applies the Light Forest theme.</source>
-    <translation>Wendet das Design „Heller Wald" an.</translation>
-  </message>
-  <message>
-    <source>Light Mint</source>
-    <translation>Helle Minze</translation>
-  </message>
-  <message>
-    <source>Applies the Light Mint theme.</source>
-    <translation>Wendet das Design „Helle Minze" an.</translation>
-  </message>
-  <message>
-    <source>Light Nebula</source>
-    <translation>Heller Nebel</translation>
-  </message>
-  <message>
-    <source>Applies the Light Nebula theme.</source>
-    <translation>Wendet das Design „Heller Nebel" an.</translation>
-  </message>
-  <message>
-    <source>Light Ocean</source>
-    <translation>Heller Ozean</translation>
-  </message>
-  <message>
-    <source>Applies the Light Ocean theme.</source>
-    <translation>Wendet das Design „Heller Ozean" an.</translation>
   </message>
   <message>
     <source>Load engine...</source>
@@ -294,10 +108,6 @@ Stockfish wurde geladen.</translation>
     <translation>Öffnet einen Dialog zum Bearbeiten der Einstellungen.</translation>
   </message>
   <message>
-    <source>Applies the Spanish language.</source>
-    <translation>Wendet die spanische Sprache an.</translation>
-  </message>
-  <message>
     <source>Start analysis</source>
     <translation>Analyse starten</translation>
   </message>
@@ -321,13 +131,93 @@ Stockfish wurde geladen.</translation>
     <source>Prompts whether to unload the currently loaded engine.</source>
     <translation>Fragt, ob die aktuell geladene Engine entladen werden soll.</translation>
   </message>
+</context>
+<context>
+  <name>EngineAnalysis</name>
   <message>
-    <source>General</source>
-    <translation>Allgemein</translation>
+    <source>Analyzing...</source>
+    <translation>Analysiere...</translation>
+  </message>
+</context>
+<context>
+  <name>EngineLoader</name>
+  <message>
+    <source>UCI engine (*.exe)</source>
+    <translation>UCI-Engine (*.exe)</translation>
+  </message>
+  <message>
+    <source>Load Engine</source>
+    <translation>Engine laden</translation>
+  </message>
+  <message>
+    <source>Engine Error</source>
+    <translation>Engine-Fehler</translation>
+  </message>
+  <message>
+    <source>Unload Engine</source>
+    <translation>Engine entladen</translation>
+  </message>
+  <message>
+    <source>Are you sure you want to unload the engine?</source>
+    <translation>Möchten Sie die Engine wirklich entladen?</translation>
+  </message>
+  <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Relaunch StrikeChess or load an engine.</source>
+    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
+
+Die Engine ist möglicherweise abgestürzt.
+Starten Sie StrikeChess neu oder laden Sie eine Engine.</translation>
+  </message>
+  <message>
+    <source>Cannot communicate with UCI engine.
+
+The engine may have crashed.
+Stockfish has been loaded.</source>
+    <translation>Mit der UCI-Engine kann nicht kommuniziert werden.
+
+Die Engine ist möglicherweise abgestürzt.
+Stockfish wurde geladen.</translation>
+  </message>
+</context>
+<context>
+  <name>LanguageMenu</name>
+  <message>
+    <source>Applies the American English language.</source>
+    <translation>Wendet die amerikanisch-englische Sprache an.</translation>
+  </message>
+  <message>
+    <source>Applies the German language.</source>
+    <translation>Wendet die deutsche Sprache an.</translation>
+  </message>
+  <message>
+    <source>Applies the Italian language.</source>
+    <translation>Wendet die italienische Sprache an.</translation>
+  </message>
+  <message>
+    <source>Applies the Spanish language.</source>
+    <translation>Wendet die spanische Sprache an.</translation>
   </message>
   <message>
     <source>Language</source>
     <translation>Sprache</translation>
+  </message>
+  <message>
+    <source>Relaunch Required</source>
+    <translation>Neustart erforderlich</translation>
+  </message>
+  <message>
+    <source>Please relaunch StrikeChess to apply the new language.</source>
+    <translation>Bitte starten Sie StrikeChess neu, um die neue Sprache anzuwenden.</translation>
+  </message>
+</context>
+<context>
+  <name>MenuBar</name>
+  <message>
+    <source>General</source>
+    <translation>Allgemein</translation>
   </message>
   <message>
     <source>Edit</source>
@@ -337,13 +227,73 @@ Stockfish wurde geladen.</translation>
     <source>Help</source>
     <translation>Hilfe</translation>
   </message>
+</context>
+<context>
+  <name>PgnFiles</name>
   <message>
-    <source>Tool bar</source>
-    <translation>Werkzeugleiste</translation>
+    <source>Load Game</source>
+    <translation>Spiel laden</translation>
   </message>
   <message>
-    <source>Analyzing...</source>
-    <translation>Analysiere...</translation>
+    <source>You will lose the current game.
+Load from PGN anyway?</source>
+    <translation>Das aktuelle Spiel geht verloren.
+Trotzdem aus PGN laden?</translation>
+  </message>
+  <message>
+    <source>PGN file (*.pgn)</source>
+    <translation>PGN-Datei (*.pgn)</translation>
+  </message>
+  <message>
+    <source>Game loaded from PGN.</source>
+    <translation>Spiel aus PGN geladen.</translation>
+  </message>
+  <message>
+    <source>File Error</source>
+    <translation>Dateifehler</translation>
+  </message>
+  <message>
+    <source>Cannot read PGN.
+
+The file may be locked or corrupted.
+Check file permissions and try again.</source>
+    <translation>PGN kann nicht gelesen werden.
+
+Die Datei ist möglicherweise gesperrt oder beschädigt.
+Überprüfen Sie die Dateiberechtigungen und versuchen Sie es erneut.</translation>
+  </message>
+  <message>
+    <source>Load Error</source>
+    <translation>Ladefehler</translation>
+  </message>
+  <message>
+    <source>Save Game</source>
+    <translation>Spiel speichern</translation>
+  </message>
+  <message>
+    <source>Game saved successfully.</source>
+    <translation>Spiel erfolgreich gespeichert.</translation>
+  </message>
+  <message>
+    <source>Save Error</source>
+    <translation>Speicherfehler</translation>
+  </message>
+  <message>
+    <source>Cannot save game as PGN.
+
+The folder may be read-only or the disk may be full.
+Try saving to a different folder.</source>
+    <translation>Spiel kann nicht als PGN gespeichert werden.
+
+Der Ordner ist möglicherweise schreibgeschützt oder der Datenträger voll.
+Versuchen Sie, in einem anderen Ordner zu speichern.</translation>
+  </message>
+</context>
+<context>
+  <name>StatusBar</name>
+  <message>
+    <source>Theme</source>
+    <translation>Design</translation>
   </message>
   <message>
     <source>(unavailable)</source>
@@ -360,6 +310,84 @@ Stockfish wurde geladen.</translation>
   <message>
     <source>Engine ponder</source>
     <translation>Engine-Vorausberechnung</translation>
+  </message>
+</context>
+<context>
+  <name>ThemeMenu</name>
+  <message>
+    <source>Dark Forest</source>
+    <translation>Dunkler Wald</translation>
+  </message>
+  <message>
+    <source>Applies the Dark Forest theme.</source>
+    <translation>Wendet das Design „Dunkler Wald" an.</translation>
+  </message>
+  <message>
+    <source>Dark Mint</source>
+    <translation>Dunkle Minze</translation>
+  </message>
+  <message>
+    <source>Applies the Dark Mint theme.</source>
+    <translation>Wendet das Design „Dunkle Minze" an.</translation>
+  </message>
+  <message>
+    <source>Dark Nebula</source>
+    <translation>Dunkler Nebel</translation>
+  </message>
+  <message>
+    <source>Applies the Dark Nebula theme.</source>
+    <translation>Wendet das Design „Dunkler Nebel" an.</translation>
+  </message>
+  <message>
+    <source>Dark Ocean</source>
+    <translation>Dunkler Ozean</translation>
+  </message>
+  <message>
+    <source>Applies the Dark Ocean theme.</source>
+    <translation>Wendet das Design „Dunkler Ozean" an.</translation>
+  </message>
+  <message>
+    <source>Light Forest</source>
+    <translation>Heller Wald</translation>
+  </message>
+  <message>
+    <source>Applies the Light Forest theme.</source>
+    <translation>Wendet das Design „Heller Wald" an.</translation>
+  </message>
+  <message>
+    <source>Light Mint</source>
+    <translation>Helle Minze</translation>
+  </message>
+  <message>
+    <source>Applies the Light Mint theme.</source>
+    <translation>Wendet das Design „Helle Minze" an.</translation>
+  </message>
+  <message>
+    <source>Light Nebula</source>
+    <translation>Heller Nebel</translation>
+  </message>
+  <message>
+    <source>Applies the Light Nebula theme.</source>
+    <translation>Wendet das Design „Heller Nebel" an.</translation>
+  </message>
+  <message>
+    <source>Light Ocean</source>
+    <translation>Heller Ozean</translation>
+  </message>
+  <message>
+    <source>Applies the Light Ocean theme.</source>
+    <translation>Wendet das Design „Heller Ozean" an.</translation>
+  </message>
+  <message>
+    <source>Theme</source>
+    <translation>Design</translation>
+  </message>
+</context>
+<context>
+  <name>ToolBar</name>
+  <message>
+    <source>Tool bar</source>
+    <translation>Werkzeugleiste</translation>
   </message>
 </context>
 <context>
@@ -474,8 +502,8 @@ Stockfish wurde geladen.</translation>
     <translation>StrikeChess wurde bereits gestartet!</translation>
   </message>
   <message>
-    <source>About StrikeChess %1</source>
-    <translation>Über StrikeChess %1</translation>
+    <source>About StrikeChess</source>
+    <translation>Über StrikeChess</translation>
   </message>
   <message>
     <source>Play chess and analyze games on

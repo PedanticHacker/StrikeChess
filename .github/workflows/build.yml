@@ -95,20 +95,20 @@ jobs:
       - name: Copy license files (Windows/Linux)
         if: runner.os != 'macOS'
         shell: bash
-        run: cp GPL-3.0.txt NOTICE.txt dist/
+        run: cp GPL-3.0.txt NOTICE.txt dist/StrikeChess/
 
       - name: Copy Linux files
         if: runner.os == 'Linux'
         run: |
-          cp strikechess/assets/icons/logo.svg dist/
-          cp strikechess/assets/Linux/install.sh dist/
-          cp strikechess/assets/Linux/uninstall.sh dist/
+          cp strikechess/assets/icons/logo.svg dist/StrikeChess/
+          cp strikechess/assets/Linux/install.sh dist/StrikeChess/
+          cp strikechess/assets/Linux/uninstall.sh dist/StrikeChess/
 
       - name: Compress artifact (Linux)
         if: runner.os == 'Linux'
         run: |
-          cd dist
-          zip -r ../${{ matrix.artifact-name }}.zip .
+          cd dist/StrikeChess
+          zip -ry ../../${{ matrix.artifact-name }}.zip .
 
       - name: Compress artifact (macOS)
         if: runner.os == 'macOS'
@@ -117,8 +117,8 @@ jobs:
       - name: Compress artifact (Windows)
         if: runner.os == 'Windows'
         run: |
-          cd dist
-          Compress-Archive -Path * -DestinationPath ..\${{ matrix.artifact-name }}.zip
+          cd dist/StrikeChess
+          Compress-Archive -Path * -DestinationPath ..\..\${{ matrix.artifact-name }}.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6

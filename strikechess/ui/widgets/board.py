@@ -1,10 +1,12 @@
 from chess import square, svg
+from PySide6.QtWidgets import QWidget
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtCore import (
     Qt,
     Slot,
+    QSize,
     QRectF,
     QPointF,
     QEasingCurve,
@@ -45,6 +47,7 @@ class SvgBoard(QSvgWidget):
         self.is_interactive: bool = True
         self.dragged_piece: Piece | None = None
         self.origin_square: Square | None = None
+        self.arrow: list[tuple[Square, Square]] = []
         self.cursor_point: QPointF = QPointF(0.0, 0.0)
         self.animation_point: QPointF = QPointF(0.0, 0.0)
         self.is_white_at_bottom: bool = self._settings.value("ui", "is_white_at_bottom")
@@ -60,7 +63,6 @@ class SvgBoard(QSvgWidget):
         self._animation.finished.connect(self.stop_dragging)
         self._animation.valueChanged.connect(self.update_animation_point)
 
-        self.setFixedSize(500, 500)
         self.setMouseTracking(True)
 
     @property
@@ -100,6 +102,25 @@ class SvgBoard(QSvgWidget):
         self.update()
         self.is_white_at_bottom = is_white_at_bottom
 
+    def set_arrow(self, move: Move) -> None:
+        """Set arrow marker for `move`."""
+        self.update()
+        self.arrow = [(move.from_square, move.to_square)]
+
+    def clear_arrow(self) -> None:
+        """Clear current arrow marker from board."""
+        self.update()
+        self.arrow.clear()
+
+    def set_last_move_arrow(self) -> None:
+        """Set arrow marker for current position's last move, if any."""
+        move_stack: list[Move] = self._game.board.move_stack
+
+        if move_stack:
+            self.set_arrow(move_stack[-1])
+        else:
+            self.clear_arrow()
+
     def start_dragging(self, square: Square, piece: Piece) -> None:
         """Start dragging `piece` from `square`."""
         self.is_dragging = True
@@ -111,7 +132,7 @@ class SvgBoard(QSvgWidget):
 
     @Slot(QPointF)
     def update_animation_point(self, point: QPointF) -> None:
-        """Update animated piece position based on `point`."""
+        """Place animated piece at `point`."""
         self.update()
         self.animation_point = point
 
@@ -293,9 +314,9 @@ class SvgBoard(QSvgWidget):
         legal_target_squares: list[Square] = self._game.legal_target_squares(square)
 
         svg_board: str = svg.board(
+            arrows=self.arrow,
             board=board_to_render,
             check=self._game.check,
-            arrows=self._game.arrow,
             colors=self._color_names(),
             squares=legal_target_squares,
             orientation=self.is_white_at_bottom,
@@ -315,3 +336,28 @@ class SvgBoard(QSvgWidget):
         renderer: QSvgRenderer = QSvgRenderer(svg.piece(self.dragged_piece).encode())
         renderer.render(painter, piece_render_area)
         painter.end()
+
+
+class BoardContainer(QWidget):
+    """Container that keeps board as largest centered square."""
+
+    def __init__(self, board: SvgBoard) -> None:
+        super().__init__()
+
+        self._board: SvgBoard = board
+
+        self._board.setParent(self)
+        self.setMinimumSize(300, 300)
+
+    def sizeHint(self) -> QSize:
+        """Get preferred container size, as wide as its height."""
+        return QSize(self.height(), self.height())
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Fit board into largest centered square."""
+        self.updateGeometry()
+
+        side: int = min(self.width(), self.height())
+        x: int = (self.width() - side) // 2
+        y: int = (self.height() - side) // 2
+        self._board.setGeometry(x, y, side, side)
