@@ -1,5 +1,4 @@
 from chess import square, svg
-from PySide6.QtWidgets import QWidget
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtSvgWidgets import QSvgWidget
@@ -64,11 +63,17 @@ class SvgBoard(QSvgWidget):
         self._animation.valueChanged.connect(self.update_animation_point)
 
         self.setMouseTracking(True)
+        self.setMinimumSize(300, 300)
 
     @property
     def board_size(self) -> int:
         """Board size in pixels."""
-        return self.width()
+        return min(self.width(), self.height())
+
+    @property
+    def board_offset(self) -> QPointF:
+        """Offset to board, centering it in widget."""
+        return QPointF(self.width() - self.board_size, self.height() - self.board_size) / 2
 
     @property
     def board_margin(self) -> float:
@@ -87,6 +92,10 @@ class SvgBoard(QSvgWidget):
     def square_center_offset(self) -> float:
         """Offset to square center, accounting for board margin."""
         return self.square_size / 2 + self.board_margin
+
+    def sizeHint(self) -> QSize:
+        """Get preferred size, as wide as its height."""
+        return QSize(self.height(), self.height())
 
     def enable_interaction(self) -> None:
         """Allow human to play moves."""
@@ -193,6 +202,7 @@ class SvgBoard(QSvgWidget):
         if board_svg != self._loaded_svg:
             self.load(board_svg)
             self._loaded_svg = board_svg
+            self.renderer().setAspectRatioMode(Qt.AspectRatioMode.KeepAspectRatio)
 
         super().paintEvent(event)
 
@@ -206,6 +216,10 @@ class SvgBoard(QSvgWidget):
 
         if self.is_animating:
             self._render_piece(self.animation_point)
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        """Notify layout of new size hint."""
+        self.updateGeometry()
 
     def _color_names(self) -> dict[str, str]:
         """Get color names for SVG rendering."""
@@ -252,8 +266,8 @@ class SvgBoard(QSvgWidget):
         return 0 <= column <= 7 and 0 <= row <= 7
 
     def _cursor_point_from(self, event: QMouseEvent) -> QPointF:
-        """Get cursor point from position data of `event`."""
-        self.cursor_point = event.position()
+        """Get cursor point on board from position data of `event`."""
+        self.cursor_point = event.position() - self.board_offset
         return self.cursor_point
 
     def _can_drag(self, piece: Piece | None) -> bool:
@@ -287,7 +301,6 @@ class SvgBoard(QSvgWidget):
     def _drop_piece(self, target_square: Square) -> None:
         """Drop dragged piece at `target_square`."""
         self._game.find_legal_move(self.origin_square, target_square)
-
         self.stop_dragging()
 
     def _slide_piece_back(self, cursor_point: QPointF) -> None:
@@ -334,30 +347,6 @@ class SvgBoard(QSvgWidget):
         painter: QPainter = QPainter(self)
         piece_render_area: QRectF = self._piece_render_area_at(cursor_point)
         renderer: QSvgRenderer = QSvgRenderer(svg.piece(self.dragged_piece).encode())
+        painter.translate(self.board_offset)
         renderer.render(painter, piece_render_area)
         painter.end()
-
-
-class BoardContainer(QWidget):
-    """Container that keeps board as largest centered square."""
-
-    def __init__(self, board: SvgBoard) -> None:
-        super().__init__()
-
-        self._board: SvgBoard = board
-
-        self._board.setParent(self)
-        self.setMinimumSize(300, 300)
-
-    def sizeHint(self) -> QSize:
-        """Get preferred container size, as wide as its height."""
-        return QSize(self.height(), self.height())
-
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        """Fit board into largest centered square."""
-        self.updateGeometry()
-
-        side: int = min(self.width(), self.height())
-        x: int = (self.width() - side) // 2
-        y: int = (self.height() - side) // 2
-        self._board.setGeometry(x, y, side, side)

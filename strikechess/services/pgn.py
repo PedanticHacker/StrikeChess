@@ -67,7 +67,6 @@ class PgnService:
         pgn_game: PgnGame = PgnGame(headers)
         pgn_game.setup(game.root_fen)
         pgn_game.add_line(game.move_stack)
-
         return str(pgn_game)
 
     def suggest_file_name(

@@ -234,5 +234,4 @@ def _stockfish_executable() -> str:
 
     stockfish_directory: Path = root_path() / "assets" / "engines" / "stockfish-19" / system
     executable_path: Path = stockfish_directory / f"stockfish{extension}"
-
     return str(executable_path)

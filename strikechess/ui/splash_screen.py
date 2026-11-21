@@ -35,5 +35,4 @@ class SplashScreen(QSplashScreen):
         """Show splash screen and raise it to foreground."""
         self.show()
         self.raise_()
-
         return self

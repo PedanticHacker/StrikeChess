@@ -14,7 +14,7 @@ from strikechess.ui.board_orientation import BoardOrientation
 from strikechess.ui.engine import EngineAnalysis, EngineLoader
 from strikechess.ui.dialogs import PromotionDialog, SettingsDialog
 from strikechess.services import EngineService, GameService, SettingsService
-from strikechess.ui.widgets import BoardContainer, ChessClock, EvaluationBar, FenEditor, SvgBoard
+from strikechess.ui.widgets import ChessClock, EvaluationBar, FenEditor, SvgBoard
 from strikechess.utils import (
     root_path,
     elide_name,
@@ -518,9 +518,8 @@ class MainWindow(QMainWindow):
     def _create_layout(self) -> None:
         """Create grid layout with fixed widget placement."""
         self._grid_layout: QGridLayout = QGridLayout()
-        board_container: BoardContainer = BoardContainer(self._board)
 
-        self._grid_layout.addWidget(board_container, 1, 2, 4, 1)
+        self._grid_layout.addWidget(self._board, 1, 2, 4, 1)
         self._grid_layout.addWidget(self._table_view, 1, 3, 4, 1)
         self._grid_layout.addWidget(self._evaluation_bar, 1, 4, 4, 1)
         self._grid_layout.addWidget(self._engine_analysis_label, 1, 5, 4, 1)
