@@ -34,14 +34,14 @@ def _show_duplicate_launch_warning() -> None:
     settings: SettingsService = SettingsService()
     install_translators(settings.value("ui", "language"))
 
-    theme_name: str = settings.value("ui", "theme")
-    file_path: Path = root_path() / "assets" / "themes" / f"{theme_name}.qss"
-
     message_box: QMessageBox = QMessageBox(
         QMessageBox.Icon.Warning,
         QApplication.translate("StrikeChess", "App Error"),
         QApplication.translate("StrikeChess", "StrikeChess has already been launched!"),
     )
+
+    theme_name: str = settings.value("ui", "theme")
+    file_path: Path = root_path() / "assets" / "themes" / f"{theme_name}.qss"
 
     with open(file_path, encoding="utf-8") as qss_file:
         message_box.setStyleSheet(qss_file.read())

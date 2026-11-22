@@ -6,10 +6,8 @@ from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
 class EvaluationBar(QProgressBar):
     """Vertical bar with animatable chunk showing evaluation score."""
 
-    def __init__(self, settings: SettingsService) -> None:
+    def __init__(self) -> None:
         super().__init__()
-
-        self._settings: SettingsService = settings
 
         self._animation: QPropertyAnimation = QPropertyAnimation(self, b"value")
         self._animation.setEasingCurve(QEasingCurve.Type.InOutCubic)
@@ -19,11 +17,9 @@ class EvaluationBar(QProgressBar):
         self.setRange(0, 1000)
         self.setOrientation(Qt.Orientation.Vertical)
 
-        self.invert_fill(self._settings.value("ui", "is_white_at_bottom"))
-
-    def invert_fill(self, invert: bool) -> None:
-        """Invert from which end evaluation bar fills."""
-        self.setInvertedAppearance(invert)
+    def invert_fill(self, is_white_at_bottom: bool) -> None:
+        """Set chunk direction based on `is_white_at_bottom`."""
+        self.setInvertedAppearance(is_white_at_bottom)
 
     def reset_appearance(self) -> None:
         """Rewind chunk and clear evaluation text."""

@@ -59,9 +59,9 @@ class MainWindow(QMainWindow):
 
         # Widgets
         self._fen_editor: FenEditor = FenEditor(self._game)
+        self._evaluation_bar: EvaluationBar = EvaluationBar()
         self._table_model: TableModel = TableModel(self._game.moves)
         self._table_view: TableView = TableView(self._table_model)
-        self._evaluation_bar: EvaluationBar = EvaluationBar(self._settings)
         self._board: SvgBoard = SvgBoard(self._game, self._engine, self._settings)
         self._black_clock: ChessClock = ChessClock(BLACK, self._game, self._settings)
         self._white_clock: ChessClock = ChessClock(WHITE, self._game, self._settings)
@@ -561,9 +561,10 @@ class MainWindow(QMainWindow):
     def _create_menu_bar(self) -> None:
         """Create menu bar with actions in separate menus."""
         self._theme_menu: ThemeMenu = ThemeMenu(self)
-        language_menu: LanguageMenu = LanguageMenu(self, self._settings)
+        self._language_menu: LanguageMenu = LanguageMenu(self, self._settings)
 
-        self.setMenuBar(MenuBar(self, self._theme_menu, language_menu))
+        self._menu_bar: MenuBar = MenuBar(self, self._theme_menu, self._language_menu)
+        self.setMenuBar(self._menu_bar)
 
     def _create_status_bar(self) -> None:
         """Create status bar for opening, theme, and engine ponder."""
