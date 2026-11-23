@@ -15,7 +15,7 @@ from strikechess.utils import root_path
 
 
 class EngineService(QObject):
-    """Chess engine operations using Universal Chess Interface (UCI)."""
+    """Engine operations using Universal Chess Interface (UCI)."""
 
     error_occurred: ClassVar[Signal] = Signal()
     move_played: ClassVar[Signal] = Signal(Move)
@@ -48,12 +48,12 @@ class EngineService(QObject):
         return self._engine is not None
 
     def load_default_engine(self) -> None:
-        """Load executable file of default Stockfish engine."""
+        """Load default Stockfish engine from its executable file."""
         with suppress(EngineError):
             self.load_file(_stockfish_executable())
 
     def load_file(self, file_path: str) -> None:
-        """Load UCI-compliant engine from `file_path`."""
+        """Load UCI engine from file at `file_path`."""
         new_engine: SimpleEngine | None = None
 
         try:
@@ -195,7 +195,7 @@ class EngineService(QObject):
 
 
 def _delete_quarantine_attribute(file_path: str) -> None:
-    """Delete quarantine attribute from `file_path`."""
+    """Delete quarantine attribute from file at `file_path`."""
     if platform.system() == "Darwin":
         subprocess.run(
             ["xattr", "-d", "com.apple.quarantine", file_path],
@@ -220,7 +220,7 @@ def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
 
 
 def _make_executable(file_path: str) -> None:
-    """Make `file_path` have executable permission."""
+    """Make file at `file_path` have executable permission."""
     if os.access(file_path, os.X_OK):
         return
 

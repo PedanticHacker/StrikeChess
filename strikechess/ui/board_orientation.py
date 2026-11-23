@@ -30,7 +30,7 @@ class BoardOrientation:
         self._orient_board_elements(not self._settings.value("engine", "is_white"))
 
     def _orient_board_elements(self, is_white_at_bottom: bool) -> None:
-        """Orient board-related elements based on board orientation."""
+        """Orient board elements based on `is_white_at_bottom`."""
         self._board.set_orientation(is_white_at_bottom)
         self._evaluation_bar.invert_fill(is_white_at_bottom)
 

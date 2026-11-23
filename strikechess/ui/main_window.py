@@ -155,8 +155,8 @@ class MainWindow(QMainWindow):
         """Apply QSS theme based on `file_name` and show theme name."""
         file_path: Path = root_path() / "assets" / "themes" / f"{file_name}.qss"
 
-        with open(file_path, encoding="utf-8") as qss_file:
-            self.setStyleSheet(qss_file.read())
+        with open(file_path, encoding="utf-8") as theme_file:
+            self.setStyleSheet(theme_file.read())
 
         self.ensurePolished()
         self._tool_bar.tint_icons(self._icon_color, self._disabled_icon_color)
@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def update_actions(self) -> None:
-        """Update availability of actions based on game state."""
+        """Update action availability based on game and engine state."""
         is_engine_thinking: bool = self._engine.is_thinking
         is_engine_analyzing: bool = self._engine.is_analyzing
         is_engine_not_loaded: bool = not self._engine.is_loaded()

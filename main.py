@@ -43,8 +43,8 @@ def _show_duplicate_launch_warning() -> None:
     theme_name: str = settings.value("ui", "theme")
     file_path: Path = root_path() / "assets" / "themes" / f"{theme_name}.qss"
 
-    with open(file_path, encoding="utf-8") as qss_file:
-        message_box.setStyleSheet(qss_file.read())
+    with open(file_path, encoding="utf-8") as theme_file:
+        message_box.setStyleSheet(theme_file.read())
 
     message_box.exec()
 

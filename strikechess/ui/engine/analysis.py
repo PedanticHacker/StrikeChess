@@ -87,7 +87,7 @@ class EngineAnalysis(QObject):
 
     @Slot(str)
     def show_engine_variation(self, variation: str) -> None:
-        """Show formatted variation based on engine analysis."""
+        """Show formatted `variation` from engine analysis."""
         if not self._engine.is_analyzing:
             return
 

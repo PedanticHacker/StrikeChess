@@ -148,7 +148,7 @@ class GameService(QObject):
         self._board = self._board.root()
 
     def update_state(self, move_index: int) -> None:
-        """Update game state by `move_index`."""
+        """Update game state based on `move_index`."""
         self.move_index = move_index
         self._board = self.positions[move_index].copy()
 

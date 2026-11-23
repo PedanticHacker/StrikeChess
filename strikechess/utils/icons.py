@@ -14,7 +14,7 @@ def create_colored_icon(color: str) -> QIcon:
 
 
 def create_svg_icon(file_name: str) -> QIcon:
-    """Create SVG icon from file at `file_name`."""
+    """Create SVG icon based on `file_name`."""
     return QIcon(f":/icons/{file_name}.svg")
 
 

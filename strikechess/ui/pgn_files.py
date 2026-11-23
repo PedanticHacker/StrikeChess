@@ -131,12 +131,12 @@ class PgnFiles(QObject):
 
 
 def _read_pgn_file(file_path: str) -> str:
-    """Read and return PGN text from `file_path`."""
-    with open(file_path, encoding="utf-8") as file:
-        return file.read()
+    """Read and return PGN text from file at `file_path`."""
+    with open(file_path, encoding="utf-8") as game_file:
+        return game_file.read()
 
 
 def _write_pgn_file(file_path: str, pgn_text: str) -> None:
-    """Write `pgn_text` as PGN to `file_path`."""
-    with open(file_path, mode="w", encoding="utf-8", newline="\n") as file:
-        file.write(pgn_text)
+    """Write `pgn_text` as PGN to file at `file_path`."""
+    with open(file_path, mode="w", encoding="utf-8", newline="\n") as game_file:
+        game_file.write(pgn_text)

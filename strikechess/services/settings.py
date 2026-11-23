@@ -63,9 +63,9 @@ class SettingsService:
         return self._load(self._default_file_path)
 
     def _load(self, file_path: Path) -> dict[str, dict[str, Any]]:
-        """Load settings from `file_path`."""
-        with open(file_path, encoding="utf-8") as file:
-            return json.load(file)
+        """Load settings from file at `file_path`."""
+        with open(file_path, encoding="utf-8") as settings_file:
+            return json.load(settings_file)
 
     def _save(self) -> None:
         """Save settings to user's settings.json file."""

@@ -74,7 +74,7 @@ class ChessClock(QLCDNumber):
             self.stop_timer()
 
     def start_timer(self) -> None:
-        """Start tracking elapsed time, then start timer countdown."""
+        """Start countdown unless already active."""
         if self._countdown_timer.isActive():
             return
 
@@ -82,7 +82,7 @@ class ChessClock(QLCDNumber):
         self._countdown_timer.start()
 
     def stop_timer(self) -> None:
-        """Subtract elapsed time, then stop timer countdown."""
+        """Stop countdown and update clock to remaining time."""
         if self._countdown_timer.isActive():
             elapsed_time: float = self._elapsed_timer.nsecsElapsed() / NanosecondsPerSecond
             self.time = max(0.0, self.time - elapsed_time)
@@ -100,7 +100,7 @@ class ChessClock(QLCDNumber):
 
     @Slot()
     def update_time(self) -> None:
-        """Update remaining time and check for timer expiration."""
+        """Update clock to remaining time and check for expiration."""
         elapsed_time: float = self._elapsed_timer.nsecsElapsed() / NanosecondsPerSecond
         self.time -= elapsed_time
         self._elapsed_timer.start()

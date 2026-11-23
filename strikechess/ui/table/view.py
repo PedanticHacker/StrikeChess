@@ -103,7 +103,7 @@ class TableView(QTableView):
         self.move_selected.emit(self.current_move)
 
     def _select_model_index(self, model_index: QModelIndex) -> None:
-        """Select move based on `model_index`."""
+        """Select move at `model_index`."""
         self.selectionModel().setCurrentIndex(
             model_index,
             QItemSelectionModel.SelectionFlag.ClearAndSelect,

@@ -172,7 +172,7 @@ class SvgBoard(QSvgWidget):
             self.start_dragging(square, piece)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        """Update cursor based on hovered piece."""
+        """Update cursor and move any dragged piece with it."""
         cursor_point: QPointF = self._cursor_point_from(event)
         self._update_cursor_at(cursor_point)
 
@@ -260,13 +260,13 @@ class SvgBoard(QSvgWidget):
         return square(file_index, rank_index)
 
     def _is_on_square(self, cursor_point: QPointF) -> bool:
-        """Return True if `cursor_point` is on a square."""
+        """Return True if `cursor_point` is on any square."""
         row: float = (cursor_point.y() - self.board_margin) // self.square_size
         column: float = (cursor_point.x() - self.board_margin) // self.square_size
         return 0 <= column <= 7 and 0 <= row <= 7
 
     def _cursor_point_from(self, event: QMouseEvent) -> QPointF:
-        """Get cursor point on board from position data of `event`."""
+        """Get location of `event` relative to top-left board corner."""
         self.cursor_point = event.position() - self.board_offset
         return self.cursor_point
 

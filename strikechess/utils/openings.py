@@ -14,5 +14,5 @@ def _openings() -> dict[str, str]:
     """Load openings from openings.json file."""
     file_path: Path = root_path() / "assets" / "openings.json"
 
-    with open(file_path, encoding="utf-8") as file:
-        return json.load(file)
+    with open(file_path, encoding="utf-8") as openings_file:
+        return json.load(openings_file)
