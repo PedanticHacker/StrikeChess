@@ -44,12 +44,12 @@ class SvgBoard(QSvgWidget):
         self.is_dragging: bool = False
         self.is_animating: bool = False
         self.is_interactive: bool = True
+        self.is_white_at_bottom: bool = True
         self.dragged_piece: Piece | None = None
         self.origin_square: Square | None = None
         self.arrow: list[tuple[Square, Square]] = []
         self.cursor_point: QPointF = QPointF(0.0, 0.0)
         self.animation_point: QPointF = QPointF(0.0, 0.0)
-        self.is_white_at_bottom: bool = self._settings.value("ui", "is_white_at_bottom")
 
         self._coord: QColor = QColor()
         self._margin: QColor = QColor()

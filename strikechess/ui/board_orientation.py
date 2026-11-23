@@ -23,20 +23,14 @@ class BoardOrientation:
 
     def flip(self) -> None:
         """Flip board orientation and board-related elements."""
-        is_white_at_bottom: bool = not self._settings.value("ui", "is_white_at_bottom")
-        self._settings.set_value("ui", "is_white_at_bottom", is_white_at_bottom)
-        self._orient_board_elements()
+        self._orient_board_elements(not self._board.is_white_at_bottom)
 
     def orient_board_for_human(self) -> None:
         """Place human at bottom if playing against engine."""
-        is_engine_white: bool = self._settings.value("engine", "is_white")
-        self._settings.set_value("ui", "is_white_at_bottom", not is_engine_white)
-        self._orient_board_elements()
+        self._orient_board_elements(not self._settings.value("engine", "is_white"))
 
-    def _orient_board_elements(self) -> None:
+    def _orient_board_elements(self, is_white_at_bottom: bool) -> None:
         """Orient board-related elements based on board orientation."""
-        is_white_at_bottom: bool = self._settings.value("ui", "is_white_at_bottom")
-
         self._board.set_orientation(is_white_at_bottom)
         self._evaluation_bar.invert_fill(is_white_at_bottom)
 

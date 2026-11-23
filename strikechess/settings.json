@@ -11,7 +11,6 @@
     "name": ""
   },
   "ui": {
-    "is_white_at_bottom": true,
     "language": "en",
     "theme": "dark-mint"
   }
