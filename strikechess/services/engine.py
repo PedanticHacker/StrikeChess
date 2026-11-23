@@ -48,9 +48,9 @@ class EngineService(QObject):
         return self._engine is not None
 
     def load_default_engine(self) -> None:
-        """Load default Stockfish engine from its executable file."""
+        """Load default Stockfish engine if possible."""
         with suppress(EngineError):
-            self.load_file(_stockfish_executable())
+            self.load_file(_stockfish_engine_file_path())
 
     def load_file(self, file_path: str) -> None:
         """Load UCI engine from file at `file_path`."""
@@ -227,11 +227,11 @@ def _make_executable(file_path: str) -> None:
     os.chmod(file_path, os.stat(file_path).st_mode | stat.S_IXUSR)
 
 
-def _stockfish_executable() -> str:
-    """Get path to executable file of default Stockfish engine."""
+def _stockfish_engine_file_path() -> str:
+    """Get path to Stockfish engine file."""
     system: str = platform.system()
     extension: str = ".exe" if system == "Windows" else ""
 
     stockfish_directory: Path = root_path() / "assets" / "engines" / "stockfish-19" / system
-    executable_path: Path = stockfish_directory / f"stockfish{extension}"
-    return str(executable_path)
+    file_path: Path = stockfish_directory / f"stockfish{extension}"
+    return str(file_path)
