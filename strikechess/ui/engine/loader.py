@@ -7,7 +7,7 @@ from strikechess.utils import ask_question, show_file_manager, show_warning
 
 
 class EngineLoader(QObject):
-    """Loading and unloading of UCI engines."""
+    """Loading and unloading UCI engines."""
 
     engine_loaded: ClassVar[Signal] = Signal()
     engine_changed: ClassVar[Signal] = Signal()

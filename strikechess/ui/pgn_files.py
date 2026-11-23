@@ -11,7 +11,7 @@ from strikechess.utils import (
 
 
 class PgnFiles(QObject):
-    """Loading and saving of games as PGN files."""
+    """Loading and saving games as PGN files."""
 
     game_loaded: ClassVar[Signal] = Signal()
 
