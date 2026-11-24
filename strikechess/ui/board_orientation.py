@@ -26,7 +26,7 @@ class BoardOrientation:
         self._orient_board_elements(not self._board.is_white_at_bottom)
 
     def orient_board_for_human(self) -> None:
-        """Place human at bottom if playing against engine."""
+        """Place human at bottom and engine at top."""
         self._orient_board_elements(not self._settings.value("engine", "is_white"))
 
     def _orient_board_elements(self, is_white_at_bottom: bool) -> None:

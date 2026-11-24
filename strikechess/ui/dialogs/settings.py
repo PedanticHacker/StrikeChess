@@ -37,15 +37,15 @@ class SettingsDialog(QDialog):
         self.setWindowTitle(self.tr("Settings"))
 
     def disable_engine_group(self) -> None:
-        """Disable engine settings if no engine is loaded."""
+        """Disable all settings in engine group."""
         self._engine_group.setDisabled(True)
 
     def disable_human_name_group(self) -> None:
-        """Disable changing human name to preserve player identity."""
+        """Disable setting in human name group."""
         self._human_name_group.setDisabled(True)
 
     def disable_time_control_group(self) -> None:
-        """Disable time control settings if game is in progress."""
+        """Disable all settings in time control group."""
         self._time_control_group.setDisabled(True)
 
     @Slot()

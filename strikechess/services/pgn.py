@@ -53,7 +53,7 @@ class PgnService:
         engine_name: str,
         is_engine_white: bool,
     ) -> str:
-        """Export game to PGN format."""
+        """Export `game` to PGN format."""
         headers: dict[str, str] = {
             "Event": "StrikeChess Game",
             "Site": "Computer",

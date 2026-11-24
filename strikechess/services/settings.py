@@ -74,7 +74,10 @@ class SettingsService:
         temporary_file_path: Path = self._user_file_path.with_suffix(".tmp")
 
         with open(
-            temporary_file_path, mode="w", encoding="utf-8", newline="\n"
+            temporary_file_path,
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
         ) as temporary_file:
             json.dump(self._user_settings, temporary_file, indent=2)
             temporary_file.write("\n")

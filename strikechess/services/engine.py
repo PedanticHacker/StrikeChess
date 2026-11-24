@@ -204,7 +204,7 @@ def _delete_quarantine_attribute(file_path: str) -> None:
 
 
 def _engine_options(available_options: Mapping[str, Option]) -> dict[str, int]:
-    """Get supported Hash and Threads options for engine."""
+    """Clip values for Threads and Hash in `available_options`."""
     hash_in_megabytes: int = 512
     assigned_threads: int = max(1, os.cpu_count() - 1)
 

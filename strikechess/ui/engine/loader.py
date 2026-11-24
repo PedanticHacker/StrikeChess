@@ -3,7 +3,7 @@ from platform import system
 from chess.engine import EngineError
 from PySide6.QtCore import QObject, Signal, Slot
 
-from strikechess.utils import ask_question, show_file_manager, show_warning
+from strikechess.utils import ask_question, show_open_file_manager, show_warning
 
 
 class EngineLoader(QObject):
@@ -28,8 +28,10 @@ class EngineLoader(QObject):
     def load_engine(self) -> None:
         """Show file manager to select and load engine."""
         engine_filter: str = self.tr("UCI engine (*.exe)") if system() == "Windows" else ""
-        file_path: str | None = show_file_manager(
-            self.parent(), self.tr("Load Engine"), engine_filter
+        file_path: str | None = show_open_file_manager(
+            self.parent(),
+            self.tr("Load Engine"),
+            engine_filter,
         )
 
         if file_path is None:

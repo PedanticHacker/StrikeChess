@@ -240,7 +240,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def request_engine_move(self, force: bool = False) -> None:
-        """Request engine to play move if loaded, on turn, or forced."""
+        """Request engine to play move if on turn or `force` is True."""
         if not self._engine.is_loaded():
             return
 
@@ -376,7 +376,7 @@ class MainWindow(QMainWindow):
             self._scroll_throttle_timer.start()
 
     def _apply_saved_settings(self) -> None:
-        """Act on edited settings being saved."""
+        """Update app state to reflect saved settings."""
         if not self._game.is_in_progress():
             self._black_clock.reset()
             self._white_clock.reset()

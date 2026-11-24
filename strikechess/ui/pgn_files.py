@@ -5,8 +5,8 @@ from strikechess.utils import (
     show_info,
     ask_question,
     show_warning,
-    show_file_manager,
-    save_with_file_manager,
+    show_open_file_manager,
+    show_save_file_manager,
 )
 
 
@@ -42,8 +42,10 @@ class PgnFiles(QObject):
             ):
                 return
 
-        file_path: str | None = show_file_manager(
-            self.parent(), self.tr("Load Game"), self.tr("PGN file (*.pgn)")
+        file_path: str | None = show_open_file_manager(
+            self.parent(),
+            self.tr("Load Game"),
+            self.tr("PGN file (*.pgn)"),
         )
 
         if file_path is None:
@@ -93,7 +95,7 @@ class PgnFiles(QObject):
             is_engine_white,
         )
 
-        file_path: str | None = save_with_file_manager(
+        file_path: str | None = show_save_file_manager(
             self.parent(),
             self.tr("Save Game"),
             self.tr("PGN file (*.pgn)"),
