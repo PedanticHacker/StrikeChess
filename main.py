@@ -18,7 +18,7 @@ SplashScreenDurationInMilliseconds: Final[int] = 3000
 
 
 def _create_app() -> QApplication:
-    """Create QApplication object initialized with basic settings."""
+    """Create QApplication with its name, version, icon, and style."""
     app: QApplication = QApplication()
     app.setStyle("fusion")
     app.setApplicationName("StrikeChess")

@@ -1,5 +1,5 @@
 class BoardOrientation:
-    """Orientation of board and board-related elements."""
+    """Player placement for board and board-related widgets."""
 
     def __init__(
         self,
@@ -22,15 +22,15 @@ class BoardOrientation:
         self._evaluation_bar: EvaluationBar = evaluation_bar
 
     def flip(self) -> None:
-        """Flip board orientation and board-related elements."""
-        self._orient_board_elements(not self._board.is_white_at_bottom)
+        """Flip orientation of board and board-related widgets."""
+        self._orient_board_widgets(not self._board.is_white_at_bottom)
 
     def orient_board_for_human(self) -> None:
         """Place human at bottom and engine at top."""
-        self._orient_board_elements(not self._settings.value("engine", "is_white"))
+        self._orient_board_widgets(not self._settings.value("engine", "is_white"))
 
-    def _orient_board_elements(self, is_white_at_bottom: bool) -> None:
-        """Orient board elements based on `is_white_at_bottom`."""
+    def _orient_board_widgets(self, is_white_at_bottom: bool) -> None:
+        """Orient board widgets based on `is_white_at_bottom`."""
         self._board.set_orientation(is_white_at_bottom)
         self._evaluation_bar.invert_fill(is_white_at_bottom)
 

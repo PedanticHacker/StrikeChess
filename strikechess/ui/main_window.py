@@ -31,7 +31,7 @@ ScrollThrottleIntervalInMilliseconds: Final[int] = 180
 
 
 class MainWindow(QMainWindow):
-    """Main app window."""
+    """User interface (UI) for interacting with whole app."""
 
     icon_color = create_color_property("_icon_color")
     disabled_icon_color = create_color_property("_disabled_icon_color")
@@ -71,16 +71,14 @@ class MainWindow(QMainWindow):
         self._engine_analysis_label.setFixedWidth(200)
         self._engine_analysis_label.setObjectName("engineAnalysis")
 
-        self._engine_name_label: QLabel = QLabel(elide_name(self._engine.name))
+        self._engine_name_label: QLabel = QLabel()
         self._engine_name_label.setFixedWidth(200)
         self._engine_name_label.setObjectName("engineName")
 
         self._notifications_label: QLabel = QLabel()
         self._notifications_label.setObjectName("notifications")
 
-        self._human_name_label: QLabel = QLabel(
-            elide_name(self._settings.value("human", "name") or self.tr("Player"))
-        )
+        self._human_name_label: QLabel = QLabel()
         self._human_name_label.setFixedWidth(200)
         self._human_name_label.setObjectName("humanName")
 
@@ -100,6 +98,7 @@ class MainWindow(QMainWindow):
         self._connect_signals_to_slots()
 
         self.update_actions()
+        self.show_player_names()
         self._board_orientation.orient_board_for_human()
         self.apply_theme(self._settings.value("ui", "theme"))
 
@@ -133,11 +132,11 @@ class MainWindow(QMainWindow):
         self.close()
 
     def show_about(self) -> None:
-        """Show About dialog."""
+        """Show About dialog with version, copyright, and license."""
         show_about(self)
 
     def show_settings_dialog(self) -> None:
-        """Show dialog to edit settings."""
+        """Show dialog to edit settings and apply them if saved."""
         settings_dialog: SettingsDialog = SettingsDialog(self, self._settings)
 
         if not self._engine.is_loaded():
@@ -285,11 +284,6 @@ class MainWindow(QMainWindow):
 
         self._update_ui_state()
 
-    @Slot()
-    def show_engine_name(self) -> None:
-        """Show name of engine, shortened to fit its label."""
-        self._engine_name_label.setText(elide_name(self._engine.name))
-
     @Slot(int)
     def show_historical_move(self, move_index: int) -> None:
         """Show position from historical move at `move_index`."""
@@ -317,6 +311,19 @@ class MainWindow(QMainWindow):
 
         if is_returning_from_history:
             self.request_engine_move()
+
+    @Slot()
+    def show_player_names(self) -> None:
+        """Show player names, or their colors if names are missing."""
+        is_engine_white: bool = self._settings.value("engine", "is_white")
+        human_color: str = self.tr("Black") if is_engine_white else self.tr("White")
+        engine_color: str = self.tr("White") if is_engine_white else self.tr("Black")
+
+        human_name: str = self._settings.value("human", "name") or human_color
+        engine_name: str = self._engine.name if self._engine.is_loaded() else engine_color
+
+        self._human_name_label.setText(elide_name(human_name))
+        self._engine_name_label.setText(elide_name(engine_name))
 
     @Slot()
     def update_actions(self) -> None:
@@ -381,20 +388,17 @@ class MainWindow(QMainWindow):
             self._black_clock.reset()
             self._white_clock.reset()
 
-            self._human_name_label.setText(
-                elide_name(self._settings.value("human", "name") or self.tr("Player"))
-            )
-
         if not self._settings.value("engine", "is_ponder_enabled"):
             self._engine.stop_ponder()
 
         self.request_engine_move()
 
+        self.show_player_names()
         self._status_bar.show_engine_ponder()
         self._board_orientation.orient_board_for_human()
 
     def _connect_signals_to_slots(self) -> None:
-        """Connect component signals to corresponding slot methods."""
+        """Connect clock, engine, game, and widget signals to slots."""
 
         # Clocks
         self._black_clock.expired.connect(self.expire_clock_for)
@@ -405,7 +409,7 @@ class MainWindow(QMainWindow):
         self._engine_analysis.started.connect(self.update_actions)
         self._engine_analysis.stopped.connect(self.update_actions)
         self._engine_loader.engine_changed.connect(self.update_actions)
-        self._engine_loader.engine_changed.connect(self.show_engine_name)
+        self._engine_loader.engine_changed.connect(self.show_player_names)
         self._engine_loader.engine_loaded.connect(self.request_engine_move)
         self._engine_loader.engine_changed.connect(self._status_bar.show_engine_ponder)
 
@@ -432,7 +436,7 @@ class MainWindow(QMainWindow):
             name=self.tr("Flip"),
             icon=create_svg_icon("flip"),
             handler=self._board_orientation.flip,
-            status_tip=self.tr("Flips the board orientation and board-related elements."),
+            status_tip=self.tr("Flips the orientation of the board and board-related widgets."),
         )
         self.load_engine_action: QAction = create_action(
             shortcut="Ctrl+L",
@@ -592,7 +596,7 @@ class MainWindow(QMainWindow):
         self._update_ui_state()
 
     def _show_fen(self) -> None:
-        """Show FEN in editor."""
+        """Show FEN of current position in editor."""
         self._table_view.setFocus()
         self._fen_editor.hide_warning()
         self._fen_editor.setText(self._game.fen)

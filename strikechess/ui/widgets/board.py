@@ -112,17 +112,17 @@ class SvgBoard(QSvgWidget):
         self.is_white_at_bottom = is_white_at_bottom
 
     def set_arrow(self, move: Move) -> None:
-        """Set arrow marker for `move`."""
+        """Set arrow for `move`."""
         self.update()
         self.arrow = [(move.from_square, move.to_square)]
 
     def clear_arrow(self) -> None:
-        """Clear current arrow marker from board."""
+        """Clear current arrow from board."""
         self.update()
         self.arrow.clear()
 
     def set_last_move_arrow(self) -> None:
-        """Set arrow marker for current position's last move, if any."""
+        """Set arrow for last move of current position, if any."""
         move_stack: list[Move] = self._game.board.move_stack
 
         if move_stack:

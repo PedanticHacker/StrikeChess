@@ -1,19 +1,19 @@
 import platform
 
 system = platform.system()
-engine_directory = f"assets/engines/stockfish-19/{system}"
-engine_files = Tree(f"strikechess/{engine_directory}", prefix=engine_directory)
+engine_directory = f"strikechess/assets/engines/stockfish-19/{system}"
+engine_files = Tree(engine_directory, prefix=engine_directory)
 
 dependency_analysis = Analysis(
     ["main.py"],
     datas=[
         ("NOTICE.txt", "."),
         ("GPL-3.0.txt", "."),
-        ("strikechess/settings.json", "."),
-        ("strikechess/assets/audio", "assets/audio"),
-        ("strikechess/assets/openings.json", "assets"),
-        ("strikechess/assets/themes", "assets/themes"),
-        ("strikechess/assets/translations/*.qm", "assets/translations"),
+        ("strikechess/settings.json", "strikechess"),
+        ("strikechess/assets/audio", "strikechess/assets/audio"),
+        ("strikechess/assets/openings.json", "strikechess/assets"),
+        ("strikechess/assets/themes", "strikechess/assets/themes"),
+        ("strikechess/assets/translations/*.qm", "strikechess/assets/translations"),
     ],
 )
 

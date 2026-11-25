@@ -4,10 +4,6 @@
 <context>
   <name>MainWindow</name>
   <message>
-    <source>Player</source>
-    <translation>Spieler</translation>
-  </message>
-  <message>
     <source>New Game</source>
     <translation>Neues Spiel</translation>
   </message>
@@ -32,6 +28,14 @@ Trotzdem die FEN anwenden?</translation>
     <translation>Denke nach...</translation>
   </message>
   <message>
+    <source>Black</source>
+    <translation>Schwarz</translation>
+  </message>
+  <message>
+    <source>White</source>
+    <translation>Weiß</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Beenden</translation>
   </message>
@@ -52,8 +56,8 @@ Trotzdem die FEN anwenden?</translation>
     <translation>Drehen</translation>
   </message>
   <message>
-    <source>Flips the board orientation and board-related elements.</source>
-    <translation>Dreht die Brettausrichtung und zugehörige Elemente.</translation>
+    <source>Flips the orientation of the board and board-related widgets.</source>
+    <translation>Dreht die Ausrichtung des Bretts und der zugehörigen Widgets.</translation>
   </message>
   <message>
     <source>Load engine...</source>
@@ -415,6 +419,14 @@ Versuchen Sie, in einem anderen Ordner zu speichern.</translation>
     <translation>Einstellungen</translation>
   </message>
   <message>
+    <source>Black</source>
+    <translation>Schwarz</translation>
+  </message>
+  <message>
+    <source>White</source>
+    <translation>Weiß</translation>
+  </message>
+  <message>
     <source>Engine</source>
     <translation>Engine</translation>
   </message>
@@ -425,18 +437,6 @@ Versuchen Sie, in einem anderen Ordner zu speichern.</translation>
   <message>
     <source>Time control</source>
     <translation>Zeitkontrolle</translation>
-  </message>
-  <message>
-    <source>Player</source>
-    <translation>Spieler</translation>
-  </message>
-  <message>
-    <source>Black</source>
-    <translation>Schwarz</translation>
-  </message>
-  <message>
-    <source>White</source>
-    <translation>Weiß</translation>
   </message>
   <message>
     <source>Ponder</source>
@@ -524,10 +524,6 @@ MIT-Lizenz</translation>
 </context>
 <context>
   <name>EngineService</name>
-  <message>
-    <source>(no engine)</source>
-    <translation>(keine Engine)</translation>
-  </message>
   <message>
     <source>Cannot load UCI engine.
 

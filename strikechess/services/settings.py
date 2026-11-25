@@ -32,7 +32,7 @@ class SettingsService:
         return stored_value
 
     def set_value(self, section: str, key: str, value: Any) -> None:
-        """Set `value` to `key` for `section` in settings."""
+        """Set `key` in `section` to `value` and save settings."""
         try:
             self._user_settings[section][key] = value
         except (KeyError, TypeError):

@@ -36,7 +36,7 @@ class FenEditor(QLineEdit):
 
     @Slot()
     def apply_fen(self) -> None:
-        """Send edited FEN when Return key is pressed."""
+        """Send edited FEN if valid and different from current one."""
         position: Board | None = self._validated_position(self.text())
 
         if position is None:
@@ -47,14 +47,14 @@ class FenEditor(QLineEdit):
 
     @Slot(str)
     def validate_fen(self, fen: str) -> None:
-        """Validate whether `fen` represents valid position."""
+        """Show or hide warning based on whether `fen` is valid."""
         if self._validated_position(fen) is None:
             self.show_warning()
         else:
             self.hide_warning()
 
     def _validated_position(self, fen: str) -> Board | None:
-        """Get position based on `fen`, or None if `fen` is invalid."""
+        """Get position from `fen`, or None if `fen` is invalid."""
         try:
             position: Board = Board(fen)
         except (IndexError, ValueError):

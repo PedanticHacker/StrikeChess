@@ -61,7 +61,7 @@ class EngineLoader(QObject):
 
     @Slot()
     def load_default_engine_on_error(self) -> None:
-        """Load default engine if possible and show warning on error."""
+        """Load default engine if possible and warn about failed one."""
         if not self._engine.is_loaded():
             return
 

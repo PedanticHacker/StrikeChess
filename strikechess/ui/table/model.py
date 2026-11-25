@@ -24,7 +24,7 @@ class TableModel(QAbstractTableModel):
         return None
 
     def flags(self, index: QModelIndex | QPersistentModelIndex) -> Qt.ItemFlag:
-        """Get interaction state based on data existence at `index`."""
+        """Get item flags based on whether `index` holds move."""
         if self.data(index) is None:
             return Qt.ItemFlag.NoItemFlags
         return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable

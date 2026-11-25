@@ -40,8 +40,8 @@ class EngineService(QObject):
 
     @property
     def name(self) -> str:
-        """Engine name, or "(no engine)" if none is loaded."""
-        return self.tr("(no engine)") if self._engine is None else self._engine.id["name"]
+        """Engine name, or no text if engine is not loaded."""
+        return "" if self._engine is None else self._engine.id["name"]
 
     def is_loaded(self) -> bool:
         """Return True if engine is loaded."""

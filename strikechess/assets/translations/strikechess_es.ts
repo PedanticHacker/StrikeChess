@@ -4,10 +4,6 @@
 <context>
   <name>MainWindow</name>
   <message>
-    <source>Player</source>
-    <translation>Jugador</translation>
-  </message>
-  <message>
     <source>New Game</source>
     <translation>Nueva partida</translation>
   </message>
@@ -32,6 +28,14 @@ Apply the FEN anyway?</source>
     <translation>Pensando...</translation>
   </message>
   <message>
+    <source>Black</source>
+    <translation>Negras</translation>
+  </message>
+  <message>
+    <source>White</source>
+    <translation>Blancas</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Salir</translation>
   </message>
@@ -52,8 +56,8 @@ Apply the FEN anyway?</source>
     <translation>Girar</translation>
   </message>
   <message>
-    <source>Flips the board orientation and board-related elements.</source>
-    <translation>Gira la orientación del tablero y los elementos relacionados.</translation>
+    <source>Flips the orientation of the board and board-related widgets.</source>
+    <translation>Gira la orientación del tablero y de los widgets relacionados.</translation>
   </message>
   <message>
     <source>Load engine...</source>
@@ -415,6 +419,14 @@ Intente guardar en otra carpeta.</translation>
     <translation>Ajustes</translation>
   </message>
   <message>
+    <source>Black</source>
+    <translation>Negras</translation>
+  </message>
+  <message>
+    <source>White</source>
+    <translation>Blancas</translation>
+  </message>
+  <message>
     <source>Engine</source>
     <translation>Motor</translation>
   </message>
@@ -425,18 +437,6 @@ Intente guardar en otra carpeta.</translation>
   <message>
     <source>Time control</source>
     <translation>Control de tiempo</translation>
-  </message>
-  <message>
-    <source>Player</source>
-    <translation>Jugador</translation>
-  </message>
-  <message>
-    <source>Black</source>
-    <translation>Negras</translation>
-  </message>
-  <message>
-    <source>White</source>
-    <translation>Blancas</translation>
   </message>
   <message>
     <source>Ponder</source>
@@ -524,10 +524,6 @@ Licencia MIT</translation>
 </context>
 <context>
   <name>EngineService</name>
-  <message>
-    <source>(no engine)</source>
-    <translation>(sin motor)</translation>
-  </message>
   <message>
     <source>Cannot load UCI engine.
 

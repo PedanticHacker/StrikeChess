@@ -11,7 +11,7 @@ NanosecondsPerSecond: Final[int] = 1_000_000_000
 
 
 class ClockStyleSheet(StrEnum):
-    """QSS style sheets for clock widgets."""
+    """Qt Style Sheets (QSS) for clock widgets."""
 
     Black = "color: white; background-color: black;"
     White = "color: black; background-color: white;"
@@ -52,7 +52,7 @@ class ChessClock(QLCDNumber):
         return QSize(100, 50)
 
     def reset(self) -> None:
-        """Stop countdown and set time to values from settings."""
+        """Stop countdown and set time and increment from settings."""
         self._countdown_timer.stop()
 
         self.time: float = self._settings.value("clock", "time")

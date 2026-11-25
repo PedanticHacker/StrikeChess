@@ -102,5 +102,5 @@ class ThemeMenu(QMenu):
         self.setTitle(self.tr("Theme"))
 
     def theme_name(self, file_name: str) -> str:
-        """Get translated name of theme based on `file_name`."""
+        """Get translated theme name based on `file_name`."""
         return self.tr(ThemeName(file_name).text)

@@ -8,7 +8,7 @@ from strikechess.utils import create_svg_icon
 
 
 def _create_button(icon: QIcon) -> QPushButton:
-    """Create button with `icon`."""
+    """Create button with `icon` in 50 by 50 pixels."""
     button: QPushButton = QPushButton()
     button.setIcon(icon)
     button.setIconSize(QSize(50, 50))
@@ -28,7 +28,7 @@ class PromotionDialog(QDialog):
         self.setWindowTitle(self.tr("Pawn Promotion"))
 
     def select_piece_type(self, piece_type: PieceType) -> None:
-        """Set promotion piece type to `piece_type`."""
+        """Set promotion piece type to `piece_type` and close dialog."""
         self.piece_type = piece_type
         self.accept()
 

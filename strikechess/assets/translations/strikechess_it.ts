@@ -4,10 +4,6 @@
 <context>
   <name>MainWindow</name>
   <message>
-    <source>Player</source>
-    <translation>Giocatore</translation>
-  </message>
-  <message>
     <source>New Game</source>
     <translation>Nuova partita</translation>
   </message>
@@ -32,6 +28,14 @@ Applicare il FEN comunque?</translation>
     <translation>Sto pensando...</translation>
   </message>
   <message>
+    <source>Black</source>
+    <translation>Nero</translation>
+  </message>
+  <message>
+    <source>White</source>
+    <translation>Bianco</translation>
+  </message>
+  <message>
     <source>Quit</source>
     <translation>Esci</translation>
   </message>
@@ -52,8 +56,8 @@ Applicare il FEN comunque?</translation>
     <translation>Capovolgi</translation>
   </message>
   <message>
-    <source>Flips the board orientation and board-related elements.</source>
-    <translation>Capovolge l'orientamento della scacchiera e gli elementi correlati.</translation>
+    <source>Flips the orientation of the board and board-related widgets.</source>
+    <translation>Capovolge l'orientamento della scacchiera e dei widget correlati.</translation>
   </message>
   <message>
     <source>Load engine...</source>
@@ -415,6 +419,14 @@ Prova a salvare in un'altra cartella.</translation>
     <translation>Impostazioni</translation>
   </message>
   <message>
+    <source>Black</source>
+    <translation>Nero</translation>
+  </message>
+  <message>
+    <source>White</source>
+    <translation>Bianco</translation>
+  </message>
+  <message>
     <source>Engine</source>
     <translation>Motore</translation>
   </message>
@@ -425,18 +437,6 @@ Prova a salvare in un'altra cartella.</translation>
   <message>
     <source>Time control</source>
     <translation>Controllo del tempo</translation>
-  </message>
-  <message>
-    <source>Player</source>
-    <translation>Giocatore</translation>
-  </message>
-  <message>
-    <source>Black</source>
-    <translation>Nero</translation>
-  </message>
-  <message>
-    <source>White</source>
-    <translation>Bianco</translation>
   </message>
   <message>
     <source>Ponder</source>
@@ -524,10 +524,6 @@ Licenza MIT</translation>
 </context>
 <context>
   <name>EngineService</name>
-  <message>
-    <source>(no engine)</source>
-    <translation>(nessun motore)</translation>
-  </message>
   <message>
     <source>Cannot load UCI engine.
 

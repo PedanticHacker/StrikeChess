@@ -34,7 +34,7 @@ class TableView(QTableView):
 
     @property
     def current_move(self) -> int:
-        """Currently selected move."""
+        """Index of currently selected move."""
         current_model_index: QModelIndex = self.selectionModel().currentIndex()
         return 2 * current_model_index.row() + current_model_index.column()
 
@@ -99,7 +99,7 @@ class TableView(QTableView):
 
     @Slot()
     def send_selected_move(self) -> None:
-        """Send currently selected move when move selection changes."""
+        """Send index of currently selected move."""
         self.move_selected.emit(self.current_move)
 
     def _select_model_index(self, model_index: QModelIndex) -> None:

@@ -10,7 +10,7 @@ def ask_question(parent: QWidget | None, title: str, question: str) -> bool:
 
 
 def show_about(parent: QWidget | None) -> None:
-    """Show About dialog."""
+    """Show About dialog with version, copyright, and license."""
     title: str = QApplication.translate("StrikeChess", "About StrikeChess")
 
     message: str = QApplication.translate(

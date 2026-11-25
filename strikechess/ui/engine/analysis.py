@@ -39,7 +39,7 @@ class EngineAnalysis(QObject):
         self._engine.variation_analyzed.connect(self.show_engine_variation)
 
     def start(self) -> None:
-        """Start analyzing current position."""
+        """Start analyzing current position, pausing clocks."""
         self._black_clock.stop_timer()
         self._white_clock.stop_timer()
 
@@ -50,7 +50,7 @@ class EngineAnalysis(QObject):
         self.started.emit()
 
     def stop(self) -> None:
-        """Stop analyzing current position."""
+        """Stop analyzing current position, resuming clocks."""
         self._engine.stop_analysis()
 
         self._engine_analysis_label.clear()
@@ -79,7 +79,7 @@ class EngineAnalysis(QObject):
 
     @Slot(Move)
     def show_best_move_arrow(self, best_move: Move) -> None:
-        """Show `best_move` as arrow marker on board."""
+        """Show `best_move` as arrow on board."""
         if not self._engine.is_analyzing:
             return
 

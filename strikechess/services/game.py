@@ -37,7 +37,7 @@ class GameService(QObject):
 
     @property
     def check(self) -> Square | None:
-        """Square of king in check."""
+        """Square of king in check, if any."""
         if self._board.is_check():
             return self._board.king(self._board.turn)
         return None
@@ -143,12 +143,12 @@ class GameService(QObject):
         return [move.to_square for move in moves]
 
     def set_root_position(self) -> None:
-        """Reset pieces to initial position."""
+        """Set board to initial position before any moves."""
         self.move_index = -1
         self._board = self._board.root()
 
     def update_state(self, move_index: int) -> None:
-        """Update game state based on `move_index`."""
+        """Set board to position after move at `move_index`."""
         self.move_index = move_index
         self._board = self.positions[move_index].copy()
 
