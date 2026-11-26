@@ -17,8 +17,6 @@ class EngineAnalysis(QObject):
         game: GameService,
         engine: EngineService,
         board: SvgBoard,
-        black_clock: ChessClock,
-        white_clock: ChessClock,
         evaluation_bar: EvaluationBar,
         notifications_label: QLabel,
         engine_analysis_label: QLabel,
@@ -28,8 +26,6 @@ class EngineAnalysis(QObject):
         self._board: SvgBoard = board
         self._game: GameService = game
         self._engine: EngineService = engine
-        self._black_clock: ChessClock = black_clock
-        self._white_clock: ChessClock = white_clock
         self._evaluation_bar: EvaluationBar = evaluation_bar
         self._notifications_label: QLabel = notifications_label
         self._engine_analysis_label: QLabel = engine_analysis_label
@@ -39,10 +35,7 @@ class EngineAnalysis(QObject):
         self._engine.variation_analyzed.connect(self.show_engine_variation)
 
     def start(self) -> None:
-        """Start analyzing current position, pausing clocks."""
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
-
+        """Start analyzing current position."""
         self._evaluation_bar.show()
         self._engine_analysis_label.show()
 
@@ -50,7 +43,10 @@ class EngineAnalysis(QObject):
         self.started.emit()
 
     def stop(self) -> None:
-        """Stop analyzing current position, resuming clocks."""
+        """Stop analyzing current position."""
+        if not self._engine.is_analyzing:
+            return
+
         self._engine.stop_analysis()
 
         self._engine_analysis_label.clear()
@@ -65,9 +61,6 @@ class EngineAnalysis(QObject):
             self._notifications_label.clear()
 
         self.stopped.emit()
-
-        self._black_clock.update_countdown()
-        self._white_clock.update_countdown()
 
     @Slot(Score)
     def animate_evaluation(self, score: Score) -> None:

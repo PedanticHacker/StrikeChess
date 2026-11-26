@@ -82,13 +82,13 @@ class EngineService(QObject):
         self._engine = new_engine
 
     def terminate(self) -> None:
-        """Stop analysis and terminate engine."""
+        """Terminate engine if loaded."""
         engine: SimpleEngine | None = self._engine
 
         if engine is None:
             return
 
-        self.stop_analysis()
+        self.is_thinking = False
 
         self._engine = None
         engine.close()
@@ -123,14 +123,15 @@ class EngineService(QObject):
             return
 
         except EngineError:
-            self.is_thinking = False
-
             if engine is self._engine:
                 self.error_occurred.emit()
 
             return
 
-        if play_result.move is None or engine is not self._engine:
+        if engine is not self._engine:
+            return
+
+        if play_result.move is None:
             self.is_thinking = False
             return
 
@@ -166,8 +167,6 @@ class EngineService(QObject):
                         self.variation_analyzed.emit(variation)
 
         except (CancelledError, EngineError, TimeoutError):
-            self.is_analyzing = False
-
             if engine is self._engine:
                 engine.close()
                 self.error_occurred.emit()

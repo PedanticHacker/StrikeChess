@@ -161,7 +161,7 @@ class SvgBoard(QSvgWidget):
         if event.button() != Qt.MouseButton.LeftButton:
             return
 
-        if self.is_animating or not self.is_interactive:
+        if self.is_animating:
             return
 
         cursor_point: QPointF = self._cursor_point_from(event)
@@ -285,12 +285,12 @@ class SvgBoard(QSvgWidget):
 
     def _update_cursor_at(self, cursor_point: QPointF) -> None:
         """Update cursor based on draggability at `cursor_point`."""
-        square: Square = self._square(cursor_point)
-        piece: Piece | None = self._game.piece_at(square)
-
         if self.is_dragging:
             self.setCursor(Qt.CursorShape.ClosedHandCursor)
             return
+
+        square: Square = self._square(cursor_point)
+        piece: Piece | None = self._game.piece_at(square)
 
         if self._is_on_square(cursor_point) and self._can_drag(piece):
             self.setCursor(Qt.CursorShape.OpenHandCursor)

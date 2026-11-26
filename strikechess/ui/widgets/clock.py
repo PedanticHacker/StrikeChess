@@ -62,7 +62,6 @@ class ChessClock(QLCDNumber):
     def update_countdown(self) -> None:
         """Start/stop countdown based on current turn."""
         if not self._game.move_stack:
-            self.stop_timer()
             return
 
         if self._game.is_over_by_result() or self._game.is_viewing_history:
@@ -83,10 +82,12 @@ class ChessClock(QLCDNumber):
 
     def stop_timer(self) -> None:
         """Stop countdown and update clock to remaining time."""
-        if self._countdown_timer.isActive():
-            elapsed_time: float = self._elapsed_timer.nsecsElapsed() / NanosecondsPerSecond
-            self.time = max(0.0, self.time - elapsed_time)
-            self._show_time()
+        if not self._countdown_timer.isActive():
+            return
+
+        elapsed_time: float = self._elapsed_timer.nsecsElapsed() / NanosecondsPerSecond
+        self.time = max(0.0, self.time - elapsed_time)
+        self._show_time()
 
         self._countdown_timer.stop()
 

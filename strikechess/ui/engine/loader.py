@@ -9,7 +9,6 @@ from strikechess.utils import ask_question, show_open_file_manager, show_warning
 class EngineLoader(QObject):
     """Loading and unloading UCI engines."""
 
-    engine_loaded: ClassVar[Signal] = Signal()
     engine_changed: ClassVar[Signal] = Signal()
 
     def __init__(
@@ -42,7 +41,6 @@ class EngineLoader(QObject):
 
             self._engine.load_file(file_path)
 
-            self.engine_loaded.emit()
             self.engine_changed.emit()
 
         except EngineError as error:
@@ -81,8 +79,6 @@ class EngineLoader(QObject):
             )
             return
 
-        self.engine_changed.emit()
-
         show_warning(
             self.parent(),
             self.tr("Engine Error"),
@@ -93,7 +89,7 @@ class EngineLoader(QObject):
             ),
         )
 
-        self.engine_loaded.emit()
+        self.engine_changed.emit()
 
     def _unload_engine(self) -> None:
         """Stop analysis, terminate engine, and send engine change."""

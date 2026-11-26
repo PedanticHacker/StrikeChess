@@ -184,9 +184,6 @@ class MainWindow(QMainWindow):
     @Slot(Color)
     def expire_clock_for(self, player_color: Color) -> None:
         """End game when clock of `player_color` expires."""
-        self._black_clock.stop_timer()
-        self._white_clock.stop_timer()
-
         self._game.player_with_expired_clock = player_color
         self._notifications_label.setText(self._game.result())
 
@@ -209,11 +206,6 @@ class MainWindow(QMainWindow):
         is_game_over_by_result: bool = self._game.is_over_by_result()
 
         if self._game.fen != self._engine_fen or is_game_over_by_result:
-            if is_game_over_by_result:
-                self._notifications_label.setText(self._game.result())
-            else:
-                self._notifications_label.clear()
-
             self.update_actions()
 
             self.request_engine_move()
@@ -243,33 +235,35 @@ class MainWindow(QMainWindow):
         if not self._engine.is_loaded():
             return
 
-        if self._engine.is_thinking:
-            return
-
         if self._game.is_over_by_result():
             return
 
         if self._game.is_viewing_history and not force:
             return
 
-        if self._game.is_engine_to_move() or force:
-            self._engine_fen = self._game.fen
+        if not self._game.is_engine_to_move() and not force:
+            return
 
-            self._engine.is_thinking = True
-            self._notifications_label.setText(self.tr("Thinking..."))
+        self._notifications_label.setText(self.tr("Thinking..."))
 
-            self.update_actions()
+        if self._engine.is_thinking:
+            return
 
-            QThreadPool.globalInstance().start(
-                partial(
-                    self._engine.play_move,
-                    board=self._game.board_copy(),
-                    black_time=self._black_clock.time,
-                    white_time=self._white_clock.time,
-                    black_increment=self._black_clock.increment,
-                    white_increment=self._white_clock.increment,
-                )
+        self._engine.is_thinking = True
+        self._engine_fen = self._game.fen
+
+        self.update_actions()
+
+        QThreadPool.globalInstance().start(
+            partial(
+                self._engine.play_move,
+                board=self._game.board_copy(),
+                black_time=self._black_clock.time,
+                white_time=self._white_clock.time,
+                black_increment=self._black_clock.increment,
+                white_increment=self._white_clock.increment,
             )
+        )
 
     @Slot()
     def reset_ui_state(self) -> None:
@@ -309,7 +303,11 @@ class MainWindow(QMainWindow):
 
         self._board.set_last_move_arrow()
 
+        self.show_result()
+        self.update_actions()
+
         if is_returning_from_history:
+            self.start_clock()
             self.request_engine_move()
 
     @Slot()
@@ -324,6 +322,26 @@ class MainWindow(QMainWindow):
 
         self._human_name_label.setText(elide_name(human_name))
         self._engine_name_label.setText(elide_name(engine_name))
+
+    @Slot()
+    def show_result(self) -> None:
+        """Show game result, or nothing if game is not over."""
+        if self._game.is_over_by_result():
+            self._notifications_label.setText(self._game.result())
+        else:
+            self._notifications_label.clear()
+
+    @Slot()
+    def start_clock(self) -> None:
+        """Start clock countdown for player on turn."""
+        self._black_clock.update_countdown()
+        self._white_clock.update_countdown()
+
+    @Slot()
+    def stop_clock(self) -> None:
+        """Stop clock countdown for player on turn."""
+        self._black_clock.stop_timer()
+        self._white_clock.stop_timer()
 
     @Slot()
     def update_actions(self) -> None:
@@ -406,11 +424,17 @@ class MainWindow(QMainWindow):
 
         # Engine
         self._engine.move_played.connect(self.play_engine_move)
+
+        self._engine_analysis.started.connect(self.stop_clock)
         self._engine_analysis.started.connect(self.update_actions)
+
+        self._engine_analysis.stopped.connect(self.start_clock)
         self._engine_analysis.stopped.connect(self.update_actions)
+
+        self._engine_loader.engine_changed.connect(self.show_result)
         self._engine_loader.engine_changed.connect(self.update_actions)
         self._engine_loader.engine_changed.connect(self.show_player_names)
-        self._engine_loader.engine_loaded.connect(self.request_engine_move)
+        self._engine_loader.engine_changed.connect(self.request_engine_move)
         self._engine_loader.engine_changed.connect(self._status_bar.show_engine_ponder)
 
         # Game
@@ -517,8 +541,6 @@ class MainWindow(QMainWindow):
             self._game,
             self._engine,
             self._board,
-            self._black_clock,
-            self._white_clock,
             self._evaluation_bar,
             self._notifications_label,
             self._engine_analysis_label,
@@ -616,6 +638,9 @@ class MainWindow(QMainWindow):
         self._show_fen()
         self._status_bar.show_opening()
 
+        self.show_result()
+        self.update_actions()
+
         if self._game.is_over_by_result():
             self._black_clock.stop_timer()
             self._white_clock.stop_timer()
@@ -625,4 +650,5 @@ class MainWindow(QMainWindow):
             self._board.disable_interaction()
             return
 
+        self.start_clock()
         self.request_engine_move()
