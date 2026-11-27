@@ -139,7 +139,7 @@ class MainWindow(QMainWindow):
         """Show dialog to edit settings and apply them if saved."""
         settings_dialog: SettingsDialog = SettingsDialog(self, self._settings)
 
-        if not self._engine.is_loaded():
+        if not self._engine.is_loaded() or self._engine.is_thinking or self._engine.is_analyzing:
             settings_dialog.disable_engine_group()
 
         if self._game.is_in_progress():

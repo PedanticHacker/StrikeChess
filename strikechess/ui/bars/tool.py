@@ -11,6 +11,7 @@ class ToolBar(QToolBar):
 
         self.setMovable(False)
         self.setWindowTitle(self.tr("Tool bar"))
+        self.toggleViewAction().setVisible(False)
 
         self.addAction(main_window.quit_action)
         self.addSeparator()
