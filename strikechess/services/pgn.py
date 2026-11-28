@@ -11,12 +11,12 @@ from strikechess.utils import is_valid_position
 class PgnService:
     """Portable Game Notation (PGN) parsing and exporting."""
 
-    def parse_pgn(self, pgn_text: str) -> tuple[list[str], str | None, str]:
+    def parse_game(self, pgn_text: str) -> tuple[list[str], str | None, str]:
         """Parse `pgn_text` into moves, optional FEN, and result."""
         pgn_data: StringIO = StringIO(pgn_text)
-        game: PgnGame = read_game(pgn_data) or PgnGame()
+        pgn_game: PgnGame = read_game(pgn_data) or PgnGame()
 
-        if not game.mainline_moves() and "FEN" not in game.headers:
+        if not pgn_game.mainline_moves() and "FEN" not in pgn_game.headers:
             raise ValueError(
                 QApplication.translate(
                     "PgnService",
@@ -26,7 +26,7 @@ class PgnService:
                 )
             )
 
-        if game.errors or not is_valid_position(game.board()):
+        if pgn_game.errors or not is_valid_position(pgn_game.board()):
             raise ValueError(
                 QApplication.translate(
                     "PgnService",
@@ -37,26 +37,26 @@ class PgnService:
             )
 
         moves: list[str] = []
-        board: Board = game.board()
-        fen: str | None = game.headers.get("FEN")
-        result: str = game.headers.get("Result", "*")
+        board: Board = pgn_game.board()
+        fen: str | None = pgn_game.headers.get("FEN")
+        result: str = pgn_game.headers.get("Result", "*")
 
-        for move in game.mainline_moves():
+        for move in pgn_game.mainline_moves():
             moves.append(board.san_and_push(move))
 
         return moves, fen, result
 
-    def export_to_pgn(
+    def create_game(
         self,
         game: GameService,
         human_name: str,
         engine_name: str,
         is_engine_white: bool,
-    ) -> str:
-        """Export `game` to PGN format."""
+    ) -> PgnGame:
+        """Create PGN game from `game`."""
         headers: dict[str, str] = {
             "Event": "StrikeChess Game",
-            "Site": "Computer",
+            "Site": "?",
             "Date": datetime.now().strftime("%Y.%m.%d"),
             "Round": "1",
             "White": engine_name if is_engine_white else human_name,
@@ -67,7 +67,7 @@ class PgnService:
         pgn_game: PgnGame = PgnGame(headers)
         pgn_game.setup(game.root_fen)
         pgn_game.add_line(game.move_stack)
-        return str(pgn_game)
+        return pgn_game
 
     def suggest_file_name(
         self,

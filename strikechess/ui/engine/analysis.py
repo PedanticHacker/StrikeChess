@@ -49,6 +49,7 @@ class EngineAnalysis(QObject):
 
         self._engine.stop_analysis()
 
+        self._board.set_last_move_arrow()
         self._engine_analysis_label.clear()
         self._evaluation_bar.reset_appearance()
 

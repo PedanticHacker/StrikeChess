@@ -1,3 +1,4 @@
+from chess.pgn import FileExporter
 from PySide6.QtCore import QObject, Signal
 
 from strikechess.services import PgnService
@@ -53,7 +54,7 @@ class PgnFiles(QObject):
 
         try:
             pgn_text: str = _read_pgn_file(file_path)
-            moves, fen, result = self._pgn.parse_pgn(pgn_text)
+            moves, fen, result = self._pgn.parse_game(pgn_text)
 
             if fen is None:
                 self._game.reset()
@@ -106,14 +107,14 @@ class PgnFiles(QObject):
             return
 
         try:
-            pgn_text: str = self._pgn.export_to_pgn(
+            pgn_game: PgnGame = self._pgn.create_game(
                 self._game,
                 human_name,
                 engine_name,
                 is_engine_white,
             )
 
-            _write_pgn_file(file_path, pgn_text)
+            _write_pgn_file(file_path, pgn_game)
 
             show_info(self.parent(), self.tr("Game saved successfully."))
 
@@ -138,7 +139,7 @@ def _read_pgn_file(file_path: str) -> str:
         return game_file.read()
 
 
-def _write_pgn_file(file_path: str, pgn_text: str) -> None:
-    """Write `pgn_text` to file at `file_path`."""
+def _write_pgn_file(file_path: str, pgn_game: PgnGame) -> None:
+    """Write `pgn_game` to file at `file_path`."""
     with open(file_path, mode="w", encoding="utf-8", newline="\n") as game_file:
-        game_file.write(pgn_text)
+        pgn_game.accept(FileExporter(game_file))

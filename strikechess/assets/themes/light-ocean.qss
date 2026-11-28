@@ -38,6 +38,52 @@ QCheckBox::indicator:unchecked:hover, QRadioButton::indicator:unchecked:hover {
   background-color: #97b6d3;
 }
 
+QComboBox {
+  background-color: #97b6d3;
+  border: 1px solid #4d85bd;
+  border-radius: 4px;
+  color: #183557;
+  combobox-popup: 0;
+  padding: 3px 8px;
+}
+
+QComboBox QAbstractItemView {
+  background-color: #97b6d3;
+  border: 1px solid #4d85bd;
+  color: #183557;
+  outline: none;
+  selection-background-color: #85a1bb;
+  selection-color: #183557;
+}
+
+QComboBox QAbstractItemView::item {
+  padding: 4px 8px;
+}
+
+QComboBox::down-arrow {
+  border-left: 4px solid #97b6d3;
+  border-right: 4px solid #97b6d3;
+  border-top: 5px solid #183557;
+  height: 1px;
+  width: 1px;
+}
+
+QComboBox::down-arrow:disabled {
+  border-top: 5px solid #385576;
+}
+
+QComboBox::drop-down {
+  border: none;
+}
+
+QComboBox:disabled {
+  color: #385576;
+}
+
+QComboBox:hover {
+  border: 1px solid #3d75ad;
+}
+
 QDialog {
   background-color: #87a6c3;
   border: 1px solid #4d85bd;
