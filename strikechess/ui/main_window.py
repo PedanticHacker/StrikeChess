@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
         # Widgets
         self._fen_editor: FenEditor = FenEditor(self._game)
         self._evaluation_bar: EvaluationBar = EvaluationBar()
-        self._table_model: TableModel = TableModel(self._game.moves)
+        self._table_model: TableModel = TableModel(self._game)
         self._table_view: TableView = TableView(self._table_model)
         self._board: SvgBoard = SvgBoard(self._game, self._engine, self._settings)
         self._black_clock: ChessClock = ChessClock(BLACK, self._game, self._settings)
@@ -127,14 +127,6 @@ class MainWindow(QMainWindow):
         self._engine_analysis.stop()
         self.request_engine_move(force=True)
 
-    def quit(self) -> None:
-        """Quit app by closing main window."""
-        self.close()
-
-    def show_about(self) -> None:
-        """Show About dialog with version, copyright, and license."""
-        show_about(self)
-
     def show_settings_dialog(self) -> None:
         """Show dialog to edit settings and apply them if saved."""
         settings_dialog: SettingsDialog = SettingsDialog(self, self._settings)
@@ -185,7 +177,7 @@ class MainWindow(QMainWindow):
     def expire_clock_for(self, player_color: Color) -> None:
         """End game when clock of `player_color` expires."""
         self._game.player_with_expired_clock = player_color
-        self._notifications_label.setText(self._game.result())
+        self.show_result()
 
         self._engine.stop_ponder()
 
@@ -273,8 +265,8 @@ class MainWindow(QMainWindow):
 
         self._engine.stop_ponder()
 
-        self._board.clear_arrow()
         self._status_bar.clear_opening()
+        self._board.set_last_move_arrow()
 
         self._update_ui_state()
 
@@ -293,8 +285,7 @@ class MainWindow(QMainWindow):
             self._game.update_state(move_index)
 
         if not is_last_move:
-            self._black_clock.stop_timer()
-            self._white_clock.stop_timer()
+            self.stop_clock()
 
         self._engine_analysis.stop()
 
@@ -428,6 +419,7 @@ class MainWindow(QMainWindow):
         self._engine_analysis.started.connect(self.stop_clock)
         self._engine_analysis.started.connect(self.update_actions)
 
+        self._engine_analysis.stopped.connect(self.show_result)
         self._engine_analysis.stopped.connect(self.start_clock)
         self._engine_analysis.stopped.connect(self.update_actions)
 
@@ -450,8 +442,8 @@ class MainWindow(QMainWindow):
         """Create menu item and tool bar button actions."""
         self.about_action: QAction = create_action(
             shortcut="F1",
-            handler=self.show_about,
             icon=create_svg_icon("about"),
+            handler=partial(show_about, self),
             name=self.tr("About StrikeChess"),
             status_tip=self.tr("Shows the About dialog."),
         )
@@ -491,8 +483,8 @@ class MainWindow(QMainWindow):
             status_tip=self.tr("Forces the engine to play a move on the current turn."),
         )
         self.quit_action: QAction = create_action(
-            handler=self.quit,
             shortcut="Ctrl+Q",
+            handler=self.close,
             name=self.tr("Quit"),
             icon=create_svg_icon("quit"),
             status_tip=self.tr("Quits the app by closing the main window."),
@@ -642,8 +634,7 @@ class MainWindow(QMainWindow):
         self.update_actions()
 
         if self._game.is_over_by_result():
-            self._black_clock.stop_timer()
-            self._white_clock.stop_timer()
+            self.stop_clock()
 
             self._engine.stop_ponder()
 

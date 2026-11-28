@@ -54,6 +54,11 @@ class GameService(QObject):
         self._reset_game_state()
 
     @property
+    def first_move_number(self) -> int:
+        """Number of first move in game."""
+        return self._board.root().fullmove_number
+
+    @property
     def last_position(self) -> Board:
         """Position after last move, unaffected by viewing history."""
         return self.positions[-1] if self.positions else self._board
@@ -109,10 +114,9 @@ class GameService(QObject):
         self._board.reset()
         self._reset_game_state()
 
-    def load_moves(self, moves: list[str]) -> None:
+    def load_moves(self, moves: list[Move]) -> None:
         """Load `moves` into current game."""
-        for san_move in moves:
-            move: Move = self._board.parse_san(san_move)
+        for move in moves:
             self.push(move)
 
     def push(self, move: Move) -> None:
@@ -202,10 +206,6 @@ class GameService(QObject):
         board.push(move)
         return _is_game_over(board)
 
-    def is_white_to_move(self) -> bool:
-        """Return True if White is to move."""
-        return self._board.turn == WHITE
-
     def _reset_game_state(self) -> None:
         """Reset game to default state."""
         self.move_index = -1
@@ -225,7 +225,7 @@ class GameService(QObject):
 
     def _add_ellipsis_as_first_move(self) -> None:
         """Add ellipsis as White's missing move if Black starts."""
-        if not self.is_white_to_move():
+        if self._board.turn != WHITE:
             self.move_index = 0
             self.moves.append("...")
             self.positions.append(self._board.copy())

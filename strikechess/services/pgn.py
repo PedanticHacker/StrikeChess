@@ -11,8 +11,8 @@ from strikechess.utils import is_valid_position
 class PgnService:
     """Portable Game Notation (PGN) parsing and exporting."""
 
-    def parse_game(self, pgn_text: str) -> tuple[list[str], str | None, str]:
-        """Parse `pgn_text` into moves, optional FEN, and result."""
+    def parse_game(self, pgn_text: str) -> tuple[list[Move], str, str]:
+        """Parse `pgn_text` into moves, FEN, and result."""
         pgn_data: StringIO = StringIO(pgn_text)
         pgn_game: PgnGame = read_game(pgn_data) or PgnGame()
 
@@ -36,14 +36,9 @@ class PgnService:
                 )
             )
 
-        moves: list[str] = []
-        board: Board = pgn_game.board()
-        fen: str | None = pgn_game.headers.get("FEN")
+        fen: str = pgn_game.board().fen()
         result: str = pgn_game.headers.get("Result", "*")
-
-        for move in pgn_game.mainline_moves():
-            moves.append(board.san_and_push(move))
-
+        moves: list[Move] = list(pgn_game.mainline_moves())
         return moves, fen, result
 
     def create_game(

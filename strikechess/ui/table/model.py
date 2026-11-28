@@ -4,10 +4,10 @@ from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 class TableModel(QAbstractTableModel):
     """Model providing moves in standard algebraic notation (SAN)."""
 
-    def __init__(self, moves: list[str]) -> None:
+    def __init__(self, game: GameService) -> None:
         super().__init__()
 
-        self._moves: list[str] = moves
+        self._game: GameService = game
 
     def data(
         self,
@@ -18,8 +18,8 @@ class TableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.DisplayRole:
             move_index: int = 2 * index.row() + index.column()
 
-            if 0 <= move_index < len(self._moves):
-                return self._moves[move_index]
+            if 0 <= move_index < len(self._game.moves):
+                return self._game.moves[move_index]
 
         return None
 
@@ -34,7 +34,7 @@ class TableModel(QAbstractTableModel):
         parent: QModelIndex | QPersistentModelIndex = QModelIndex(),
     ) -> int:
         """Get calculated row count needed for White/Black moves."""
-        return (len(self._moves) + 1) // 2
+        return (len(self._game.moves) + 1) // 2
 
     def columnCount(
         self,
@@ -54,7 +54,7 @@ class TableModel(QAbstractTableModel):
             if orientation == Qt.Orientation.Horizontal:
                 return [self.tr("White"), self.tr("Black")][section]
 
-            return section + 1
+            return section + self._game.first_move_number
 
         return None
 

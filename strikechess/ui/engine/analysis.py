@@ -56,11 +56,6 @@ class EngineAnalysis(QObject):
         self._evaluation_bar.hide()
         self._engine_analysis_label.hide()
 
-        if self._game.is_over_by_result():
-            self._notifications_label.setText(self._game.result())
-        else:
-            self._notifications_label.clear()
-
         self.stopped.emit()
 
     @Slot(Score)

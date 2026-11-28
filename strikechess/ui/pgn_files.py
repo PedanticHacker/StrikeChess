@@ -56,11 +56,7 @@ class PgnFiles(QObject):
             pgn_text: str = _read_pgn_file(file_path)
             moves, fen, result = self._pgn.parse_game(pgn_text)
 
-            if fen is None:
-                self._game.reset()
-            else:
-                self._game.fen = fen
-
+            self._game.fen = fen
             self._game.load_moves(moves)
 
             if result in ("1-0", "0-1", "1/2-1/2") and not self._game.is_over_by_rules():

@@ -257,6 +257,12 @@ QStatusBar QLabel {
   padding-right: 1px;
 }
 
+QTableCornerButton::section {
+  background-color: #1f291f;
+  border: none;
+  border-bottom: 1px solid #3d4f3d;
+}
+
 QTableView {
   background-color: #2d382d;
   border: 1px solid #3d4f3d;
