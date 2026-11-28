@@ -506,13 +506,13 @@ Prova a salvare in un'altra cartella.</translation>
     <translation>Informazioni su StrikeChess</translation>
   </message>
   <message>
-    <source>Play chess and analyze games on
-Windows, Linux, and macOS.
+    <source>A chess app for Windows, Linux, and macOS,
+powered by the Stockfish engine.
 
 Copyright (C) 2026 Boštjan Mejak
 MIT License</source>
-    <translation>Gioca a scacchi e analizza partite su
-Windows, Linux e macOS.
+    <translation>Un'applicazione di scacchi per Windows, Linux e macOS,
+basata sul motore Stockfish.
 
 Copyright (C) 2026 Boštjan Mejak
 Licenza MIT</translation>
